@@ -12,15 +12,15 @@ mapping and develop a reusable framework in GWT to create new maps.
 These requirements can be summarised as:
 * reduce the time needed to develop maps 
 * reduce the duplication and maintenance overhead for each implementation of the maps surveyor
-
+ 
 We approached these requirements by developing these features:
 * refactoring the code base to create reusable components for the UI, for instance Map, Filter, Markers, Popups etc
 * designed a simple DSL to configure the web application using XML, allowing users to define concepts like:
-** a dataprovider abstraction was added as a basic facade over a data source , with a view support multiple data 
+1. a dataprovider abstraction was added as a basic facade over a data source , with a view support multiple data 
    sources, for instance the current data source is a local JSON file, in the future this could be a google spreadsheet
-** support for faceted browsing, with several configurable facet filter UI components, including multiple selection
-** a schema datatype to map the data source to an internal representation
-** view types beyond maps are supported, like tables, links static html  
+2. support for faceted browsing, with several configurable facet filter UI components, including multiple selection
+3. a schema datatype to map the data source to an internal representation
+4. view types beyond maps are supported, like tables, links static html  
     
 ## How do I use it?
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
@@ -54,4 +54,3 @@ The use of this framework assumes some familiarity with GWT framework, mvn, and 
 
 ## Where can I learn more
 Check the README files in the SurveyorCore and MapCore modules
-
