@@ -10,12 +10,15 @@ continents. As the demand for creating surveyors increased, we decided to refact
 mapping and develop a reusable framework in GWT to create new maps. 
 
 These requirements can be summarised as:
+
 * reduce the time needed to develop maps 
 * reduce the duplication and maintenance overhead for each implementation of the maps surveyor
  
 We approached these requirements by developing these features:
+
 * refactoring the code base to create reusable components for the UI, for instance Map, Filter, Markers, Popups etc
 * designed a simple DSL to configure the web application using XML, allowing users to define concepts like:
+
 1. a dataprovider abstraction was added as a basic facade over a data source , with a view support multiple data 
    sources, for instance the current data source is a local JSON file, in the future this could be a google spreadsheet
 2. support for faceted browsing, with several configurable facet filter UI components, including multiple selection
