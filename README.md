@@ -1,4 +1,4 @@
-## What is WWARN Maps Surveyor
+## WWARN Maps Surveyor overview
 WWARN Maps Surveyors are a mapping platform for visualising data to support statistical 
 reporting, public health surveillance, and health research. However, the use of the this 
 goes beyond geo visualisation of research data. The platform can, for instance, facilitate 
