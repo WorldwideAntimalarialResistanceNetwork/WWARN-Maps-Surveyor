@@ -30,41 +30,37 @@ The use of this framework assumes some familiarity with GWT framework, mvn, and 
 
 1. Add Maven dependencies
 
-	```xml
-	<!-- -->
-	<dependency>
-		<groupId>org.wwarn.surveyor</groupId>
-		<artifactId>SurveyorCore</artifactId>
-		<version>1.7.2-SNAPSHOT</version>
-	</dependency>
-        ```
-	
+```xml
+    <dependency>
+        <groupId>org.wwarn.surveyor</groupId>
+        <artifactId>SurveyorCore</artifactId>
+        <version>1.7.2-SNAPSHOT</version>
+    </dependency>
+```
+
 2. Add the inherits statement to your module.gwt.xml.	
-	```xml
-	<inherits name="org.wwarn.surveyor.SurveyorCore"/>
-	```
+```xml
+    <inherits name="org.wwarn.surveyor.SurveyorCore"/>
+```
 	
 3. Clone the sample application, and configure xml
 
 4. Build
    Maven commands: Deployment - Jetty:
 
-   ```#!sh
-   mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run
+   ```
+    mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run
    ```
 
-   Deployment - Tomcat6x:
+   Deployment - Tomcat6x: Should deploy to http://localhost:8080/nmfisurveyor-1.0-SNAPSHOT
 
    ```
-   #!sh
-   mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run -DskipTests -Dcargo.maven.containerId=tomcat6x -Dcargo.maven.containerUrl=http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.zip
+    mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run -DskipTests -Dcargo.maven.containerId=tomcat6x -Dcargo.maven.containerUrl=http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.zip
    ```
-     Should deploy to http://localhost:8080/nmfisurveyor-1.0-SNAPSHOT
-
+   
    Deployment - Tomcat7x
 
    ```
-   #!sh
      mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run -DskipTests -Dcargo.maven.containerId=tomcat7x -Dcargo.maven.containerUrl=http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.16/bin/apache-tomcat-7.0.16.zip
    ```
 
