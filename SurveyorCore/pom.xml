@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.wwarn</groupId>
+        <artifactId>wwarn-maps-surveyor</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <!-- POM file generated with GWT webAppCreator -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wwarn.surveyor</groupId>
+    <artifactId>SurveyorCore</artifactId>
+    <packaging>jar</packaging>
+    <version>1.7.2-SNAPSHOT</version>
+    <name>SurveyorCore</name>
+
+    <inceptionYear>2013</inceptionYear>
+
+    <organization>
+        <name>WorldWide Antimalarial Resistance Network (WWARN)</name>
+        <url>http://www.wwarn.org/about-us</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>The BSD 3-Clause License</name>
+            <url>http://opensource.org/licenses/BSD-3-Clause</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <!-- Convenience property to set the GWT version -->
+        <gwtVersion>2.6.1</gwtVersion>
+        <gwt.maven.plugin.version>2.6.1</gwt.maven.plugin.version>
+        <!-- GWT needs at least java 1.5 -->
+        <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <map.core.version>2.7.1-NVT-RC-SNAPSHOT</map.core.version>
+    </properties>
+
+    <repositories>
+        <!-- Note this must be repeated here, despite being in parent pom -->
+    </repositories>
+
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>org/wwarn/surveyor/**/*.xml</include>
+                    <include>org/wwarn/surveyor/**/*.java</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*Test.java</exclude>
+                    <exclude>**/GwtTest*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.css</include>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+
+            <!-- GWT Maven Plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>${gwt.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>test</goal>
+                            <!--<goal>generateAsync</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
+                <!-- Plugin configuration. There are many available options, see
+                  gwt-maven-plugin documentation at codehaus.org -->
+                <configuration>
+                    <module>org.wwarn.surveyor.SurveyorCore</module>
+                    <mode>htmlunit</mode>
+                    <includes>**/Gwt*Suite.java</includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12</version>
+                <executions>
+                    <execution>
+                        <id>ExecuteTests</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/GwtTest*.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${javaVersion}</source>
+                    <target>${javaVersion}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Custom license headers for all files -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>Add License Headers</id>
+                        <configuration>
+                            <licenseName>bsd_3</licenseName>
+                            <organizationName>University of Oxford</organizationName>
+                            <copyrightOwners>University of Oxford</copyrightOwners>
+                            <roots>
+                                <root>src</root>
+                                <root>target/generated-sources</root>
+                                <root>target/processed-sources</root>
+                                <!-- Included because HTML/CSS/KML files are here -->
+                                <root>war</root>
+                            </roots>
+                            <!-- Don't touch these compiler generated files -->
+                            <excludes>
+                                <exclude>**/*.cache.html</exclude>
+                                <exclude>**/*.nocache.html</exclude>
+                                <exclude>**/*.properties</exclude>
+                                <exclude>**/*.json</exclude>
+                            </excludes>
+                        </configuration>
+
+                        <!-- Bound to run at last phase before compile -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.wwarn.mapcore</groupId>
+            <artifactId>MapCore</artifactId>
+            <version>${map.core.version}</version>
+        </dependency>
+        <!-- Import mapcore test cases
+        this fails for some odd reasons..
+        <dependency>
+            <groupId>org.wwarn.mapcore</groupId>
+            <artifactId>MapCore</artifactId>
+            <classifier>tests</classifier>
+            <version>2.4-SNAPSHOT</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- needed for gwt integration tests-->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <classifier>sources</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt.google-apis</groupId>
+            <artifactId>gwt-visualization</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <!--
+           See GwtMockito documentation: https://github.com/google/gwtmockito
+        -->
+        <dependency>
+            <groupId>com.google.gwt.gwtmockito</groupId>
+            <artifactId>gwtmockito</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <!--
+             See EventBinder documentation: https://github.com/google/gwteventbinder
+         -->
+        <dependency>
+            <groupId>com.google.gwt.eventbinder</groupId>
+            <artifactId>eventbinder</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>4.8.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>4.8.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-facet</artifactId>
+            <version>4.8.1</version>
+        </dependency>
+
+        <!-- json Parser -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

@@ -1,0 +1,5 @@
+.idea
+MapCore/.settings
+*.iml
+MapCore/target
+SurveyorCore/target

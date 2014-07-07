@@ -1,0 +1,540 @@
+/*
+ * #%L
+ * SurveyorCore
+ * %%
+ * Copyright (C) 2013 - 2014 University of Oxford
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the University of Oxford nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+
+table{
+    font-family:Arial Unicode MS, Arial, sans-serif;
+}
+
+.lookLikeLink {
+    font-family:Arial Unicode MS, Arial, sans-serif;
+    color: #0095C5;
+    text-decoration: none;
+    font-size:12px;
+    font-weight:bold;
+}
+
+a:link {
+}
+
+.descriptionContainer p {
+
+    font-size: 10pt;
+    margin-bottom: 1em;
+    margin-top: 0.5em;
+}
+
+.descriptionContainer h2 {
+    font-size: 16pt;
+    /*margin-top: 1.5em;*/
+    margin-bottom: 0;
+}
+.descriptionContainer h1 {
+    font-size: 20pt;
+    text-align: center;
+    margin-top: 0;
+}
+.descriptionContainer table th, .descriptionContainer table td {
+    border: solid 1px #CCCCCC;
+    padding: 5px;
+    font-size: 10pt;
+}
+
+
+
+.info * {
+    font-family:Helvetica,Arial,sans-serif;
+}
+
+.info h1 {
+    color:#333333;
+    float:left;
+    font-size:14px;
+    font-weight:bold;
+    line-height:14px;
+    margin:0;
+    padding:0 0 5px;
+    width:268px;
+
+    font-style:normal;
+}
+
+.info h2 {
+    color:#685457;
+    font-size:14px;
+    font-weight:normal;
+    line-height:1em;
+    margin:5px 0 3px 3px;
+    padding: 0 0 5px;
+
+    font-style:normal;
+
+}
+
+.info a {
+    color:#CC0000;
+    font-weight:bold;
+    text-decoration:none;
+    font-size: 10pt;
+}
+.info a:hover {
+    text-decoration:underline;
+}
+
+.info .details p {
+
+    color:#685457;
+    display:block;
+    line-height:1em;
+    margin:0;
+    padding:0 20px 5px 0;
+}
+
+.info .samples p {
+    font-size: 36pt;
+    line-height: 20pt;
+}
+.info .positive p {
+    font-size: 36pt;
+    line-height: 20pt;
+}
+
+.info .details p img {
+    left:5px;
+    position:relative;
+}
+
+
+    /*Select GWT styles imported from standard.css*/
+.gwt-PopupPanel {
+    border: 3px solid #C3D9FF;
+    padding: 3px;
+    background: white;
+}
+
+.sectionPanelHeading {
+    font-size: 13px;
+    /*font-weight:bold;*/
+    /*padding-bottom:6px;*/
+    /*padding-top:6px;*/
+    /*padding-left:3px;*/
+}
+
+
+.cw-StackPanelHeader {
+    padding-right: 7px;
+    font-weight: bold;
+    font-size: 1.4em;
+}
+
+
+.MainSectionPanel {
+    border-bottom: 1px solid #BBBBBB;
+    border-left: 1px solid #BBBBBB;
+    border-right: 1px solid #BBBBBB;
+    border-top: 1px solid #BBBBBB;
+    margin-bottom: 10px;
+}
+
+.MainSectionPanelTitleBar {
+    -moz-background-clip: border;
+    -moz-background-inline-policy: continuous;
+    -moz-background-origin: padding;
+    background: #D3DEF6 url("images/hborder.png") repeat-x scroll 0 -989px;
+    border-color: #BBBBBB #BBBBBB -moz-use-text-color;
+    border-width: 1px 1px 0;
+    font-weight: bold;
+    padding: 3px;
+}
+
+.MainSectionPanelContent {
+    background: white none repeat scroll 0 0;
+    border: 1px none #BBBBBB;
+    border-top: solid #BBB;
+    border-bottom: 0 -moz-use-text-color;
+    /*padding: 20px 20px 20px 20px;*/
+}
+
+.gwt-HTML{
+    font-size: 13px;
+    line-height:1.5
+}
+.subHeading{
+    font-size:11px;
+}
+.gwt-ListBox{
+    font-size:11px;
+    width:190px;
+}
+.popups {
+
+    padding: 8px;
+    border: 2px solid #ccccff;
+    background-color: white;
+}
+
+.mainAppWidget {
+
+    background-color:#FFFFFF;
+    margin: 10px auto 15px;
+    width:98%;
+    -moz-box-shadow:0 2px 10px rgba(0, 0, 0, 0.7);
+    -webkit-box-shadow:0 2px 10px rgba(0,0,0,0.7);
+    box-shadow:0 2px 10px rgba(0,0,0,0.7);
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    padding: 10px 10px 10px 10px;
+}
+
+    /* Styles for between header and footer */
+
+.listChoiceContainer .label {
+    display: inline;
+}
+.listChoiceContainer .labelContent {
+    display: inline;
+}
+
+#yearRangePanel .label {
+    font-size: 10pt;
+    color: black;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+#yearRangePanel .labelContent {
+    font-size: 10pt;
+    margin-left: 0.5em;
+    color: black;
+}
+
+#yearRangePanel div {
+
+    overflow:visible !important;
+}
+
+#yearRangePanel .rangeSeparator {
+    font-size: 10pt;
+    color: black;
+    margin-left: 0.5em;
+}
+
+
+
+#sizeRangePanel .label {
+    font-size: 10pt;
+    color: black;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+#sizeRangePanel .labelContent {
+    font-size: 10pt;
+    margin-left: 0.5em;
+    color: black;
+}
+.gwt-TabBar {
+}
+.gwt-TabBar .gwt-TabBarFirst {
+    width: 5px; /* first tab distance from the left */
+}
+.gwt-TabBar .gwt-TabBarRest {
+}
+.gwt-TabBar .gwt-TabBarItem {
+    margin-left: 6px;
+    padding: 3px 6px 3px 6px;
+    cursor: pointer;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    background: #d0e4f6;
+}
+.gwt-TabBar .gwt-TabBarItem-selected {
+    cursor: default;
+    background: #92c1f0;
+}
+.gwt-TabBar .gwt-TabBarItem-disabled {
+    cursor: default;
+    color: #999999;
+}
+.gwt-TabPanel {
+}
+.gwt-TabPanelBottom {
+    border-color: #92c1f0;
+    border-style: solid;
+    border-width: 3px 2px 2px;
+    overflow: hidden;
+    padding: 6px;
+}
+
+.gwt-DecoratedTabBar {
+}
+.gwt-DecoratedTabBar .gwt-TabBarFirst {
+    width: 5px; /* first tab distance from the left */
+}
+.gwt-DecoratedTabBar .gwt-TabBarRest {
+}
+.gwt-DecoratedTabBar .gwt-TabBarItem {
+    border-collapse: collapse;
+    margin-left: 6px;
+}
+.gwt-DecoratedTabBar .tabTop {
+    background: #FFFFFF;
+}
+
+.gwt-DecoratedTabBar .tabTopCenter {
+    padding: 0px;
+    background: #303030;
+    color: #ffffff
+}
+.gwt-DecoratedTabBar .tabTopLeft {
+    padding: 0px;
+    zoom: 1;
+    background: #303030;
+    -moz-border-radius-topleft: 3px;
+    -webkit-border-top-left-radius:3px;
+    border-top-left-radius: 6px;
+}
+
+.gwt-DecoratedTabBar .tabTopRight {
+    padding: 0px;
+    zoom: 1;
+    background: #303030;
+    -moz-border-radius-topright: 3px;
+    -webkit-border-top-right-radius:3px;
+    border-top-right-radius: 6px;
+}
+
+.gwt-DecoratedTabBar .tabTopLeftInner,
+.gwt-DecoratedTabBar .tabTopRightInner {
+    width: 6px;
+    height: 6px;
+}
+
+* html .gwt-DecoratedTabBar .tabTopLeftInner,
+* html .gwt-DecoratedTabBar .tabTopRightInner {
+    width: 6px;
+    height: 6px;
+    overflow: hidden;
+}
+.gwt-DecoratedTabBar .tabMiddleLeft,
+.gwt-DecoratedTabBar .tabMiddleRight {
+    width: 6px;
+    padding: 0px;
+    background: #303030;
+}
+.gwt-DecoratedTabBar .tabMiddleLeftInner,
+.gwt-DecoratedTabBar .tabMiddleRightInner {
+    width: 1px;
+    height: 1px;
+}
+.gwt-DecoratedTabBar .tabMiddleCenter {
+    padding: 0px 4px 2px 4px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    background: #303030;
+}
+.gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabTopCenter {
+    color: white;
+    background: #D80009;
+}
+.gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabTopLeft {
+    background: #D80009;
+    background-position: 0px -61px;
+}
+.gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabTopRight {
+    background: #D80009;
+    background-position: -6px -61px;
+}
+.gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabMiddleLeft,
+.gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabMiddleRight {
+    background: #D80009;
+}
+.gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabMiddleCenter {
+    cursor: default;
+    background: #D80009;;
+}
+.gwt-DecoratedTabBar .gwt-TabBarItem-disabled .tabMiddleCenter {
+    cursor: default;
+    color: #999999;
+}
+
+.gwt-DecoratorPanel {
+}
+.gwt-DecoratorPanel .topCenter {
+    border-top: 1px solid #bbb;
+    line-height: 0px;
+}
+.gwt-DecoratorPanel .bottomCenter {
+    border-bottom: 1px solid #bbb;
+    line-height: 0px;
+}
+.gwt-DecoratorPanel .topCenterInner,
+.gwt-DecoratorPanel .bottomCenterInner {
+    height: 1px;
+    line-height: 0px;
+    font-size: 1px;
+}
+.gwt-DecoratorPanel .middleLeft {
+    border-left: 1px solid #bbb;
+}
+.gwt-DecoratorPanel .middleRight {
+    border-right: 1px solid #bbb;
+}
+.gwt-DecoratorPanel .middleLeftInner,
+.gwt-DecoratorPanel .middleRightInner {
+    width: 1px;
+    line-height: 1px;
+}
+.gwt-DecoratorPanel .topLeftInner,
+.gwt-DecoratorPanel .topRightInner,
+.gwt-DecoratorPanel .bottomLeftInner,
+.gwt-DecoratorPanel .bottomRightInner {
+    width: 5px;
+    height: 5px;
+    zoom: 1;
+    font-size: 1px;
+    overflow: hidden;
+}
+.gwt-DecoratorPanel .topLeft {
+    line-height: 0px;
+    background: url(images/corner.png) no-repeat 0px -6px;
+    -background: url(images/circles_ie6.png) no-repeat 0px -6px;
+}
+.gwt-DecoratorPanel .topRight {
+    line-height: 0px;
+    background: url(images/corner.png) no-repeat -5px -6px;
+    -background: url(images/circles_ie6.png) no-repeat -5px -6px;
+}
+.gwt-DecoratorPanel .bottomLeft {
+    line-height: 0px;
+    background: url(images/corner.png) no-repeat 0px -11px;
+    -background: url(images/circles_ie6.png) no-repeat 0px -11px;
+}
+.gwt-DecoratorPanel .bottomRight {
+    line-height: 0px;
+    background: url(images/corner.png) no-repeat -5px -11px;
+    -background: url(images/circles_ie6.png) no-repeat -5px -11px;
+}
+html>body .gwt-DecoratorPanel {
+}
+* html .gwt-DecoratorPanel .topLeftInner,
+* html .gwt-DecoratorPanel .topRightInner,
+* html .gwt-DecoratorPanel .bottomLeftInner,
+* html .gwt-DecoratorPanel .bottomRightInner {
+    width: 5px;
+    height: 5px;
+    overflow: hidden;
+}
+.Popup_Failure_Rate
+{
+    font-family: arial;
+    font-size: 10px;
+    background: #e0ffff;
+}
+
+.Popup_Title_Panel
+{
+    font-family: arial;
+    font-size: 10px;
+    background: #e0ffff;
+}
+
+.Popup_Publisher_Panel
+{
+    font-family: arial;
+    font-size: 10px;
+    background: #e0ffff;
+}
+
+.Popup_report_type_panel
+{
+    font-family: arial;
+    font-size: 10px;
+    background: #e0ffff;
+}
+
+.Popup_Grid {
+    font-family: arial;
+    font-size: 10px;
+    background: #e0ffff;
+}
+
+.Report_Table_Style
+{
+    font-family: arial;
+    font-size: 10px;
+    background: #e0ffff
+}
+
+.PopupNormalFont
+{
+    font-family: arial;
+    font-size: 12px;
+}
+.PopupHeading1Font
+{
+    font-family: arial;
+    font-weight: bold;
+    font-size: 13px;
+}
+.PopupHeading2Font
+{
+    font-family: arial;
+    font-weight: bold;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.PopupHeading2FontRight {
+    font-family: arial;
+    font-weight: bold;
+    text-align: right;
+    font-size: 12px;
+    float: right;
+}
+
+    /* stock list flex table */
+.drugList {
+    border: 1px solid silver;
+    padding: 2px;
+    margin-bottom:6px;
+}
+
+.google-visualization-table-table * {
+    margin: 0;
+    vertical-align: bottom !important;
+    padding: 1 !important;
+}
+

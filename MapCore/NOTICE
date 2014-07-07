@@ -1,0 +1,34 @@
+Notice file from up stream projects:
+========================================================================================================================
+   ===================================================================================
+   ==  Notices and attributions required by libraries that the project depends on   ==
+   ===================================================================================
+
+ The JUnit depends on Java Hamcrest (http://hamcrest.org/JavaHamcrest/).
+========================================================================================================================
+Mockito license - MIT.
+
+Libraries used:
+
+Cglib - Apache License 2.0
+ASM - BSD license
+
+Mockito all distribution:
+
+Objenesis - MIT license
+Hamcrest - BSD license
+========================================================================================================================
+Lists of third-party dependencies.
+     (Apache License 2.0) GWT Maps API V3 - Core API (com.github.branflake2267:gwt-maps-api:3.10.0-alpha-6 - https://github.com/branflake2267/GWT-Maps-V3-Api/gwt-maps-api/)
+     (GWT Terms) gwt-dev (com.google.gwt:gwt-dev:2.6.1 - http://www.gwtproject.org/gwt-dev/)
+     (GWT Terms) gwt-user (com.google.gwt:gwt-user:2.6.1 - http://www.gwtproject.org/gwt-user/)
+     (The Apache Software License, Version 2.0) Google API Libraries for Google Web Toolkit (com.google.gwt.google-apis:gwt-ajaxloader:1.1.0 - http://nexus.sonatype.org/oss-repository-hosting.html/gwt-ajaxloader)
+     (Unknown license) gwt-visualization (com.google.gwt.google-apis:gwt-visualization:1.1.2 - no url defined)
+     (The Apache Software License, Version 2.0) GwtMockito (com.google.gwt.gwtmockito:gwtmockito:1.1.3 - http://google.github.io/gwtmockito/gwtmockito)
+     (Apache License, Version 2.0) Bean Validation API (javax.validation:validation-api:1.0.0.GA - no url defined)
+     (Common Public License Version 1.0) JUnit (junit:junit:4.8.1 - http://junit.org)
+     (Apache 2) opencsv (net.sf.opencsv:opencsv:2.0 - http://opencsv.sf.net)
+     (Apache License 2.0) (LGPL 2.1) (MPL 1.1) Javassist (org.javassist:javassist:3.17.1-GA - http://www.javassist.org/)
+     (provided without support or warranty) JSON (JavaScript Object Notation) (org.json:json:20090211 - http://www.json.org/java/index.html)
+     (The MIT License) Mockito (org.mockito:mockito-all:1.9.5 - http://www.mockito.org)
+     (BSD License - http://yuilibrary.com/license/) YUI 2 (http://yui.github.io/yui2/docs/yui_2.9.0_full)

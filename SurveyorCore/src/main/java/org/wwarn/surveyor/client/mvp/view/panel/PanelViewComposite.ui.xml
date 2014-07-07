@@ -1,0 +1,86 @@
+<!--
+  #%L
+  SurveyorCore
+  %%
+  Copyright (C) 2013 - 2014 University of Oxford
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  
+  3. Neither the name of the University of Oxford nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        @external .tableContentHrefOrderHack;
+
+        .frameContainer {
+            width: 100%;
+            height: 100%;
+        }
+
+        .frame {
+            width: 100%;
+            height: 100%;
+            min-width: 1000px;
+            border: 1px solid #ccc;
+        }
+
+        .tableContentHrefOrderHack *{
+            padding: 0px !important;
+        }
+        .hack p{
+            visibility: hidden;
+            margin-top: -1em;
+            height: 0.3em;
+            overflow: hidden;
+        }
+
+        .horizontalPanel{
+            margin-top: 1em;
+            margin-bottom: 1em;
+            vertical-align: middle;
+        }
+
+        .label{
+            font-weight:bold;
+        }
+
+
+    </ui:style>
+    <g:FlowPanel addStyleNames="{style.frameContainer}">
+        <g:HorizontalPanel addStyleNames="{style.horizontalPanel}">
+            <g:Label addStyleNames="{style.label}"> Please select a topic: </g:Label>
+            <g:ListBox ui:field="listBox"></g:ListBox>
+        </g:HorizontalPanel>
+
+        <g:Frame addStyleNames="{style.frame}" ui:field="frame" height="500px"/>
+        <!-- TODO: fix this hack to work around width 100% issue -->
+        <g:HTMLPanel addStyleNames="{style.hack}">
+            <p>
+                WWARN has created a suite of tools tracking the emergence and spread of antimalarial resistance. One aspect of this work is the development of user-friendly interfaces that allows users to visualise data from different sources. WWARN Explorer uses dynamic, interactive mapping to visualise summary data from multiple studies stored in the WWARN Data Repository. WWARN Surveyors display published malaria drug resistance markers and antimalarial medicine quality reports. Curabitur erat felis, volutpat sed facilisis laoreet, adipiscing a nibh. Maecenas in mauris placerat, auctor dolor in, gravida enim. Nam nisi lorem, tempor id arcu id, pellentesque aliquet arcu. Sed blandit odio erat, eget aliquam dui commodo eget.
+            </p>
+        </g:HTMLPanel>
+    </g:FlowPanel>
+</ui:UiBinder>

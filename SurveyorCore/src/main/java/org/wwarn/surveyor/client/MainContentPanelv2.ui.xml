@@ -1,0 +1,86 @@
+<!--
+  #%L
+  SurveyorCore
+  %%
+  Copyright (C) 2013 - 2014 University of Oxford
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  
+  3. Neither the name of the University of Oxford nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+<ui:style>
+    .mainpanel{
+        height: 100%;
+    }
+    <!--
+    http://stackoverflow.com/questions/12254614/gwt-layout-how-would-i-fix-this-layout-dockpanel
+    not sure why this hack is needed, but without the below style, dockpanel displays nothing!
+    -->
+    html, body{
+        height: 100%;
+        width: 100%;
+        min-height: 100%;
+        margin: 0px !important
+    }
+</ui:style>
+
+<g:DockLayoutPanel unit="PX" height="100%" addStyleNames="{style.mainpanel}">
+    <g:north size='50'>
+        <g:Label>Header</g:Label>
+    </g:north>
+    <g:center>
+        <g:ScrollPanel>
+            <g:FlowPanel>
+                <g:VerticalPanel ui:field="resultsContainerPanel"/>
+                <g:SplitLayoutPanel>
+                    <g:west size="50">
+                        <g:VerticalPanel ui:field="rightColumnBottomContainerPanel">
+
+                        </g:VerticalPanel>
+                    </g:west>
+                    <g:center>
+                        <g:HTMLPanel>
+                            <font size="2"><br/>
+                                <b>We would be grateful for any additional information, corrections or comments from users and authors. Visit the AQ Surveyor web page for information on <a href="http://www.wwarn.org/resistance/surveyors/antimalarial-quality/methodology" target="_blank">Methodology</a>, <a href="http://www.wwarn.org/resistance/surveyors/antimalarial-quality/resources" target="_blank">External resources</a>, <a href="http://www.wwarn.org/resistance/surveyors/antimalarial-quality/acknowledgements" target="_blank">Acknowledgements</a>, and the <a href="http://www.wwarn.org/resistance/surveyors/antimalarial-quality/user-guide" target="_blank"><u>User guide</u></a>.</b>
+                            </font>
+                        </g:HTMLPanel>
+                    </g:center>
+
+                </g:SplitLayoutPanel>
+            </g:FlowPanel>
+        </g:ScrollPanel>
+    </g:center>
+    <g:west size='190'>
+        <g:ScrollPanel>
+            <g:HTMLPanel ui:field="selectorPanel">
+                <div class="sectionPanelHeading" ui:field="sectionPanelHeading">Select filter</div>
+                <g:VerticalPanel ui:field="filterContainerPanel"/>
+            </g:HTMLPanel>
+        </g:ScrollPanel>
+    </g:west>
+</g:DockLayoutPanel>
+</ui:UiBinder>

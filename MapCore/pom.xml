@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.wwarn</groupId>
+        <artifactId>wwarn-maps-surveyor</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wwarn.mapcore</groupId>
+    <artifactId>MapCore</artifactId>
+    <packaging>jar</packaging>
+    <name>MapCore</name>
+    <version>2.7.1-NVT-RC-SNAPSHOT</version>
+
+    <inceptionYear>2013</inceptionYear>
+
+    <organization>
+        <name>WorldWide Antimalarial Resistance Network (WWARN)</name>
+        <url>http://www.wwarn.org/about-us</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>The BSD 3-Clause License</name>
+            <url>http://opensource.org/licenses/BSD-3-Clause</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <gwtVersion>2.6.1</gwtVersion>
+        <gwtPluginVersion>2.6.1</gwtPluginVersion>
+    </properties>
+
+    <repositories>
+        <!-- Note this must be repeated here, despite being in parent pom -->
+
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwtVersion}</version>
+            <!-- This is a bit of a hack:
+   we need this to perform a gwt-compile
+   but we do not want to include in war -->
+            <!--<scope>provided</scope>-->
+        </dependency>
+
+        <!-- needed for gwt integration tests-->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- http://google.github.io/gwtmockito/ -->
+            <groupId>com.google.gwt.gwtmockito</groupId>
+            <artifactId>gwtmockito</artifactId>
+            <version>1.1.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- GWT Maps API V3 -->
+        <dependency>
+            <groupId>com.github.branflake2267</groupId>
+            <artifactId>gwt-maps-api</artifactId>
+            <version>3.10.0-alpha-6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.gwt.google-apis</groupId>
+            <artifactId>gwt-visualization</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>org/wwarn/mapcore/**/*.xml</include>
+                    <include>org/wwarn/mapcore/**/*.java</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*Test.java</exclude>
+                    <exclude>**/GwtTest*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>*.css</include>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <!-- GWT -->
+            <!-- 'mvn gwt:run' - runs development mode -->
+            <!-- 'mvn gwt:debug' - runs debug mode -->
+            <!-- 'mvn gwt:compile' - compiles gwt -->
+            <!-- 'mvn integration-test' - runs the gwt test suite (**/Gwt*Suite.java) -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>${gwtPluginVersion}</version>
+                <configuration>
+                    <!--
+                     See http://code.google.com/support/bin/answer.py?hl=en&answer=71442
+                    Does not seem to be necessary #superstitiousCode
+                    -->
+                    <!--<gwtVersion>${gwtVersion}</gwtVersion>-->
+                    <extraJvmArgs>-Xmx1024m -Xss1024k</extraJvmArgs>
+                    <module>org.wwarn.mapcore.Map</module>
+                    <strict>true</strict>
+                    <includes>**/Gwt*Suite.java</includes>
+                    <mode>htmlunit</mode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>gwt-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>gwt-tests</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>${javaVersion}</source>
+                    <target>${javaVersion}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.3.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <packaging>jar</packaging>
+                            <artifactId>${project.artifactId}</artifactId>
+                            <groupId>${project.groupId}</groupId>
+                            <version>${project.version}</version>
+                            <file>
+                                ${project.build.directory}/${project.artifactId}-${project.version}.jar
+                            </file>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12</version>
+                <executions>
+                    <execution>
+                        <id>ExecuteTests</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/GwtTest*.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Custom license headers for all files -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>Add License Headers</id>
+                        <configuration>
+                            <licenseName>bsd_3</licenseName>
+                            <organizationName>University of Oxford</organizationName>
+                            <copyrightOwners>University of Oxford</copyrightOwners>
+                            <roots>
+                                <root>src</root>
+                                <root>target/generated-sources</root>
+                                <root>target/processed-sources</root>
+                                <!-- Included because HTML/CSS/KML files are here -->
+                                <root>war</root>
+                            </roots>
+
+                            <excludes>
+                                <!-- Don't touch these compiler generated files -->
+                                <exclude>**/*.cache.html</exclude>
+                                <exclude>**/*.nocache.html</exclude>
+                                <exclude>**/*.properties</exclude>
+                                <!-- other files that one should ignore-->
+                                <exclude>**/*.json</exclude>
+                            </excludes>
+                        </configuration>
+
+                        <!-- Bound to run at last phase before compile -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

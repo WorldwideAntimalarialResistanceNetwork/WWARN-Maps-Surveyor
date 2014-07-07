@@ -1,0 +1,225 @@
+/*
+ * #%L
+ * SurveyorCore
+ * %%
+ * Copyright (C) 2013 - 2014 University of Oxford
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the University of Oxford nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+body {
+    background-color:#FFFFFF;
+    color:#000000;
+    font-family:Verdana,Geneva,sans-serif;
+    font-size:12px;
+    border-top:5px solid #303030;
+    margin:0;
+}
+
+
+h1, h2, h3, h4 {
+    font-family:Calibri,Arial,Helvetica,sans-serif;
+    /* font-style:italic; */
+    font-weight:normal;
+}
+
+
+a {
+    color: #0095C5;
+    text-decoration: none;
+}
+
+a:link {
+}
+
+
+.wwarnheader, #footer {
+    /*margin:0 auto;*/
+    text-align:left;
+    position:relative;
+    /*width:970px;*/
+}
+.wwarnheader {
+    /*margin-bottom:15px;*/
+    height: 100px;
+}
+
+.logo {
+    /*letter-spacing : -1000em;*/
+}
+
+h1.logo, h2.logo {
+    border:none;
+    width:300px;
+    position: absolute;
+    top: 10px;
+    margin: 0;
+    left: 25px;
+}
+/* Set width & height to image dimensions */
+h1.logo a, h2.logo a {
+    display:block;
+    background: url(images/logo.png) no-repeat;
+    width:300px;
+    height:80px;
+}
+h1.logo a:hover, h2.logo a:hover {
+    display:block;
+    background: url(images/logo.png) 0 -80px no-repeat;
+    width:300px;
+    height:80px;
+}
+
+.logotext {
+    color: #D80009;
+    font-family: Verdana,Geneva,sans-serif;
+    font-size: 30px;
+    font-weight: normal;
+    text-align: left;
+    vertical-align: top;
+    position: absolute;
+    top: 39px;
+    left: 328px;
+    width: 568px;
+}
+.strapline {
+    color: #d80009;
+    font-family: Verdana,Geneva,sans-serif;
+    font-size: 18px;
+    font-weight: normal;
+    text-align: right;
+    margin: 0;
+    /*clear:both;*/
+    position: absolute;
+    top: 75px;
+    right: 25px;
+}
+
+.secondary-wrap {
+    line-height:1.5;
+    position:absolute;
+    top:0;
+    right:0;
+    background:#303030;
+    padding:0 5px 0;
+    margin-right: 20px;
+    font-size:12px;
+    -moz-border-radius:0 0 3px 3px;
+    -webkit-border-radius:0 0 3px 3px;
+    border-radius:0 0 3px 3px;
+}
+.secondary-wrap .menu {
+    -webkit-padding-start: 0px !important;
+}
+.secondary-wrap ul {
+    list-style:none;
+    float:left;
+    margin:0;
+}
+.secondary-wrap li:first-child a {
+    border-left:none;
+}
+.secondary-wrap li {
+    float:left;
+    display:inline;
+    background:#303030;
+    padding:2px 3px;
+    margin-bottom:2px;
+}
+
+.secondary-wrap li a {
+    color:#cbcbcb;
+    display:block;
+    padding:0 0 0 6px;
+    border-left:1px solid #cbcbcb;
+}
+.secondary-wrap li a:hover {
+    color:#fff;
+}
+.secondary-wrap ul ul {
+    margin:0;
+    position:absolute;
+    top:5px;
+    left:0;
+}
+.secondary-wrap ul ul li:first-child {
+    display:block;
+}
+.secondary-wrap ul ul:hover li {
+    display:block;
+}
+.secondary-wrap ul ul li {
+    float:none;
+    display:none;
+    padding:0 0 5px;
+    margin-bottom:0;
+}
+.secondary-wrap ul ul li a {
+    border:none;
+}
+.secondary-wrap ul ul li:first-child a {
+    background:url(http://www.wwarn.org/images/icons/icon-arrow.png) no-repeat 80px 8px;
+    border-left:1px solid #fff;
+    border-right:1px solid #fff;
+    padding-right:15px;
+}
+.secondary-wrap ul ul li a {
+    margin:0 10px 0;
+    width:80px;
+}
+.secondary-wrap ul li.select {
+    position:relative;
+    width:120px;
+}
+.secondary-wrap form {
+}
+.secondary-wrap div:first-child {
+    margin:3px 0 0 5px;
+    float:left;
+}
+.secondary-wrap div {
+    margin:3px 0 0 0;
+    float:left;
+}
+.secondary-wrap .ShareData,
+.secondary-wrap .Fournirdesdonnes {
+    background:url(http://www.wwarn.org/sites/all/themes/wwarn/images/icons/top-contributing-data.jpg) no-repeat 0 3px;
+    padding-left:14px;
+}
+.secondary-wrap .ShareData a,
+.secondary-wrap .Fournirdesdonnes a {
+    border:none;
+}
+.secondary-wrap div.form-item {
+}
+.secondary-wrap .container-inline {
+    margin:0;
+}
+.secondary-wrap .container-inline div,
+.secondary-wrap .container-inline label {
+    display:inline;
+    margin:0;
+}

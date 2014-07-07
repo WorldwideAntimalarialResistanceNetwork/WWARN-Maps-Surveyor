@@ -1,0 +1,84 @@
+<!--
+  #%L
+  SurveyorCore
+  %%
+  Copyright (C) 2013 - 2014 University of Oxford
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  
+  3. Neither the name of the University of Oxford nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:filter="urn:import:org.wwarn.surveyor.client.mvp.view.filter">
+    <ui:style>
+        .mainAppWidget {
+
+        }
+
+        .rows {
+            width: 100%;
+        }
+
+        .columnSet {
+            width: 100%;
+        }
+
+        .horizontalPanelAlignment {
+            float: left;
+        }
+
+        .yearRangeSliderComposite {
+            min-width: 500px;
+            width: 50%;
+        }
+    </ui:style>
+
+    <g:VerticalPanel ui:field="mainAppWidget">
+        <g:VerticalPanel ui:field="mainContent">
+            <g:VerticalPanel ui:field="rows">
+                <g:HorizontalPanel ui:field="columnSet">
+                    <g:VerticalPanel ui:field="leftColumn">
+                        <g:HTMLPanel ui:field="selectorPanel">
+                            <g:VerticalPanel ui:field="filterContainerPanel"/>
+                        </g:HTMLPanel>
+                    </g:VerticalPanel>
+                    <g:VerticalPanel ui:field="rightColumn">
+                        <g:VerticalPanel ui:field="resultsContainerPanel"/>
+                        <g:FlowPanel>
+                            <filter:YearRangeSliderComposite addStyleNames="{style.horizontalPanelAlignment} {style.yearRangeSliderComposite}" width="50%" fieldName="PY" dateFormat="yyyy"/>
+                            <g:FlowPanel addStyleNames="{style.horizontalPanelAlignment}" width="40%" height="100px">
+                                <g:HTMLPanel>
+                                    <p>We would be grateful for any additional information, corrections or comments from users and authors. Visit the AQ Surveyor web page for information on <a href="http://www.wwarn.org/resistance/surveyors/antimalarial-quality/methodology" target="_blank">Methodology</a>, <a href="http://www.wwarn.org/resistance/surveyors/antimalarial-quality/resources" target="_blank">External resources</a>, <a href="http://www.wwarn.org/resistance/surveyors/antimalarial-quality/acknowledgements" target="_blank">Acknowledgements</a>, and the <a href="http://www.wwarn.org/resistance/surveyors/antimalarial-quality/user-guide" target="_blank"><u>User guide</u></a>.</p>
+                                </g:HTMLPanel>
+                            </g:FlowPanel>
+                        </g:FlowPanel>
+                    </g:VerticalPanel>
+                </g:HorizontalPanel>
+            </g:VerticalPanel>
+        </g:VerticalPanel>
+    </g:VerticalPanel>
+
+
+</ui:UiBinder>

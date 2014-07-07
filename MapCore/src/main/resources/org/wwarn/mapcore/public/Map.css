@@ -1,0 +1,124 @@
+/*
+ * #%L
+ * MapCore
+ * %%
+ * Copyright (C) 2013 - 2014 University of Oxford
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the University of Oxford nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+.mapWidget {
+    _padding-right: 10px;
+}
+
+.rangeSliderTickLabel {
+
+    color: black;
+    font-size: 5px;
+    padding-top: 5px;
+}
+.rangeSliderNumLabel {
+
+    font-size: 10pt;
+    color: black;
+}
+
+.sectionPanelHeading {
+    font-size: 13px;
+    /*font-weight:bold;*/
+    /*padding-bottom:6px;*/
+    /*padding-top:6px;*/
+    /*padding-left:3px;*/
+}
+
+.MainSectionPanel {
+    border-bottom: 1px solid #BBBBBB;
+    border-left: 1px solid #BBBBBB;
+    border-right: 1px solid #BBBBBB;
+    border-top: 1px solid #BBBBBB;
+    margin-bottom: 10px;
+}
+
+.MainSectionPanelTitleBar {
+    -moz-background-clip: border;
+    -moz-background-inline-policy: continuous;
+    -moz-background-origin: padding;
+    background: #D3DEF6 url("images/hborder.png") repeat-x scroll 0 -989px;
+    border-color: #BBBBBB #BBBBBB -moz-use-text-color;
+    border-width: 1px 1px 0;
+    font-weight: bold;
+    padding: 3px;
+}
+
+.MainSectionPanelContent {
+    background: white none repeat scroll 0 0;
+    border-color: #BBBBBB #BBBBBB -moz-use-text-color;
+    border-width: 1px 1px 0;
+    border-style: solid none none none;
+    /*padding: 20px 20px 20px 20px;*/
+    border-top: 1px solid #BBB;
+}
+
+.popups {
+    padding: 8px;
+    border: 2px solid #ccccff;
+    background-color: white;
+}
+
+
+.linkLabel-fainter {
+    color: #84bbf2;
+    font-size: 12px;
+    cursor: pointer; /*for IE*/
+    cursor: hand;
+}
+
+.gwt-Label {
+}
+
+.checkBoxList{
+    border: 1px solid #ccc;
+    height: 100px;
+    width: 190px;
+}
+
+.searchCheckBoxList{
+    border: 1px solid #ccc;
+    #height: 100px;
+    width: 190px;
+}
+
+.searchBox{
+    width: 190px;
+    border: 1px solid #ccc;
+    background-image:url('images/icons/Search16.png');
+    background-repeat:no-repeat;
+    background-position: right;
+    background-size: 26px 26px;
+    margin-bottom: 2px;
+    margin-top: 2px;
+}
