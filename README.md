@@ -37,6 +37,7 @@ The use of this framework assumes some familiarity with GWT framework, mvn, and 
 		<artifactId>SurveyorCore</artifactId>
 		<version>1.7.2-SNAPSHOT</version>
 	</dependency>
+        ```
 	
 2. Add the inherits statement to your module.gwt.xml.	
 	```xml
@@ -46,14 +47,26 @@ The use of this framework assumes some familiarity with GWT framework, mvn, and 
 3. Clone the sample application, and configure xml
 
 4. Build
-    Maven commands:
-     Deployment - Jetty:
-     mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run
-     Deployment - Tomcat6x:
-     mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run -DskipTests -Dcargo.maven.containerId=tomcat6x -Dcargo.maven.containerUrl=http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.zip
-     Should deploy to http://localhost:8080/nmfisurveyor-1.0-SNAPSHOT
-     mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run -DskipTests -Dcargo.maven.containerId=tomcat7x -Dcargo.maven.containerUrl=http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.16/bin/apache-tomcat-7.0.16.zip
+   Maven commands: Deployment - Jetty:
 
+   ```#!sh
+   mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run
+   ```
+
+   Deployment - Tomcat6x:
+
+   ```
+   #!sh
+   mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run -DskipTests -Dcargo.maven.containerId=tomcat6x -Dcargo.maven.containerUrl=http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.zip
+   ```
+     Should deploy to http://localhost:8080/nmfisurveyor-1.0-SNAPSHOT
+
+   Deployment - Tomcat7x
+
+   ```
+   #!sh
+     mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run -DskipTests -Dcargo.maven.containerId=tomcat7x -Dcargo.maven.containerUrl=http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.16/bin/apache-tomcat-7.0.16.zip
+   ```
 
 ## Where can I learn more
 Check the README files in the SurveyorCore and MapCore modules
