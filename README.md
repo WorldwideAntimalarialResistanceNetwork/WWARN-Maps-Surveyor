@@ -17,13 +17,15 @@ These requirements can be summarised as:
 We approached these requirements by developing these features:
 
 * refactoring the code base to create reusable components for the UI, for instance Map, Filter, Markers, Popups etc
-* designed a simple DSL to configure the web application using XML, allowing users to define concepts like:
+* designed a simple DSL to configure the web application using XML configuration file
 
-1. a dataprovider abstraction was added as a basic facade over a data source , with a view support multiple data 
+Features supported in XML configuration:
+
+* a dataprovider abstraction was added as a basic facade over a data source , with a view support multiple data 
    sources, for instance the current data source is a local JSON file, in the future this could be a google spreadsheet
-2. support for faceted browsing, with several configurable facet filter UI components, including multiple selection
-3. a schema datatype to map the data source to an internal representation
-4. view types beyond maps are supported, like tables, links static html  
+* support for faceted browsing, with several configurable facet filter UI components, including multiple selection
+* a schema datatype to map the data source to an internal representation
+* view types beyond maps are supported, like tables, links static html  
     
 ## How do I use it?
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
