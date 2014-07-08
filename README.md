@@ -24,9 +24,9 @@ Features supported in XML configuration:
 
 * a dataprovider abstraction was added as a basic facade over a data source , with a view support multiple data 
    sources, for instance the current data source is a local JSON file, in the future this could be a google spreadsheet
-* support for faceted browsing, with several configurable facet filter UI components, including multiple selection
-* a schema datatype to map the data source to an internal representation
-* view types beyond maps are supported, like tables, links static html  
+* support for [faceted browsing](http://en.wikipedia.org/wiki/Faceted_search), with several configurable facet filter UI components, including multiple selection
+* a schema datatype to map the data source to an internal type representation
+* support views beyond maps, such as tables, links static embedded content etc.
     
 ## How do I use it?
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
