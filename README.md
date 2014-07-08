@@ -32,7 +32,6 @@ Features supported in XML configuration:
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
 
 1. Add Maven dependencies
-
 ```xml
     <dependency>
         <groupId>org.wwarn.surveyor</groupId>
@@ -40,14 +39,11 @@ The use of this framework assumes some familiarity with GWT framework, mvn, and 
         <version>1.7.2-SNAPSHOT</version>
     </dependency>
 ```
-
 2. Add the inherits statement to your module.gwt.xml.	
 ```xml
     <inherits name="org.wwarn.surveyor.SurveyorCore"/>
 ```
-	
 3. Clone the sample application, and configure xml
-
 4. Build
    Maven commands: Deployment - Jetty:
 
