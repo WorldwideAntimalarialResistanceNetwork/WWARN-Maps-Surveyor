@@ -12,12 +12,13 @@ mapping and develop a reusable framework in GWT to create new maps.
 These requirements can be summarised as:
 
 * reduce the time needed to develop maps 
-* reduce the duplication and maintenance overhead for each implementation of the maps surveyor
+* reduce the maintenance overhead for each implementation of the maps surveyor, reduce code duplication across several implementations  
  
 We approached these requirements by developing these features:
 
 * refactoring the code base to create reusable components for the UI, for instance Map, Filter, Markers, Popups etc
 * designed a simple DSL to configure the web application using XML configuration file
+* improve automated testing across the platform to improve code maintainability, we are following a [test pyramid](http://martinfowler.com/bliki/TestPyramid.html) approach, focusing intially on unit testing, followed by service and UI tests.
 
 Features supported in XML configuration:
 
