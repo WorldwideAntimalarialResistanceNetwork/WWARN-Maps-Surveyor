@@ -4,13 +4,13 @@
         xmlns="http://maven.apache.org/POM/4.0.0"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.wwarn</groupId>
-        <artifactId>wwarn-maps-surveyor</artifactId>
+        <groupId>org.wwarn.mapssurveyor</groupId>
+        <artifactId>maps-surveyor-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <!-- POM file generated with GWT webAppCreator -->
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wwarn.surveyor</groupId>
+    <groupId>org.wwarn.mapssurveyor</groupId>
     <artifactId>SurveyorCore</artifactId>
     <packaging>jar</packaging>
     <version>1.7.2-SNAPSHOT</version>
@@ -173,7 +173,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wwarn.mapcore</groupId>
+            <groupId>org.wwarn.mapssurveyor</groupId>
             <artifactId>MapCore</artifactId>
             <version>${map.core.version}</version>
         </dependency>
