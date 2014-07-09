@@ -49,6 +49,6 @@ public interface Resources extends ClientBundle {
     @Source("config.xml")
     TextResource config();
 
-    @ClientBundle.Source("publications.json")
-    TextResource data();
+//    @ClientBundle.Source("publications.json")
+//    TextResource data();
 }
