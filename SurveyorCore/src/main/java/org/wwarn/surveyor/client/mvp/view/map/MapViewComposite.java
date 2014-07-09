@@ -35,6 +35,9 @@ package org.wwarn.surveyor.client.mvp.view.map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -42,6 +45,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import org.wwarn.mapcore.client.components.customwidgets.GenericMapWidget;
 import org.wwarn.mapcore.client.components.customwidgets.GenericMarker;
 import org.wwarn.mapcore.client.components.customwidgets.LegendButton;
+import org.wwarn.surveyor.client.core.DataSchema;
 import org.wwarn.surveyor.client.core.QueryResult;
 import org.wwarn.surveyor.client.core.RecordList;
 import org.wwarn.surveyor.client.model.MapViewConfig;
@@ -54,6 +58,7 @@ import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * MapViewComposite combines view and presenter logic
@@ -69,12 +74,12 @@ public class MapViewComposite extends Composite {
     private static MapViewConfig viewConfig = null;
     private GenericMapWidget mapWidget;
     private ClientFactory clientFactory = SimpleClientFactory.getInstance();
-    private GenericMarker.MarkerHoverLabelBuilder markerHoverLabelBuilder = GWT.create(GenericMarker.MarkerHoverLabelBuilder.class);
-    private GenericMarker.MarkerClickInfoWindowBuilder markerClickInfoWindow = GWT.create(GenericMarker.MarkerClickInfoWindowBuilder.class);
-    private GenericMarker.MarkerIconPathBuilder markerIconPathBuilder = GWT.create(GenericMarker.MarkerIconPathBuilder.class);
-    private MarkerDisplayFilter markerDisplayFilter = GWT.create(MarkerDisplayFilter.class);
-    private MarkerCoordinateSource markerCoordinateSource = GWT.create(MarkerCoordinateSource.class);
+    private GenericMarker.MarkerIconPathBuilder markerIconPathBuilder;
+    private MarkerDisplayFilter markerDisplayFilter;
+    private MarkerCoordinateSource markerCoordinateSource;
     private Scheduler scheduler = Scheduler.get();
+    private GenericMarker.MarkerHoverLabelBuilder markerHoverLabelBuilder;
+    private GenericMarker.MarkerClickInfoWindowBuilder markerClickInfoWindow;
 
     // UI Binder boiler plate
     interface MapViewUIUiBinder extends UiBinder<FlowPanel, MapViewComposite> {}
@@ -142,16 +147,17 @@ public class MapViewComposite extends Composite {
         RecordList recordList = queryResult.getRecordList();
         List<RecordList.Record> records = recordList.getRecords();
         List<GenericMarker> markers = new ArrayList<GenericMarker>();
+        final MarkerCoordinateSource markerCoordinateSource1 = getMarkerCoordinateSource();
         for (final RecordList.Record record : records) {
             GenericMarker.Builder markerBuilder = new GenericMarker.Builder();
-            final MarkerCoordinateSource.LatitudeLongitude latitudeLongitude = markerCoordinateSource.process(record);
+            final MarkerCoordinateSource.LatitudeLongitude latitudeLongitude = markerCoordinateSource1.process(record);
             double lat = latitudeLongitude.getLatitude();
             double lon = latitudeLongitude.getLongitude();
 
-            if(markerDisplayFilter.filter(record)){
-                GenericMarker<RecordList.Record> marker = markerBuilder.setMarkerLat(lat).setMarkerLon(lon).setMarkerIconPath(markerIconPathBuilder).createMarker(record, mapWidget);
-                marker.setupMarkerHoverLabel(markerHoverLabelBuilder);
-                marker.setupMarkerClickInfoWindow(markerClickInfoWindow);
+            if(getMarkerDisplayFilter().filter(record)){
+                GenericMarker<RecordList.Record> marker = markerBuilder.setMarkerLat(lat).setMarkerLon(lon).setMarkerIconPath(getMarkerIconPathBuilder()).createMarker(record, mapWidget);
+                marker.setupMarkerHoverLabel(getMarkerHoverLabelBuilder());
+                marker.setupMarkerClickInfoWindow(getMarkerClickInfoWindow());
                 marker.addClickHandler(new GenericMarker.MarkerCallBackEventHandler<GenericMarker>() {
                     @Override
                     public void run(GenericMarker sourceElement) {
@@ -163,6 +169,108 @@ public class MapViewComposite extends Composite {
         }
 
         mapWidget.addMarkers(markers);
+    }
+
+    private MarkerCoordinateSource getMarkerCoordinateSource() {
+        if(markerCoordinateSource!=null) return markerCoordinateSource;
+        try {
+            markerCoordinateSource = GWT.create(MarkerCoordinateSource.class);
+        }catch (RuntimeException e){
+            if(!e.getMessage().startsWith("Deferred binding")) throw e;
+            //by pass deferred binding error and use default value
+            markerCoordinateSource = new DefaultMarkerCoordinateSource();
+        }
+
+        return markerCoordinateSource;
+    }
+
+    private MarkerDisplayFilter getMarkerDisplayFilter() {
+        if(markerDisplayFilter != null ){return markerDisplayFilter;}
+        try{
+            markerDisplayFilter = GWT.create(MarkerDisplayFilter.class);
+        }catch (RuntimeException e){
+            if(!e.getMessage().startsWith("Deferred binding")) throw e;
+            //by pass deferred binding error and use default value
+            markerDisplayFilter = new DefaultMarkerDisplayFilter();
+        }
+        return markerDisplayFilter;
+    }
+
+    private GenericMarker.MarkerIconPathBuilder getMarkerIconPathBuilder() {
+        if(markerIconPathBuilder !=null){ return markerIconPathBuilder; }
+        try{
+            markerIconPathBuilder = GWT.create(GenericMarker.MarkerIconPathBuilder.class);
+        }catch (RuntimeException e){
+            if(!e.getMessage().startsWith("Deferred binding")) throw e;
+            //by pass deferred binding error and use default value
+            markerIconPathBuilder = new GenericMarker.DefaultMarkerIconPathBuilder();
+        }
+        return markerIconPathBuilder;
+
+    }
+
+    private GenericMarker.MarkerClickInfoWindowBuilder getMarkerClickInfoWindow() {
+        if(markerClickInfoWindow !=null){ return markerClickInfoWindow; }
+        try{
+            markerClickInfoWindow = GWT.create(GenericMarker.MarkerClickInfoWindowBuilder.class);
+        }catch (RuntimeException e){
+            if(!e.getMessage().startsWith("Deferred binding")) throw e;
+            //by pass deferred binding error and use default value
+            markerClickInfoWindow = new DefaultMarkerClickInfoWindowBuilder();
+        }
+        return markerClickInfoWindow;
+    }
+
+    private GenericMarker.MarkerHoverLabelBuilder getMarkerHoverLabelBuilder() {
+        if(markerHoverLabelBuilder!=null){ return markerHoverLabelBuilder; }
+        try {
+            markerHoverLabelBuilder = GWT.create(GenericMarker.MarkerHoverLabelBuilder.class);
+        }catch (RuntimeException e){
+            if(!e.getMessage().startsWith("Deferred binding")) throw e;
+            //by pass deferred binding error and use default value
+            markerHoverLabelBuilder = new DefaultMarkerHoverLabelBuilder();
+        }
+        return markerHoverLabelBuilder;
+    }
+
+    public static class DefaultMarkerClickInfoWindowBuilder implements GenericMarker.MarkerClickInfoWindowBuilder<RecordList.Record>{
+        SimpleClientFactory simpleClientFactory = SimpleClientFactory.getInstance();
+        DataSchema schema = simpleClientFactory.getSchema();
+        @Override
+        public Widget build(RecordList.Record markerContext) {
+            final Set<String> fieldNames = schema.getColumns();
+            SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+            safeHtmlBuilder.appendHtmlConstant("<ul>");
+            for (String fieldName : fieldNames) {
+                safeHtmlBuilder.appendHtmlConstant("<li>");
+                safeHtmlBuilder.appendEscapedLines(fieldName + " : " + markerContext.getValueByFieldName(fieldName));
+                safeHtmlBuilder.appendHtmlConstant("</li>");
+            }
+            safeHtmlBuilder.appendHtmlConstant("</ul>");
+
+            return new HTMLPanel(safeHtmlBuilder.toSafeHtml());
+
+        }
+    }
+
+    public static class DefaultMarkerHoverLabelBuilder implements GenericMarker.MarkerHoverLabelBuilder<RecordList.Record>{
+        SimpleClientFactory simpleClientFactory = SimpleClientFactory.getInstance();
+        DataSchema schema = simpleClientFactory.getSchema();
+        @Override
+        public Widget build(RecordList.Record markerContext) {
+            final Set<String> fieldNames = schema.getColumns();
+            SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+            safeHtmlBuilder.appendHtmlConstant("<span>");
+            int indexOfFields = 0;
+            for (String fieldName : fieldNames) {
+                if(++indexOfFields > 4){ break;} /* output first three columns only */
+                safeHtmlBuilder.appendEscapedLines(fieldName+" : "+markerContext.getValueByFieldName(fieldName));
+                safeHtmlBuilder.appendHtmlConstant("<br/>");
+            }
+            safeHtmlBuilder.appendHtmlConstant("</span>");
+
+            return new HTMLPanel(safeHtmlBuilder.toSafeHtml());
+        }
     }
 
     @EventHandler
@@ -182,9 +290,7 @@ public class MapViewComposite extends Composite {
     public static class DefaultMarkerDisplayFilter implements MarkerDisplayFilter<RecordList.Record>{
         @Override
         public boolean filter(RecordList.Record record) {
-            double lat = getDefaultMarkerLatitude(record);
-            double lon = Double.parseDouble(record.getValueByFieldName(viewConfig.getMarkerLongitudeField()));
-            return (lat != 0.0 && lon != 0.0);
+            return true;
         }
     }
 

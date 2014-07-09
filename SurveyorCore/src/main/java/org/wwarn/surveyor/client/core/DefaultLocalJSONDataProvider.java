@@ -364,7 +364,6 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
      * Created by nigelthomas on 05/03/2014.
      */
     private class AsyncDataSourceLoader {
-        // TODO repeated all over the place!!
         private ClientFactory clientFactory = SimpleClientFactory.getInstance();
 
         final Resources res = Resources.IMPL;

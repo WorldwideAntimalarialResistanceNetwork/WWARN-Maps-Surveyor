@@ -70,7 +70,7 @@ public class TableViewComposite extends Composite {
     private RecordList recordList;
     private ClientFactory clientFactory = SimpleClientFactory.getInstance();
     private final DataSchema schema;
-    private TableRecordsFilter tableRecordsFilter = GWT.create(TableRecordsFilter.class);
+    private TableRecordsFilter tableRecordsFilter;
     private HashMap<String, Integer> columnNameToIndexMap = new HashMap<String, Integer>();
 
     interface TableViewUIUiBinder extends UiBinder<FlowPanel, TableViewComposite> {
@@ -95,17 +95,18 @@ public class TableViewComposite extends Composite {
     public interface TableRecordsFilter{
         public RecordList filter(RecordList recordList);
 
-        public RecordList filter(RecordList recordList, String Field);
+        public RecordList filter(RecordList recordList, String field);
     }
 
 
     private void setupDisplay() {
         rootElement.clear();
 
+        final TableRecordsFilter tableRecordsFilter1 = getTableRecordsFilter();
         if(StringUtils.isEmpty(tableConfig.getFilterBy())){
-            recordList = tableRecordsFilter.filter(clientFactory.getLastQueryResult().getRecordList());
+            recordList = tableRecordsFilter1.filter(clientFactory.getLastQueryResult().getRecordList());
         }else{
-            recordList = tableRecordsFilter.filter(clientFactory.getLastQueryResult().getRecordList(), tableConfig.getFilterBy());
+            recordList = tableRecordsFilter1.filter(clientFactory.getLastQueryResult().getRecordList(), tableConfig.getFilterBy());
         }
 
         Table.Options options = Table.Options.create();
@@ -126,6 +127,18 @@ public class TableViewComposite extends Composite {
 
         Table table = new Table(dataView, options);
         rootElement.add(table);
+    }
+
+    private TableRecordsFilter getTableRecordsFilter() {
+        if(tableRecordsFilter != null){return tableRecordsFilter;}
+        try {
+            tableRecordsFilter = GWT.create(TableRecordsFilter.class);
+        } catch (RuntimeException e){
+            if(!e.getMessage().startsWith("Deferred binding")) throw e;
+            //by pass deferred binding error and use default value
+            tableRecordsFilter = new DefaultTableRecordsFilter();
+        }
+        return tableRecordsFilter;
     }
 
     private DataView createDataViewFrom(TableViewConfig tableViewConfig, RecordList list) {
@@ -255,5 +268,19 @@ public class TableViewComposite extends Composite {
 
     private boolean isArithFunction(String fieldName){
         return fieldName.startsWith("func(ARITH");
+    }
+
+    private static class DefaultTableRecordsFilter implements TableRecordsFilter {
+        SimpleClientFactory simpleClientFactory = SimpleClientFactory.getInstance();
+        DataSchema schema = simpleClientFactory.getSchema();
+        @Override
+        public RecordList filter(RecordList recordList) {
+            return recordList;
+        }
+
+        @Override
+        public RecordList filter(RecordList recordList, String field) {
+            return recordList;
+        }
     }
 }

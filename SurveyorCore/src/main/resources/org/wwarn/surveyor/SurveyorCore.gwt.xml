@@ -61,17 +61,20 @@
     <replace-with class="org.wwarn.surveyor.client.mvp.SimpleClientFactory">
     	<when-type-is class="org.wwarn.surveyor.client.mvp.ClientFactory"/>
     </replace-with>
-    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MarkerHoverLabelNMFIImpl">
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerHoverLabelBuilder">
     	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerHoverLabelBuilder"/>
     </replace-with>
-    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MarkerClickInfoWindowBuilderNMFIImpl">
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerClickInfoWindowBuilder">
     	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerClickInfoWindowBuilder"/>
     </replace-with>
-    <replace-with class="org.wwarn.surveyor.client.mvp.view.table.TableRecordsFilterNMFIImpl">
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.DefaultTableRecordsFilter">
     	<when-type-is class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.TableRecordsFilter"/>
     </replace-with>
-    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MarkerIconPathBuilderNMFIImpl">
+    <replace-with class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.DefaultMarkerIconPathBuilder">
     	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerIconPathBuilder"/>
+    </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerDisplayFilter">
+            	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerDisplayFilter"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerCoordinateSource">
     	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerCoordinateSource"/>
