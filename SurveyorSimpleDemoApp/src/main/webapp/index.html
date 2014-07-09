@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link type="text/css" rel="stylesheet" href="Project.css">
+    <title>Project</title>
+    <link type="text/css" rel="stylesheet" href="Project/base.css">
+    <link type="text/css" rel="stylesheet" href="Project/wwarnstyle.css">
+    <script type="text/javascript" language="javascript" src="Project/Project.nocache.js"></script>
+    <script type="text/javascript" language="javascript">
+        var eventBuffer = [];
+        var eventTracker = [];
+
+        window.__gwtStatsEvent = function(event) {
+            bufferEvent(event);
+            writeBufferedEvents();
+            return true;
+        };
+
+        function bufferEvent (event) {
+            eventBuffer[eventBuffer.length] = event;
+
+            if (event.type == 'begin') {
+                var key = event.moduleName + event.subSystem + event.evtGroup;
+                eventTracker[key] = event.millis;
+            }
+        }
+
+        function writeBufferedEvents () {
+            if (!isDebugDisplayReady()) return;
+
+            var event = eventBuffer.shift();
+            while (event) {
+                appendToDebugDisplay(event);
+                event = eventBuffer.shift();
+            }
+        }
+
+        function isDebugDisplayReady () {
+            return true;
+        }
+
+        function appendToDebugDisplay (event) {
+            if (window.console)
+                console.log(eventToString(event));
+        }
+
+        function eventToString (event) {
+            var key = event.moduleName + event.subSystem + event.evtGroup;
+            var beginTime = eventTracker[key];
+            var ms = '';
+
+            if (event.type != 'begin' && beginTime) {
+                ms = ' [' + (event.millis - beginTime) + 'ms]';
+            }
+
+            return '[' + event.moduleName + '] ' + event.subSystem + ' - '
+                    + event.evtGroup + ' - ' + event.type + ' | '
+                    + event.millis + ms;
+        }
+    </script>
+    <!-- Load the Yahoo UI loader, which allows dynamic loading of YUI dependencies-->
+    <script type="text/javascript" src="http://yui.yahooapis.com/2.9.0/build/yuiloader/yuiloader-min.js"></script>
+    <script type="text/javascript" language="javascript">
+        // JavaScript statements go here
+        function close_intro() {
+            YAHOO.util.Dom.setStyle('loading_screen', 'display', 'none');
+        }
+
+    </script>
+</head>
+<body>
+<div class="wwarnheader" id="wwarnheader_top">
+    <!--Logo and Strapline-->
+
+    <h1 class="logotext">
+        Surveyor Demo Application
+    </h1>
+    <div class="strapline">
+        Mapping subset of anti malarial quality data
+    </div>
+
+</div>
+<div class="wwarnmain">
+    <!-- OPTIONAL: include this if you want history support -->
+    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
+
+    <!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
+    <noscript>
+        <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+            Your web browser must have JavaScript enabled
+            in order for this application to display correctly.
+        </div>
+    </noscript>
+    <div id="mainContent" aria-hidden="false"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<?xml version="1.0" ?>
+<!--
+  #%L
+  SurveyorCore
+  %%
+  Copyright (C) 2013 - 2014 University of Oxford
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  
+  3. Neither the name of the University of Oxford nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+
+
+<surveyor>
+    <!--
+   A sample data source, default might be the standard JSON data source
+    -->
+    <datasource type="LocalClientSideDataProvider">
+        <property name="fileLocation" value="data/publications.json"/>
+        <schema>
+            <field name="CLON" type="CoordinateLon"/> <!-- type would be controlled vocabulary containing: Coordinate, Date, String, Integer-->
+            <field name="CLAT" type="CoordinateLat"/>
+            <field name="PY" type="Date"/>
+            <field name="URL" type="String"/>
+            <field name="PTN" type="String"/>
+            <field name="DCN" type="String"/>
+            <field name="DN" type="String"/>
+            <field name="STN" type="String"/>
+            <field name="OTN" type="String"/>
+            <field name="QI" type="String"/>
+            <field name="FA" type="String"/>
+            <field name="TTL" type="String"/>
+            <field name="PUB" type="String"/>
+            <field name="CN" type="String"/>
+            <field name="FR" type="Integer"/>
+            <field name="DSN" type="String"/>
+            <field name="PID" type="Integer"/>
+        </schema>
+    </datasource>
+
+    <views>
+        <map name="Medicine Quality Map" maxZoomOutLevel="2" range="World"> <!-- alternative type may be tabular data -->
+            <!-- Assuming the range is a enumerated list of places, like World, Asia, Africa, Europe etc-->
+            <filter>
+                <field name="type" value="Molecular"/>
+            </filter>
+            <marker>
+                <lonField fieldName="CLON"/>
+                <latField fieldName="CLAT"/>
+            </marker>
+            <label>
+
+            </label>
+        </map>
+        <table name="Report table">
+            <columns>
+                <column fieldName="FA" fieldTitle="1st Author"/>
+                <column fieldName="PY" fieldTitle="Year"/>
+                <column fieldName="TTL" fieldTitle="Title" hyperlinkField="URL"/>
+                <column fieldName="PUB" fieldTitle="Publication"/>
+                <column fieldName="CN" fieldTitle="Countries"/>
+            </columns>
+            <label>
+
+            </label>
+        </table>
+    </views>
+
+    <filters>
+        <label>
+            <![CDATA[
+            Select filters:
+            <br/>
+            Use the filters below to selected publications or survey rows,
+            <br/> according to Medicine, Report type, Sampling type, Medicine source,
+            <br/> and Quality issue.
+            ]]>
+        </label>
+
+        <filter field="DCN" name="Medicines">
+            <!-- We can infers how to display the filter, based on the of the field,
+            or we could have an additional tag to describe this. So for a string field assumed that multiselect field is used-->
+            <label>
+                Allows the user to select the medicines, based on International Nonproprietary Names (INN)
+                or categories of medicines. Medicines are classified in three categories Artemisinin derivatives
+                (including all the artemisinin derivative monotherapies), Artemisinin based Combination Therapies (ACTs)
+                and Non-artemisinins. These categories are mutually exclusive and individual drugs or combinations are
+                listed below. The selection of all publications that contain information on each individual medicine or
+                medicine categories can be obtained by filtering.
+            </label>
+            <filterValueLabelMap>
+                <filterLabel fieldValue="All">All drugs and combination therapies</filterLabel>
+                <filterLabel fieldValue="ACT">Artemisinin Combination Therapies</filterLabel>
+            </filterValueLabelMap>
+        </filter>
+        <filter field="PTN" name="Report type" >
+            <label>
+                Lists the different types of publication found describing antimalarial drug quality.
+                Papers on techniques, drug legislation, reviews, and other reports usually
+                do not contain location information and therefore will not appear in the map.
+                They can however be found in the report table.
+            </label>
+            <filterValueLabelMap>
+                <filterLabel fieldValue="All">Any type of report</filterLabel>
+            </filterValueLabelMap>
+        </filter>
+        <filter field="STN" name="Collection type">
+            <label>
+                Lists the type of sampling methodology used in each report.
+                Only studies with evidence describing how randomisation was performed have been included as 'Random Survey'
+            </label>
+            <filterValueLabelMap>
+            </filterValueLabelMap>
+
+        </filter>
+        <filter field="QI" name="Quality classification">
+            <label>
+                We use, unless otherwise specified in the report, the term 'falsified' as a synonym for
+                counterfeit or spurious, referring to a medical
+                product produced with criminal intent to mislead, without reference to intellectual
+                property concerns. If authors did not examine packaging
+                we class samples that failed chemical assays, but without detected
+                wrong active ingredients, as poor quality and not falsified/counterfeit.
+                Samples that did not fail chemical assays and/or a packaging tests are considered as good quality.
+                Samples are only classified as 'Good Quality' if all samples collected were good quality.
+                Samples classified as poor quality, falsified or substandard may contain good quality medicines.
+            </label>
+            <filterValueLabelMap>
+                <filterLabel fieldValue="Falsified">Samples with fake packaging + right amount of API or wrong or none or incorrect API. Also those samples with no genuine packaging to check + wrong or no Active Pharmaceutical Ingredient</filterLabel>
+                <filterLabel fieldValue="Substandard">Samples with genuine packaging + incorrect quantity of correct API</filterLabel>
+                <filterLabel fieldValue="Poor Quality">‘Samples without reference packaging available for comparison, containing incorrect quantities (>zero %) of the correct API or failure to comply with other quality specifications (e.g. dissolution tests, contents of impurity, sterility etc)</filterLabel>
+            </filterValueLabelMap>
+        </filter>
+        <filter field="OTN" name="Medicine Source">
+            <label>
+                Lists the type of outlet where the collection of samples was
+                performed. Reports that do not provide clear information about the drug provider
+                will be classified as unknown.
+            </label>
+            <filterValueLabelMap>
+                <filterLabel fieldValue="Unknown">Studies where the source of samples is unknown</filterLabel>
+                <filterLabel fieldValue="Private pharmacy">Samples collected only in private sector pharmacies</filterLabel>
+                <filterLabel fieldValue="Distributor/ agent/ trader/ wholesale pharmacies">Samples provided from distributor, agent, trader or wholesale pharmacies</filterLabel>
+                <filterLabel fieldValue="Govt &amp; Private outlets">Samples collected from private and public sectors</filterLabel>
+            </filterValueLabelMap>
+        </filter>
+        <filterByDateRange field="PY" name="Filter by year" startDate="1975" endDate="currentYear">
+            <label>
+                Filter studies by publication year range: 1975 to 2013
+            </label>
+        </filterByDateRange>
+    </filters>
+
+</surveyor>
