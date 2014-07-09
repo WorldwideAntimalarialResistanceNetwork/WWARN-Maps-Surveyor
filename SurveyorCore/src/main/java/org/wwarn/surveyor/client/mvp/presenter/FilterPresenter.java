@@ -65,6 +65,7 @@ public class FilterPresenter implements Presenter {
     private ClientFactory clientFactory = SimpleClientFactory.getInstance();
     private final ApplicationContext applicationContext = clientFactory.getApplicationContext();
     private MainPanelView containerPanel;
+    public static final String DEFAULT_CATCH_ALL_OPTION = "All";
 
 
     public FilterPresenter(FilterView filterView) {
@@ -146,7 +147,6 @@ public class FilterPresenter implements Presenter {
 
         public static final Date START_DATE = DateTimeFormat.getFormat("yyyy").parse("1975");
         public static final int DELAY_MILLIS_BEFORE_QUERYING = 100;
-        public static final String DEFAULT_CATCH_ALL_OPTION = "All";
         private Queue<FilterChangedEvent> updateQueue = new LinkedList<FilterChangedEvent>();
         /*stores all previous field selections, this must be kept for filters to work correctly*/
         final HashMap<String, List<FilterChangedEvent.FilterElement>> selectedFacetFieldsAndValues = new HashMap<String, List<FilterChangedEvent.FilterElement>>();

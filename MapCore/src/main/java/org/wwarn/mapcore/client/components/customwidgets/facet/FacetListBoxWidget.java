@@ -56,6 +56,7 @@ import java.util.*;
 public class FacetListBoxWidget extends Composite implements HasChangeHandlers, FacetWidget {
     public static final String STYLE_FACET_LISTBOX= "facetListBox";
     public static final String DEFAULT_ALL_VALUE = "all";
+    public static final FacetWidgetItem DEFAULT_FACET_WIDGET_ITEM = new FacetWidgetItem("All", "All");
     private String facetField = null;
     String facetTitle = null;
     String facetLabel = null;
@@ -72,7 +73,6 @@ public class FacetListBoxWidget extends Composite implements HasChangeHandlers, 
     private int lastKnownIndices = 0;
     private List<FacetWidgetItem> facetWidgetItems;
     public static final int DEFAULT_VISIBLE_ITEM_COUNT = 5;
-
 
 
     @Deprecated
@@ -155,10 +155,12 @@ public class FacetListBoxWidget extends Composite implements HasChangeHandlers, 
     public void disableItems(List<FacetWidgetItem> facetWidgetItems){
         List<FacetWidgetItem> hiddenFacetWidgetItems = new ArrayList<FacetWidgetItem>();
         final List<FacetWidgetItem> facetWidgetItemListSort = new ArrayList<FacetWidgetItem>();
+
+        FacetWidgetItem defaultAllFacetItem = DEFAULT_FACET_WIDGET_ITEM;
         for (FacetWidgetItem facetWidgetItem : getFacetWidgetItems()) {
             final String value = facetWidgetItem.getValue();
             if(value.toLowerCase().equals(DEFAULT_ALL_VALUE)){
-                facetWidgetItemListSort.add(facetWidgetItem);
+                defaultAllFacetItem = facetWidgetItem;
                 continue;
             }
             if(facetWidgetItems.contains(new FacetWidgetItem(value, null))){
@@ -169,7 +171,9 @@ public class FacetListBoxWidget extends Composite implements HasChangeHandlers, 
         }
         Collections.sort(hiddenFacetWidgetItems);
         facetWidgetItemListSort.addAll(hiddenFacetWidgetItems);
+        facetWidgetItemListSort.add(0, defaultAllFacetItem);
         addAll(facetWidgetItemListSort);
+
         for (int i = 0; i < listBox.getItemCount(); i++) {
             final String value = listBox.getValue(i);
             if(value.toLowerCase().equals(DEFAULT_ALL_VALUE)){continue;}
@@ -179,7 +183,7 @@ public class FacetListBoxWidget extends Composite implements HasChangeHandlers, 
                 listBox.getElement().getElementsByTagName("option").getItem(i).removeAttribute("disabled");
             }
         }
-        //select all after items disabled
+        //select the first element in the list
         listBox.setItemSelected(0,true);
     }
 
@@ -188,8 +192,13 @@ public class FacetListBoxWidget extends Composite implements HasChangeHandlers, 
         listBox.clear();
 
         for (FacetWidgetItem facetWidgetItem : facetWidgetItems) {
-            listBox.addItem(facetWidgetItem.getValue());
+            final String value = facetWidgetItem.getValue();
+            if(value.toLowerCase().equals(DEFAULT_ALL_VALUE)){continue;}
+            listBox.addItem(value);
         }
+
+        facetWidgetItems.add(0, DEFAULT_FACET_WIDGET_ITEM);
+        listBox.insertItem(DEFAULT_FACET_WIDGET_ITEM.getValue(),0);
 
         this.facetWidgetItems = facetWidgetItems;
 
@@ -262,6 +271,7 @@ public class FacetListBoxWidget extends Composite implements HasChangeHandlers, 
     }
 
     public void unSelectAndReset(){
+
         for(int i = 0; i < listBox.getItemCount(); i++) {
             listBox.getElement().getElementsByTagName("option").getItem(i).removeAttribute("disabled");
             if(i==0) {

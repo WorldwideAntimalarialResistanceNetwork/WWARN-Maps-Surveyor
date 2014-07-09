@@ -207,7 +207,7 @@ public class FilterViewUI extends Composite implements  FilterView {
                 updateFilterWidget(widget, facetFields);
             }
         }
-        if(facetWidget.getSelectedListItems().contains("All")){
+        if(facetWidget.getSelectedListItems().contains(presenter.DEFAULT_CATCH_ALL_OPTION)){
             linkedFilterSelectionState.removeCurrentAndSuccessive(facetWidget.getFacetField());
         }
     }
