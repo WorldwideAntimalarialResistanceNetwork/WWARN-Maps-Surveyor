@@ -28,6 +28,15 @@ Features supported in XML configuration:
 * a schema datatype to map the data source to an internal type representation
 * support views beyond maps, such as tables, links static embedded content etc.
     
+## Demos and implementations
+
+### [Live demonstrator](http://wwarn-maps-surveyor-demo.appspot.com) based on [SurveyorSimpleDemoApp](./SurveyorSimpleDemoApp)
+### [AQ Surveyor](http://www.wwarn.org/aqsurveyor/)
+### [Molecular Surveyor](http://www.wwarn.org/surveyor/)
+### [NMFI Fever Series Surveyor - TODO](#)
+### [NMFI Case Reports Surveyor - TODO](#)
+
+
 ## How do I use it?
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
 
