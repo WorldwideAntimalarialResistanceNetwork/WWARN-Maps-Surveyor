@@ -89,6 +89,16 @@
     </views>
 
     <filters>
+        <label>
+            <![CDATA[
+            Select filters:
+            <br/>
+            Use the filters below to selected publications or survey rows,
+            <br/> according to Medicine, Report type, Sampling type, Medicine source,
+            <br/> and Quality issue.
+            ]]>
+        </label>
+
         <filter field="DCN" name="Medicines">
             <!-- We can infers how to display the filter, based on the of the field,
             or we could have an additional tag to describe this. So for a string field assumed that multiselect field is used-->
@@ -105,7 +115,7 @@
                 <filterLabel fieldValue="ACT">Artemisinin Combination Therapies</filterLabel>
             </filterValueLabelMap>
         </filter>
-        <filter field="PTN" name="Report type">
+        <filter field="PTN" name="Report type" >
             <label>
                 Lists the different types of publication found describing antimalarial drug quality.
                 Papers on techniques, drug legislation, reviews, and other reports usually
@@ -114,17 +124,6 @@
             </label>
             <filterValueLabelMap>
                 <filterLabel fieldValue="All">Any type of report</filterLabel>
-                <filterLabel fieldValue="Non peer reviewed article">Publications that have not undergone peer review</filterLabel>
-                <filterLabel fieldValue="Peer reviewed article">Articles published in a peer reviewed journal</filterLabel>
-                <filterLabel fieldValue="Public alert">Health warnings and articles issued by National Medicines Regulatory Agencies</filterLabel>
-                <filterLabel fieldValue="Lay press">Articles published in newspapers or magazines, both as paper copies and online, about seizures or recalls</filterLabel>
-                <filterLabel fieldValue="Report">Reports of surveys by National and International Organizations not published on scientific journals</filterLabel>
-                <filterLabel fieldValue="PhD thesis">PhD thesis on the quality of antimalarials</filterLabel>
-                <filterLabel fieldValue="Analysis techniques">Articles describing analytical techniques for quality testing and sampling techniques</filterLabel>
-                <filterLabel fieldValue="Reviews">Compilation of peer review articles of counterfeit antimalarials or anti-infectives. No sample collection conducted</filterLabel>
-                <filterLabel fieldValue="Drug regulation &amp; definitions">Articles regarding antimalarial medicine regulation and/or definitions</filterLabel>
-                <filterLabel fieldValue="Other">Articles related to antimalarial quality but without sample collection</filterLabel>
-                <filterLabel fieldValue="Short Communication/Note">Posters, notes or short communications about antimalarial quality</filterLabel>
             </filterValueLabelMap>
         </filter>
         <filter field="STN" name="Collection type">
@@ -133,13 +132,6 @@
                 Only studies with evidence describing how randomisation was performed have been included as 'Random Survey'
             </label>
             <filterValueLabelMap>
-                <filterLabel fieldValue="Convenience survey">Surveys with sample collection not conducted in a random manner</filterLabel>
-                <filterLabel fieldValue="Case reports">Studies describing patients not responding to antimalarials. Recalls of antimalarial or non-MRA public health warnings are also included under this category</filterLabel>
-                <filterLabel fieldValue="Random survey">Studies in which outlet and/or sample selection was conducted in a  random manner with description of how the randomization was performed</filterLabel>
-                <filterLabel fieldValue="MRA seizure">Reports describing antimalarial confiscations or warnings by police or MRAs</filterLabel>
-                <filterLabel fieldValue="Unknown">Studies that do not specify the methodology followed for sample collection.</filterLabel>
-                <filterLabel fieldValue="Bioavailability studies">Studies describing in vivo comparative bioavailability testing for adequate antimalarial levels for treatment. Measurement of the rate and extent to which a drug reaches the systemic circulation.</filterLabel>
-                <filterLabel fieldValue="Laboratory assembled collections">Studies describing samples that were put together in laboratories to answer chemical rather than epidemiological questions</filterLabel>
             </filterValueLabelMap>
 
     </filter>
@@ -157,10 +149,8 @@
             </label>
             <filterValueLabelMap>
                 <filterLabel fieldValue="Falsified">Samples with fake packaging + right amount of API or wrong or none or incorrect API. Also those samples with no genuine packaging to check + wrong or no Active Pharmaceutical Ingredient</filterLabel>
-                <filterLabel fieldValue="Good Quality">Set of samples that did not fail chemical assays and packaging tests</filterLabel>
                 <filterLabel fieldValue="Substandard">Samples with genuine packaging + incorrect quantity of correct API</filterLabel>
                 <filterLabel fieldValue="Poor Quality">‘Samples without reference packaging available for comparison, containing incorrect quantities (>zero %) of the correct API or failure to comply with other quality specifications (e.g. dissolution tests, contents of impurity, sterility etc)</filterLabel>
-                <filterLabel fieldValue="Degraded">Genuine packaging + correct quantity of correct API but chemical evidence of degradation</filterLabel>
             </filterValueLabelMap>
         </filter>
         <filter field="OTN" name="Medicine Source">
@@ -171,14 +161,9 @@
             </label>
             <filterValueLabelMap>
                 <filterLabel fieldValue="Unknown">Studies where the source of samples is unknown</filterLabel>
-                <filterLabel fieldValue="Hospital pharmacy">Samples collected only in public or private sector hospitals/hospital pharmacies</filterLabel>
                 <filterLabel fieldValue="Private pharmacy">Samples collected only in private sector pharmacies</filterLabel>
-                <filterLabel fieldValue="Manufacturing company">Samples provided from the manufacturing company</filterLabel>
                 <filterLabel fieldValue="Distributor/ agent/ trader/ wholesale pharmacies">Samples provided from distributor, agent, trader or wholesale pharmacies</filterLabel>
-                <filterLabel fieldValue="Clinic">Samples collected from a private sector clinic</filterLabel>
-                <filterLabel fieldValue="Trader">Yes, would group under agent</filterLabel>
                 <filterLabel fieldValue="Govt &amp; Private outlets">Samples collected from private and public sectors</filterLabel>
-                <filterLabel fieldValue="Wholesale pharmacies">Samples collected from wholesale pharmacies</filterLabel>
             </filterValueLabelMap>
         </filter>
         <filterByDateRange field="PY" name="Filter by year" startDate="1975" endDate="currentYear">
