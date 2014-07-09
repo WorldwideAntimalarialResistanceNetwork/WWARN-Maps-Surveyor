@@ -30,7 +30,7 @@ Features supported in XML configuration:
     
 ## Demos and implementations
 
-### [Live demonstrator](http://wwarn-maps-surveyor-demo.appspot.com) based on [SurveyorSimpleDemoApp](./SurveyorSimpleDemoApp)
+### [Live demonstrator](http://wwarn-maps-surveyor-demo.appspot.com) based on [SurveyorSimpleDemoApp](#/SurveyorSimpleDemoApp)
 ### [AQ Surveyor](http://www.wwarn.org/aqsurveyor/)
 ### [Molecular Surveyor](http://www.wwarn.org/surveyor/)
 ### [NMFI Fever Series Surveyor - TODO](#)
