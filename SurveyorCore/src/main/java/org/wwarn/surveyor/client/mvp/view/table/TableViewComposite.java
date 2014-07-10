@@ -35,6 +35,7 @@ package org.wwarn.surveyor.client.mvp.view.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -212,7 +213,7 @@ public class TableViewComposite extends Composite {
                             final Date date = isoFormat.parse(cellValue);
                             final String dateWithSpan = addSpanAttribute(isoFormat.format(date), formatter.format(date));
                             table.setValue(rowIndex, tableColumnIndex, dateWithSpan);
-                        break;
+                            break;
                         case Boolean:
                             boolean valueBoolean = cellValue.toLowerCase().equals("true");
                             table.setValue(rowIndex, tableColumnIndex, valueBoolean);
@@ -250,11 +251,11 @@ public class TableViewComposite extends Composite {
 
     }
     private String addHyperLink(String valueString, String hyperLinkValue) {
-        return "<a href=\""+hyperLinkValue+"\">"+valueString+"</a>";
+        return "<a href=\""+SafeHtmlUtils.htmlEscape(hyperLinkValue)+"\">"+SafeHtmlUtils.htmlEscapeAllowEntities(valueString)+"</a>";
     }
 
     private String addSpanAttribute(String valueStringRaw, String valueString) {
-        return "<span class=\"tableContentHrefOrderHack\" title=\""+valueStringRaw+"\">"+valueString+"</span>";
+        return "<span class=\"tableContentHrefOrderHack\" title=\""+ SafeHtmlUtils.htmlEscape(valueStringRaw)+"\">"+SafeHtmlUtils.htmlEscapeAllowEntities(valueString)+"</span>";
     }
 
     @EventHandler

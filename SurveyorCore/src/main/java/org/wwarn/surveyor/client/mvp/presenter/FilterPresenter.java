@@ -197,7 +197,6 @@ public class FilterPresenter implements Presenter {
             EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SurveyorAppController", "clientFactory.getDataProvider()", "end");
             FilterQuery filterQuery = new FilterQuery();
             for (String filterField : selectedFacetFieldsAndValues.keySet()) {
-                //TODO only supports single value selection
                 List<FilterChangedEvent.FilterElement> filterElements = selectedFacetFieldsAndValues.get(filterField);
                 if(filterElements.size() > 0){
                     FilterChangedEvent.FilterElement valueToFilter = filterElements.get(0);
