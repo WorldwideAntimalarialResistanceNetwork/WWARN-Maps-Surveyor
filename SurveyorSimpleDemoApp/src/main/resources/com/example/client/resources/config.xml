@@ -162,7 +162,7 @@
             <filterValueLabelMap>
                 <filterLabel fieldValue="Unknown">Studies where the source of samples is unknown</filterLabel>
                 <filterLabel fieldValue="Private pharmacy">Samples collected only in private sector pharmacies</filterLabel>
-                <filterLabel fieldValue="Distributor/ agent/ trader/ wholesale pharmacies">Samples provided from distributor, agent, trader or wholesale pharmacies</filterLabel>
+                <filterLabel fieldValue="Distributor/agent/trader/wholesale pharmacies">Samples provided from distributor, agent, trader or wholesale pharmacies</filterLabel>
                 <filterLabel fieldValue="Govt &amp; Private outlets">Samples collected from private and public sectors</filterLabel>
             </filterValueLabelMap>
         </filter>
