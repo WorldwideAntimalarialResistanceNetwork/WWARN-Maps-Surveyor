@@ -40,27 +40,15 @@ Features supported in XML configuration:
 ## How do I use it?
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
 
-1. Add Maven dependencies
-```xml
-    <dependency>
-        <groupId>org.wwarn.surveyor</groupId>
-        <artifactId>SurveyorCore</artifactId>
-        <version>1.7.2-SNAPSHOT</version>
-    </dependency>
-```
-2. Add the inherits statement to your module.gwt.xml.	
-```xml
-    <inherits name="org.wwarn.surveyor.SurveyorCore"/>
-```
-3. Clone the sample application, and configure xml
-4. Build
+1. Clone the sample application, and configure xml
+2. Build
    Maven commands: Deployment - Jetty:
 
    ```
     mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run
    ```
 
-   Deployment - Tomcat6x: Should deploy to http://localhost:8080/nmfisurveyor-1.0-SNAPSHOT
+   Deployment - Tomcat6x: Should deploy to http://localhost:8080/[artifactID]-[version]
 
    ```
     mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run -DskipTests -Dcargo.maven.containerId=tomcat6x -Dcargo.maven.containerUrl=http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.zip
