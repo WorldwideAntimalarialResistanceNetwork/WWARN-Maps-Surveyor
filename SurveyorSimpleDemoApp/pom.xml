@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.wwarn.mapssurveyor</groupId>
+        <artifactId>maps-surveyor-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <groupId>com.example</groupId>
     <artifactId>SurveyorSimpleDemoApp</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>SurveyorSimpleDemoApp</name>
-    <description>GWT with RPC using App Engin with Guice.</description>
+    <description>A demonstrator for the surveyor framework</description>
 
     <properties>
         <!-- GWT -->
@@ -61,6 +66,42 @@
                         <exclude>**/*GwtTest.java</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <!-- Custom license headers for all files -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>Add License Headers</id>
+                        <configuration>
+                            <licenseName>bsd_3</licenseName>
+                            <organizationName>University of Oxford</organizationName>
+                            <copyrightOwners>University of Oxford</copyrightOwners>
+                            <roots>
+                                <root>src</root>
+                                <root>target/generated-sources</root>
+                                <root>target/processed-sources</root>
+                                <!-- Included because HTML/CSS/KML files are here -->
+                                <root>war</root>
+                            </roots>
+                            <!-- Don't touch these compiler generated files -->
+                            <excludes>
+                                <exclude>**/*.cache.html</exclude>
+                                <exclude>**/*.nocache.html</exclude>
+                                <exclude>**/*.properties</exclude>
+                                <exclude>**/*.json</exclude>
+                            </excludes>
+                        </configuration>
+
+                        <!-- Bound to run at last phase before compile -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- GWT -->
