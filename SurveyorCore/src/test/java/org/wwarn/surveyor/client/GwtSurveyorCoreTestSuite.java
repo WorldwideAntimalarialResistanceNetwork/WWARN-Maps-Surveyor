@@ -39,6 +39,7 @@ import org.wwarn.surveyor.client.core.GwtTestDefaultLocalJSONDataProvider;
 import org.wwarn.surveyor.client.core.GwtTestRecordList;
 import org.wwarn.surveyor.client.core.GwtTestServerSideSearchDataProvider;
 import org.wwarn.surveyor.client.core.GwtTestXMLApplicationLoader;
+import org.wwarn.surveyor.client.mvp.view.plot.GwtTestGWTVizPlot;
 
 /**
  * Test suite, need to add test cases manually
@@ -53,6 +54,7 @@ public class GwtSurveyorCoreTestSuite {
         suite.addTestSuite( GwtTestRecordList.class );
         suite.addTestSuite( GwtTestDefaultLocalJSONDataProvider.class );
         suite.addTestSuite( GwtTestServerSideSearchDataProvider.class );
+        suite.addTestSuite( GwtTestGWTVizPlot.class );
         return suite;
     }
 }

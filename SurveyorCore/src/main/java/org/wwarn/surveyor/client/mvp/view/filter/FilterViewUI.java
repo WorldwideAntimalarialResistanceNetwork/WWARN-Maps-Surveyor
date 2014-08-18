@@ -46,6 +46,7 @@ import org.wwarn.mapcore.client.component.MainSectionPanel;
 import org.wwarn.mapcore.client.component.UiHelpToolTip;
 import org.wwarn.mapcore.client.components.customwidgets.facet.*;
 import org.wwarn.surveyor.client.core.FacetList;
+import org.wwarn.surveyor.client.i18nstatic.TextConstants;
 import org.wwarn.surveyor.client.model.FilterByDateRangeSettings;
 import org.wwarn.surveyor.client.model.FilterConfig;
 import org.wwarn.mapcore.client.utils.EventLogger;
@@ -65,7 +66,7 @@ public class FilterViewUI extends Composite implements  FilterView {
     private LinkedFilterSelectionState linkedFilterSelectionState = new LinkedFilterSelectionState();
 
     @UiField(provided = true)
-    public Anchor resetAnchor = new Anchor("Reset filters");
+    public Anchor resetAnchor = new Anchor();
     protected final List<FacetWidget> filterList = new ArrayList<FacetWidget>();
     private String lastSelectedFilterField;
 
@@ -84,7 +85,7 @@ public class FilterViewUI extends Composite implements  FilterView {
     }
 
     public void setupFilterDisplay(final FacetList facetList, FilterConfig filterConfig){
-        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.view.FilterView", "renderListBox", "begin");
+//        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.view.FilterView", "renderListBox", "begin");
 
         panel.clear();
         final VerticalPanel  facetWidgetsPanel = new VerticalPanel();
@@ -102,17 +103,23 @@ public class FilterViewUI extends Composite implements  FilterView {
                 facetWidgetsPanel.add((IsWidget) facetWidget);
             }
         }
-        resetAnchor = addResetLinkClickHandler(filterList);
+        setupResetAnchor();
         panel.add(resetAnchor);
 
-        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.view.FilterView", "renderListBox", "end");
+    }
+
+    private void setupResetAnchor(){
+       resetAnchor = addResetLinkClickHandler(filterList);
+       TextConstants textConstants = GWT.create(TextConstants.class);
+       resetAnchor.setText(textConstants.resetFilter());
     }
 
 
     protected MainSectionPanel createMainSectionPanel(FilterConfig filterConfig, VerticalPanel facetWidgetsPanel){
+        TextConstants textConstants = GWT.create(TextConstants.class);
         final MainSectionPanel mainSectionPanel = new MainSectionPanel(
                 facetWidgetsPanel,
-                "Select filter",
+                textConstants.selectFilter(),
                 new UiHelpToolTip(new HTML(filterConfig.getFilterLabel())));
         return mainSectionPanel;
     }
@@ -207,7 +214,7 @@ public class FilterViewUI extends Composite implements  FilterView {
                 updateFilterWidget(widget, facetFields);
             }
         }
-        if(facetWidget.getSelectedListItems().contains(presenter.DEFAULT_CATCH_ALL_OPTION)){
+        if(facetWidget.getSelectedListItems().contains("All") || facetWidget.getSelectedListItems().contains("all")){
             linkedFilterSelectionState.removeCurrentAndSuccessive(facetWidget.getFacetField());
         }
     }

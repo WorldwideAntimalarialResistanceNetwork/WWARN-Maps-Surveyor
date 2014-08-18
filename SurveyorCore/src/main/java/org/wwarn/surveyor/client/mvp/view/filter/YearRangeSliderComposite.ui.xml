@@ -31,7 +31,11 @@
   #L%
   -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+             ui:generateKeys="com.google.gwt.i18n.server.keygen.MD5KeyGenerator"
+             ui:generateLocales="default"
+        >
     <ui:style>
             /*
             See @external usage docs http://www.gwtproject.org/doc/latest/DevGuideClientBundle.html#External_and_legacy_scopes
@@ -106,7 +110,7 @@
         <g:FlowPanel ui:field="yearRangeDescriptionPanel" addStyleNames="{style.rangeSeparator} {style.paddingTop}">
             <g:Label ui:field="yearRangeLabel" addStyleNames="{style.horizontalAlign}">Filter studies by publication year range</g:Label>
             <g:Label addStyleNames="{style.prefixSpace} {style.horizontalAlign}" ui:field="startYearLabel"/>
-            <g:Label addStyleNames="{style.prefixSpace} {style.horizontalAlign}">to</g:Label>
+            <g:Label addStyleNames="{style.prefixSpace} {style.horizontalAlign}"><ui:msg>to</ui:msg></g:Label>
             <g:Label addStyleNames="{style.prefixSpace} {style.horizontalAlign}" ui:field="endYearLabel"/>
         </g:FlowPanel>
 

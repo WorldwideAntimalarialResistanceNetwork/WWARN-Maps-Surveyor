@@ -35,23 +35,23 @@ package org.wwarn.surveyor.client.mvp.view.result;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.*;
+import org.wwarn.surveyor.client.core.RecordList;
 import org.wwarn.surveyor.client.model.*;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.mvp.presenter.LoadStatusListener;
 import org.wwarn.surveyor.client.mvp.presenter.ResultPresenter;
+import org.wwarn.surveyor.client.mvp.view.template.TemplateBasedViewBuilder;
 import org.wwarn.surveyor.client.mvp.view.map.MapViewComposite;
 import org.wwarn.surveyor.client.mvp.view.panel.PanelViewComposite;
+import org.wwarn.surveyor.client.mvp.view.table.CellTableServer;
 import org.wwarn.surveyor.client.mvp.view.table.TableViewComposite;
+import org.wwarn.surveyor.client.mvp.view.template.TemplateViewComposite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,6 +122,7 @@ public class ResultViewUI extends Composite implements ResultView {
                 initializeWidget(viewConfigs, tabSelected);
             }
         });
+        tabContentHolder.getElement().setId("surveyorTabContentHolder");
     }
 
     private Widget initializeWidget(ResultsViewConfig viewConfigs, Integer tabSelected){
@@ -139,6 +140,7 @@ public class ResultViewUI extends Composite implements ResultView {
         final Widget[] widget = {new HTML()};
         final Widget defaultWidget = widget[0] = new HTML("<strong>Unable to load widget, async call failed. " +
                 "Check network and try reloading.</strong>");
+        // TODO tedious repetition of code, sort it out!
         if(viewConfig instanceof TableViewConfig){
             GWT.runAsync(new RunAsyncCallback() {
                 @Override
@@ -148,12 +150,17 @@ public class ResultViewUI extends Composite implements ResultView {
 
                 @Override
                 public void onSuccess() {
-                    Widget tableViewComposite = loadedDisplays[tabSelected];
-                    if(tableViewComposite == null){
-                        tableViewComposite = new TableViewComposite((TableViewConfig) viewConfig);
-                        loadedDisplays[tabSelected] = tableViewComposite;
+                    Widget table = loadedDisplays[tabSelected];
+                    if(table == null){
+                        TableViewConfig tableViewConfig = (TableViewConfig) viewConfig;
+                        if (tableViewConfig.getType() == TableViewConfig.TableType.SERVER_TABLE){
+                            table = new CellTableServer(tableViewConfig);
+                        }else{
+                            table = new TableViewComposite(tableViewConfig);
+                        }
+                        loadedDisplays[tabSelected] = table;
                     }
-                    tabContentHolder.setWidget(tableViewComposite);
+                    tabContentHolder.setWidget(table);
                 }
             });
         }
@@ -174,7 +181,24 @@ public class ResultViewUI extends Composite implements ResultView {
                     tabContentHolder.setWidget(mapViewComposite);
                 }
             });
-        }else if (viewConfig instanceof PanelViewConfig){
+        }else if (viewConfig instanceof TemplateViewConfig){
+            GWT.runAsync(new RunAsyncCallback() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    widget[0] = defaultWidget;
+                }
+
+                @Override
+                public void onSuccess() {
+                    Widget templateViewComposite = loadedDisplays[tabSelected];
+                    if (loadedDisplays[tabSelected] == null) {
+                        templateViewComposite = new TemplateViewComposite((TemplateViewConfig) viewConfig);
+                        loadedDisplays[tabSelected] = templateViewComposite;
+                    }
+                    tabContentHolder.setWidget(templateViewComposite);
+                }
+            });
+        } else if (viewConfig instanceof PanelViewConfig){
             GWT.runAsync(new RunAsyncCallback() {
                 @Override
                 public void onFailure(Throwable throwable) {

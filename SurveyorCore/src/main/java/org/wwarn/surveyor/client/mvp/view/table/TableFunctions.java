@@ -62,22 +62,31 @@ public class TableFunctions {
 
     DataTable table;
 
+    RecordList.Record record;
+
 
     public TableFunctions(String function, RecordList recordList, DataTable table){
         this.function = cleanFunction(function);
         this.recordList = recordList;
         this.table = table;
-        this.functionType = getFunctionType();
-        this.params = getParameters();
+        this.functionType = getFunctionType(this.function);
+        this.params = getParameters(functionType, this.function);
 
     }
+
+    public TableFunctions(String function, RecordList.Record record){
+        this.function = cleanFunction(function);
+        this.record = record;
+    }
+
+
 
     /**
      * remove space, (, ), "func"
      * eg func(CONCAT(a1,a2))
      * returns CONCAT a1,a2
      */
-    private String cleanFunction(String function){
+    public static String cleanFunction(String function){
         //
         String regex = "func|[() ]";
         String cleanedfunc = function.replaceAll(regex, "");
@@ -85,7 +94,7 @@ public class TableFunctions {
 
     }
 
-    private FunctionType getFunctionType(){
+    public static FunctionType getFunctionType(String function){
         for (FunctionType funcType : FunctionType.values() ){
             if (function.startsWith(funcType.name())){
                 return funcType;
@@ -100,7 +109,6 @@ public class TableFunctions {
         }else if(functionType == FunctionType.ARITH){
             table.setValue(rowIndex, tableColumnIndex, arith(rowIndex));
         }
-
     }
 
     /**
@@ -175,7 +183,7 @@ public class TableFunctions {
 
 
 
-    private String[] getParameters(){
+    public static String[] getParameters(FunctionType functionType, String function){
         //remove function type
         String regex = functionType.name();
         String funcParams = function.replaceAll(regex, "");
@@ -183,6 +191,6 @@ public class TableFunctions {
     }
 
     public enum FunctionType{
-        CONCAT_DATE, ARITH;
+        CONCAT_DATE, ARITH, GET_YEAR;
     }
 }

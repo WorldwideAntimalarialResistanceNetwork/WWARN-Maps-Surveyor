@@ -27,6 +27,10 @@ Features supported in XML configuration:
 * support for [faceted browsing](http://en.wikipedia.org/wiki/Faceted_search), with several configurable facet filter UI components, including multiple selection
 * a schema datatype to map the data source to an internal type representation
 * support views beyond maps, such as tables, links static embedded content etc.
+
+Limitations:
+
+* For Big data, ie billions of records visualisation, consider [Google fusion tables] which down samples very large data sets, or [imMens](http://vis.stanford.edu/projects/immens/) which aggregates over very large data sets and partitions the data based on the projection of the data needed for visualisation
     
 ## Demos and implementations
 

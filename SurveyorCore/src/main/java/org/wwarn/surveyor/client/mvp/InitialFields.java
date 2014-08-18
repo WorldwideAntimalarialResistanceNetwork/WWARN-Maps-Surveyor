@@ -34,11 +34,12 @@ package org.wwarn.surveyor.client.mvp;
  */
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by suay on 5/30/14.
  */
 public interface InitialFields {
 
-    List<String> getInitialFields();
+    Set<String> getInitialFields();
 }

@@ -98,15 +98,15 @@ public class SimpleClientFactory implements ClientFactory {
 
     public DataProvider getDataProvider(){
         if(this.dataProvider == null){
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getDataProvider", "begin");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getDataProvider", "begin");
 
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getSchema", "begin");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getSchema", "begin");
             DataSchema schema = getSchema();
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getSchema", "end");
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getFacetFieldList", "begin");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getSchema", "end");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getFacetFieldList", "begin");
             String[] facetFieldList = getFacetFieldList();
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getFacetFieldList", "end");
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "DefaultLocalJSONDataProvider", "begin");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getFacetFieldList", "end");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "DefaultLocalJSONDataProvider", "begin");
             final ApplicationContext applicationContext1 = getApplicationContext();
             final DatasourceConfig config = applicationContext1.getConfig(DatasourceConfig.class);
             GenericDataSource dataSource = new GenericDataSource(config.getFilename(), null, GenericDataSource.DataSourceType.ServletRelativeDataSource);
@@ -116,8 +116,8 @@ public class SimpleClientFactory implements ClientFactory {
                 this.dataProvider =  new DefaultLocalJSONDataProvider(dataSource, schema, facetFieldList);
             }
             //TODO refactor this too!!
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "DefaultLocalJSONDataProvider", "end");
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getDataProvider", "end");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "DefaultLocalJSONDataProvider", "end");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getDataProvider", "end");
 
         }
         return this.dataProvider;

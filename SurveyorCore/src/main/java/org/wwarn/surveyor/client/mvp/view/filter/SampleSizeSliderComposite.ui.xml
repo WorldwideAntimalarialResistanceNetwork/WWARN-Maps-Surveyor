@@ -100,18 +100,12 @@
         .paddingTop {
             padding-top: 1.0em !important;
         }
-
-
-
     </ui:style>
     <g:FlowPanel addStyleNames="{style.yearRangePanel}">
-        <g:FlowPanel ui:field="yearRangeDescriptionPanel" addStyleNames="{style.rangeSeparator} {style.paddingTop}">
+        <g:FlowPanel addStyleNames="{style.rangeSeparator} {style.paddingTop}">
             <g:Label addStyleNames="{style.horizontalAlign}">Filter studies by minimum sample size: </g:Label>
             <g:Label addStyleNames="{style.prefixSpace} {style.horizontalAlign}" ui:field="startSampleSizeLabel"/>
         </g:FlowPanel>
-
         <g:FlowPanel ui:field="sampleSizeSliderPanel" addStyleNames="{style.yearRangeSliderPanel} {style.paddingTop}"/>
-
-
     </g:FlowPanel>
 </ui:UiBinder>

@@ -51,8 +51,8 @@ public class FileChangeMonitor extends Observable {
     private WatchService watcher;
     private final Map<WatchKey, Path> keys = new HashMap<WatchKey, Path>();
     private Path monitoredFile;
-    private boolean trace = false;
     private FileChangeMonitor fileChangeMonitor = this;
+    private boolean trace = false;
 
     private FileChangeMonitor() {
     }
@@ -135,13 +135,11 @@ public class FileChangeMonitor extends Observable {
             while(!Thread.currentThread().isInterrupted()){
                 // wait for key to be signalled
                 WatchKey key;
-                try {
-                    key = watcher.take(); /* This can take a while complete,
-                    hence startSignal given only after this is loaded*/
-                    startSignal.countDown();
-                } catch (InterruptedException x) {
-                    throw x;
-                }
+
+                key = watcher.take(); /* This can take a while complete,
+                hence startSignal given only after this is loaded*/
+                startSignal.countDown();
+
 
                 Path dir = keys.get(key);
                 if (dir == null) {

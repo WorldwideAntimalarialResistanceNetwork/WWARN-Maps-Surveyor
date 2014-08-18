@@ -49,6 +49,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.*;
+import org.wwarn.surveyor.client.model.TableViewConfig;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -70,7 +71,6 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     private DataSchema dataSchema;
     private final FacetsConfig config = new FacetsConfig();
     public static final int MAX_RESULTS = 100;
-    private FileChangeMonitor fileChangeMonitor;
 
     public static LuceneSearchServiceImpl getInstance() {
         return ourInstance;
@@ -90,6 +90,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     }
 
     private void setupIndexMonitor(final DataSchema dataSchema, final GenericDataSource dataSource) throws SearchException {
+        FileChangeMonitor fileChangeMonitor;
         if(dataSource.getDataSourceType()== GenericDataSource.DataSourceType.ServletRelativeDataSource && dataSource.getLocation()!=null) {
             assertFilePathExists(dataSource.getLocation(), "jsonPath invalid:");
             File json = new File(dataSource.getLocation());
@@ -242,7 +243,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             throw new IllegalStateException("Search not ready : init method must be called first");
         }
         RecordList recordList;
-        FacetList facetList = new FacetList();
+        FacetList facetList;
         try (IndexReader indexReader = DirectoryReader.open(indexDirectory);
             TaxonomyReader taxoReader = new DirectoryTaxonomyReader(taxonomyDirectory);
         ){
@@ -264,7 +265,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             final List<ScoreDoc> hits = simpleCollector.getHits();
 
             // convert scoredoc to recordlist
-            recordList = convertSearchResultToRecordList(indexSearcher, hits, facets);
+            recordList = convertSearchResultToRecordList(indexSearcher, hits, filterQuery.getFields());
         } catch (IOException e) {
             throw new SearchException("Unable to open index or error while fetching documents", e);
         }
@@ -354,7 +355,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         return ((FilterQuery.FilterFieldValue) filterQueryElement).getFieldsValue();
     }
 
-    private RecordList convertSearchResultToRecordList(IndexSearcher indexSearcher, List<ScoreDoc> docs, List<FacetResult> facets) throws IOException {
+    private RecordList convertSearchResultToRecordList(IndexSearcher indexSearcher, List<ScoreDoc> docs, Set<String> filterFields) throws IOException {
         final RecordListBuilder recordListBuilder = new RecordListBuilder(RecordListBuilder.CompressionMode.CANONICAL, dataSchema);
         for (ScoreDoc doc : docs) {
             final Document document = indexSearcher.doc(doc.doc);
@@ -363,12 +364,27 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                 final String fieldName = indexableField.name();
                 final int columnIndex = dataSchema.getColumnIndex(fieldName);
                 final DataType type = dataSchema.getType(fieldName);
-                if(columnIndex < 0){continue;}
+                if(columnIndex < 0 || !isFieldSelected(fieldName, filterFields)){continue;}
                 fieldValues[columnIndex] = mapIndexFieldValueToDataSchemaType(type, indexableField);
             }
             recordListBuilder.addRecord(fieldValues);
         }
         return recordListBuilder.createRecordList();
+    }
+
+
+    private boolean isFieldSelected(String field, Set<String> filterFields){
+        //If filterFields is null then all the fields are selected
+        if(filterFields == null || filterFields.isEmpty()){
+            return true;
+        }
+
+        for(String filterField : filterFields){
+            if(field.equals(filterField)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private String mapIndexFieldValueToDataSchemaType(DataType type, IndexableField indexableField) {
@@ -386,6 +402,68 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         return indexableField.stringValue();
 
     }
+
+    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length) throws SearchException{
+        try{
+            QueryResult queryResult = this.query(filterQuery, facetFields);
+            RecordList recordList = queryResult.getRecordList();
+            List<RecordList.Record> searchedRecords = recordList.getRecords();
+            List<RecordList.Record> uniqueRecords = subsetUniqueRecords(filterQuery,searchedRecords);
+            return getPageRecords(uniqueRecords, start,length);
+        }catch(Exception e){
+            throw new SearchException("Unable to query the table",e);
+        }
+    }
+
+    private List<RecordList.Record> subsetUniqueRecords(FilterQuery filterQuery, List<RecordList.Record> searchedRecords) throws IllegalArgumentException {
+
+        if(filterQuery.getFields() == null){
+            throw new IllegalArgumentException("Table fields cannot be null. Please see them into the FilterQuery");
+        }
+
+        int uniqueRecordsCount = 0;
+        List<RecordList.Record> pageRecords = new ArrayList<>();
+        int schemaSize = dataSchema.size();
+
+        for (RecordList.Record searchedRecord : searchedRecords){
+            String[] fields = new String[schemaSize];
+            for(String field : filterQuery.getFields()){
+                String columnValue = searchedRecord.getValueByFieldName(field);
+                int columnIndex = dataSchema.getColumnIndex(field);
+                fields[columnIndex] = columnValue;
+            }
+
+            RecordList.Record record = new RecordList.Record(fields, dataSchema);
+            if(!pageRecords.contains(record)){
+//                if(uniqueRecordsCount >= start){
+                    pageRecords.add(record);
+//                }
+//                uniqueRecordsCount++;
+            }
+
+//            if(pageRecords.size() > (length+start)){
+//                break;
+//            }
+        }
+
+        return pageRecords;
+    }
+
+    private List<RecordList.Record>  getPageRecords(List<RecordList.Record> uniqueRecords, int start, int length){
+        if(start > uniqueRecords.size()){
+            return Collections.emptyList();
+        }
+
+        List<RecordList.Record> pageRecords = new ArrayList<>(length);
+        for(int i = start; i < start + length; i++){
+            if(uniqueRecords.size() <= i){
+                break;
+            }
+            pageRecords.add(uniqueRecords.get(i));
+        }
+        return pageRecords;
+    }
+
 
     /**
      * Consider moving this to use TopDocsCollector later for paging

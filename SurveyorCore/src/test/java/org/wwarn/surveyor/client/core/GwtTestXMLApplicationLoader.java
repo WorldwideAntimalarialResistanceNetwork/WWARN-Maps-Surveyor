@@ -36,6 +36,7 @@ package org.wwarn.surveyor.client.core;
 import com.google.gwt.junit.client.GWTTestCase;
 import org.wwarn.surveyor.client.model.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -132,42 +133,91 @@ public class GwtTestXMLApplicationLoader extends GWTTestCase {
     public void testViewConfig() throws Exception {
         ResultsViewConfig resultsViewConfig = xmlApplicationLoader.getConfig(ResultsViewConfig.class);
         assertNotNull(resultsViewConfig);
-        int viewConfigCount = 0;
-        for (ViewConfig viewConfig : resultsViewConfig) {
-            assertNotNull(viewConfig);
-            // only expecting two elements
-            if(++viewConfigCount == 1){
-                assertTrue(viewConfig instanceof MapViewConfig);
-                MapViewConfig mapViewConfig = (MapViewConfig) viewConfig;
-                assertEquals("Medicine Quality Map", viewConfig.getViewName());
-                assertEquals("CLAT", ((MapViewConfig) viewConfig).getMarkerLatitudeField());
-                assertEquals("CLON", ((MapViewConfig) viewConfig).getMarkerLongitudeField());
-                assertEquals("\n" +
-                        "            \n" +
-                        "            \n" +
-                        "            <strong>Medicine Quality Map</strong><p> The Medicine Quality Map tab shows a single pin for each study with\n" +
-                        "            antimalarial quality data for that country or location. Pins are associated with tabular text explaining \n" +
-                        "            each selected survey. The pin colour represents the maximum medicine failure rate reported in the survey. \n" +
-                        "            Once a pin is clicked the number of reports found in the country of the selected pin will be listed below \n" +
-                        "            the map. Pins associated with the same location will be spread so the second and subsequent pins at the \n" +
-                        "            same location will be shown at a slightly different locations.<br><br>\n" +
-                        "            <span style=\"color:#D80009\">\n" +
-                        "            <strong>Warning</strong> - the pin colour represents the maximum failure rate for the\n" +
-                        "            medicine with the highest failure rate, not an average. Other medicines, if\n" +
-                        "            assayed, will therefore be of better quality.<br><br>These data cannot, because of the sampling methodology \n" +
-                        "            used in most of the\n" +
-                        "            individual studies, be used to give aggregated estimates of the percentage\n" +
-                        "            of antimalarials in individual countries or globally that are poor quality.\n" +
-                        "            As more objective data becomes available we hope that this will be possible.\n" +
-                        "            </span></p>\n" +
-                        "            \n" +
-                        "            ",  viewConfig.getViewLabel());
-            }else{
-                assertTrue(viewConfig instanceof TableViewConfig);
-                testTableConfig(viewConfig);
-            }
-        }
-        assertEquals(2, viewConfigCount);
+        // only expecting three elements
+        final Iterator<ViewConfig> iterator = resultsViewConfig.iterator();
+        ViewConfig viewConfig = iterator.next();
+        assertNotNull(viewConfig);
+        assertTrue(viewConfig instanceof MapViewConfig);
+        MapViewConfig mapViewConfig = (MapViewConfig) viewConfig;
+        assertEquals("Medicine Quality Map", viewConfig.getViewName());
+        assertEquals("CLAT", ((MapViewConfig) viewConfig).getMarkerLatitudeField());
+        assertEquals("CLON", ((MapViewConfig) viewConfig).getMarkerLongitudeField());
+        assertEquals("\n" +
+                "            \n" +
+                "            \n" +
+                "            <strong>Medicine Quality Map</strong><p> The Medicine Quality Map tab shows a single pin for each study with\n" +
+                "            antimalarial quality data for that country or location. Pins are associated with tabular text explaining \n" +
+                "            each selected survey. The pin colour represents the maximum medicine failure rate reported in the survey. \n" +
+                "            Once a pin is clicked the number of reports found in the country of the selected pin will be listed below \n" +
+                "            the map. Pins associated with the same location will be spread so the second and subsequent pins at the \n" +
+                "            same location will be shown at a slightly different locations.<br><br>\n" +
+                "            <span style=\"color:#D80009\">\n" +
+                "            <strong>Warning</strong> - the pin colour represents the maximum failure rate for the\n" +
+                "            medicine with the highest failure rate, not an average. Other medicines, if\n" +
+                "            assayed, will therefore be of better quality.<br><br>These data cannot, because of the sampling methodology \n" +
+                "            used in most of the\n" +
+                "            individual studies, be used to give aggregated estimates of the percentage\n" +
+                "            of antimalarials in individual countries or globally that are poor quality.\n" +
+                "            As more objective data becomes available we hope that this will be possible.\n" +
+                "            </span></p>\n" +
+                "            \n" +
+                "            ", viewConfig.getViewLabel());
+        testInfoWindowTemplate(mapViewConfig.getTemplateViewNodesConfig());
+
+        viewConfig = iterator.next();
+        assertTrue(viewConfig instanceof TableViewConfig);
+        testTableConfig(viewConfig);
+
+        viewConfig = iterator.next();
+        assertTrue(viewConfig instanceof TemplateViewConfig);
+        testTemplateConfig((TemplateViewConfig) viewConfig);
+    }
+
+    private void testTemplateConfig(TemplateViewConfig viewConfig) {
+        assertNotNull(viewConfig.getViewName());
+        assertNotNull(viewConfig.getViewLabel());
+        final TemplateViewNodesConfig templateViewNodesConfig = viewConfig.getTemplateViewNodesConfig();
+        assertNotNull(templateViewNodesConfig);
+        assertNotNull(templateViewNodesConfig.getRootTemplateNode());
+        assertNull(templateViewNodesConfig.getDataSource());
+    }
+
+    /**
+     <splitLayout>
+     <left>
+     <!--
+     plot is inspired by qplot from ggplot2
+     Attributes
+     geom: Short for geometry, supports bar, jitter, line, boxplot
+     data: in this context data fetches all related records by matching to current context record on number of field properties, effectively calling getRelatedRecordsByFields(). Default behaviour for data attribute when absent is to get all records.
+     TODO:
+     * Data transformations may be helpful, such as sorting
+     * Support faceting to break up the data into subsets and allow user to select a subset
+     * Stats support to summarise the data into useful ways, binning and counting observations for histograms
+     * Supporting layer based composition like ggplot2 does!! Would require using a more low level drawing api and migrating ggplot logic to js..
+     -->
+     <plot geom="bar" data="CLON, CLAT, PID" x="STN" y="OTN" xLabel="x axis" yLabel="y axis" mainTitle="Bar chart example" subTitle="Chart sub title"/>
+     </left>
+     <right>
+     The bar chart shows the the decline in drug effectiveness as time increases
+     </right>
+     </splitLayout>
+     * @param templateViewNodesConfig
+     */
+    private void testInfoWindowTemplate(TemplateViewNodesConfig templateViewNodesConfig) {
+        assertNotNull(templateViewNodesConfig);
+        assertEquals("CLON,CLAT", templateViewNodesConfig.getDataSource());
+        final TemplateViewNodesConfig.TemplateNode rootTemplateNode = templateViewNodesConfig.getRootTemplateNode();
+        assertNotNull(rootTemplateNode);
+        final TemplateViewNodesConfig.TemplateNode left = rootTemplateNode.getChild(0);
+        assertEquals("left", left.getName());
+        final TemplateViewNodesConfig.TemplateNode plot = left.getChild(1);
+        assertEquals("plot", plot.getName());
+        final TemplateViewNodesConfig.TemplateNode right = rootTemplateNode.getChild(1);
+        assertEquals("right", right.getName());
+        final TemplateViewNodesConfig.TemplateNode htmlNode = right.getChild(0);
+        assertEquals("htmlNode", htmlNode.getName());
+
     }
 
     private void testTableConfig(ViewConfig viewConfig) {

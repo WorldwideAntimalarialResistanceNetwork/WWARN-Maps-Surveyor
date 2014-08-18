@@ -46,7 +46,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
     protected SearchServiceAsync searchServiceAsync = (SearchServiceAsync) GWT.create(SearchService.class);
     protected ClientFactory clientFactory = SimpleClientFactory.getInstance();
     protected final DataSchema schema;
-    protected String[] facetFieldList;
+    public String[] facetFieldList;
 
     public ServerSideSearchDataProvider(GenericDataSource dataSource, DataSchema dataSchema, String[] fieldList) {
         this.dataSource = dataSource;
@@ -58,6 +58,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
     public void onLoad(final Runnable callOnLoad) {
         try {
             InitialFilterQuery initialFilterQuery = getInitialFilterQuery();
+            clientFactory.setLastFilterQuery(initialFilterQuery.getInitialFilterQuery());
 
             searchServiceAsync.preFetchData(schema, this.dataSource, this.facetFieldList, initialFilterQuery.getInitialFilterQuery(), new AsyncCallback<QueryResult>() {
                 @Override

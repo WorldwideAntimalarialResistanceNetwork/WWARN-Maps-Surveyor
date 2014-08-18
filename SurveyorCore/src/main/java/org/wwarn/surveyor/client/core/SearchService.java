@@ -36,6 +36,9 @@ package org.wwarn.surveyor.client.core;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.core.client.GWT;
+import org.wwarn.surveyor.client.model.TableViewConfig;
+
+import java.util.List;
 
 /**
  * Created by nigelthomas on 28/05/2014.
@@ -64,5 +67,7 @@ public interface SearchService extends RemoteService {
     public QueryResult preFetchData(DataSchema schema, GenericDataSource dataSource, String[] facetList, FilterQuery filterQuery) throws SearchException;
 
     public QueryResult query(FilterQuery filterQuery, String[] facetFields) throws SearchException;
+
+    public List<RecordList.Record> queryTable(FilterQuery filterQuery, String[] facetFields ,int start, int length) throws SearchException;
 
 }

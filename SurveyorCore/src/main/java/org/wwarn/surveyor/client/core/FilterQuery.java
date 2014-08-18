@@ -43,14 +43,13 @@ import java.util.*;
  * FilterQuery := None | (Field, FieldValueToFilter) <br/>
  * User: nigel
  * Date: 19/07/13
- * @see org.wwarn.mapcore.client.core.MatchAllQuery
  */
 public class FilterQuery implements IsSerializable{
     Map<String, FilterQueryElement> filterQueries;
 
     boolean fetchAllDistinctFieldValues = true;
 
-    List<String> fields;
+    Set<String> fields;
 
     public FilterQuery() {
         this.filterQueries = new HashMap<String, FilterQueryElement>();
@@ -94,7 +93,10 @@ public class FilterQuery implements IsSerializable{
      * @param valueToFilter
      */
     public void addMultipleValuesFilter(String field, Set<String> valueToFilter){
-        filterQueries.put(field, new FilterFieldValue(field, valueToFilter));
+        if(!valueToFilter.isEmpty()){
+            filterQueries.put(field, new FilterFieldValue(field, valueToFilter));
+        }
+
     }
 
     /**
@@ -127,6 +129,14 @@ public class FilterQuery implements IsSerializable{
         public String getFilterField();
     }
 
+    public Set<String> getFields() {
+        return fields;
+    }
+
+    public void setFields(Set<String> fields) {
+        this.fields = fields;
+    }
+
     public static class FilterFieldValue implements FilterQueryElement, IsSerializable{
         private String field;
         Set<String> fieldValues;
@@ -143,9 +153,9 @@ public class FilterQuery implements IsSerializable{
             return fieldValues;
         }
 
-        //Get first element; Multiple Selection is not yet supported in the client side Implementation
+        //Get first element; Multiple Selection is not yet supported in the view side Implementation
         public String  getFieldValue() {
-            if(fieldValues != null){
+            if(!fieldValues.isEmpty()){
                 return fieldValues.iterator().next();
             }
             return null;
@@ -240,11 +250,7 @@ public class FilterQuery implements IsSerializable{
         }
     }
 
-    public List<String> getFields() {
-        return fields;
-    }
 
-    public void setFields(List<String> fields) {
-        this.fields = fields;
-    }
+
+
 }

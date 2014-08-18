@@ -35,13 +35,13 @@ package org.wwarn.surveyor.server.core;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.wwarn.surveyor.client.core.*;
+import org.wwarn.surveyor.client.model.TableViewConfig;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -61,6 +61,12 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
 
         final QueryResult query = searchServiceLayer.query(filterQuery, facetFields);
         return query;
+    }
+
+    @Override
+    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length) throws SearchException {
+        final List<RecordList.Record> records = searchServiceLayer.queryTable(filterQuery,facetFields,  start, length);
+        return records;
     }
 
     @Override

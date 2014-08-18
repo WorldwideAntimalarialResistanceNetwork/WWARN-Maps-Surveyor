@@ -169,7 +169,22 @@ public class GenericMarker<T>{
         addClickHandler(new MarkerCallBackEventHandler<GenericMarker>() {
             @Override
             public void run(GenericMarker sourceElement) {
-                displayPopup(markerClickInfoWindow.build(getContext()));
+                if(markerClickInfoWindow instanceof MarkerClickInfoWindowBuilderAsync){
+                    ((MarkerClickInfoWindowBuilderAsync) markerClickInfoWindow).build(getContext(),
+                            new AsyncCallback<Widget>() {
+                                @Override
+                                public void onFailure(Throwable throwable) {
+                                    throw new IllegalStateException(throwable);
+                                }
+
+                                @Override
+                                public void onSuccess(Widget widget) {
+                                    displayPopup(widget);
+                                }
+                            });
+                }else if(markerClickInfoWindow instanceof MarkerClickInfoWindowBuilder) {
+                    displayPopup(markerClickInfoWindow.build(getContext()));
+                }
             }
         });
     }
@@ -275,6 +290,15 @@ public class GenericMarker<T>{
      */
     public interface MarkerClickInfoWindowBuilder<T>{
         public Widget build(T markerContext);
+    }
+
+    /**
+     *  An alternative to MarkerClickInfoWindowBuilder with async methods
+     * @see org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerClickInfoWindowBuilder
+     * @param <T>
+     */
+    public interface MarkerClickInfoWindowBuilderAsync<T> extends MarkerClickInfoWindowBuilder<T>{
+        public void build(T markerContext, AsyncCallback<Widget> result);
     }
 
     public enum MarkerIcon {

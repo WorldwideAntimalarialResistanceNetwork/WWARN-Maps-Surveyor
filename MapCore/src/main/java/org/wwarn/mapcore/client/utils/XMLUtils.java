@@ -81,7 +81,7 @@ public class XMLUtils {
          * @param fieldName
          * @return
          */
-        protected String getAttributeByName(Node filterNode, String fieldName) {
+        public static String getAttributeByName(Node filterNode, String fieldName) {
             Node namedItem = filterNode.getAttributes().getNamedItem(fieldName);
             if(namedItem == null){
                 return null;

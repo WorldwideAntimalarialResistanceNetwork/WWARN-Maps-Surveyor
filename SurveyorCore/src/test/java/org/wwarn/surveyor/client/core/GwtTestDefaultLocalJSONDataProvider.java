@@ -38,7 +38,6 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.visualization.client.visualizations.Table;
-import org.wwarn.surveyor.client.model.DatasourceConfig;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
 import java.util.*;
@@ -53,19 +52,19 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
 
     public static final int QUERY_SIZE = 28;
     public static final int FINISH_TEST_DELAY_TIMEOUT_MILLIS = 1500;
-    private DataProviderSource dataProviderSource;
+    private DataProviderTestUtility.DataProviderSource dataProviderSource;
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
     protected JSONArray jsonArray;
     protected DataSchema schema;
     private DataProvider dataProvider;
 
 
-    public GwtTestDefaultLocalJSONDataProvider(DataProviderSource source) {
+    public GwtTestDefaultLocalJSONDataProvider(DataProviderTestUtility.DataProviderSource source) {
         this.dataProviderSource = source;
     }
 
     public GwtTestDefaultLocalJSONDataProvider() {
-        this.dataProviderSource = new DataProviderSource() {
+        this.dataProviderSource = new DataProviderTestUtility.DataProviderSource() {
             @Override
             public DataProvider getDataProvider() {
                 final GenericDataSource dataSource = new GenericDataSource(null, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList);
@@ -85,15 +84,8 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
     }
 
     @Override
-    protected String getVisualizationPackage() {
-        return Table.PACKAGE;    //Must Override
-    }
-
-    public interface DataProviderSource{
-        final public DataProviderTestUtility testUtility = new DataProviderTestUtility();
-        final public JSONArray jsonArray = testUtility.getJSONArray();
-        final public DataSchema schema = testUtility.fetchSampleDataSchema();
-        DataProvider getDataProvider();
+    protected String[] getVisualizationPackage() {
+        return new String[]{Table.PACKAGE};    //Must Override
     }
 
 
@@ -118,7 +110,6 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
         runTestWithDefaultDataSetup(new Runnable() {
             @Override
             public void run() {
-                QueryResult queryResult;
                 try {
                     dataProvider.query(new MatchAllQuery(), new AsyncCallback<QueryResult>() {
                         @Override

@@ -55,13 +55,13 @@
     /*padding-left:3px;*/
 }
 
-.MainSectionPanel {
-    border-bottom: 1px solid #BBBBBB;
-    border-left: 1px solid #BBBBBB;
-    border-right: 1px solid #BBBBBB;
-    border-top: 1px solid #BBBBBB;
-    margin-bottom: 10px;
-}
+/*.MainSectionPanel {*/
+    /*border-bottom: 1px solid #BBBBBB;*/
+    /*border-left: 1px solid #BBBBBB;*/
+    /*border-right: 1px solid #BBBBBB;*/
+    /*border-top: 1px solid #BBBBBB;*/
+    /*margin-bottom: 10px;*/
+/*}*/
 
 .MainSectionPanelTitleBar {
     -moz-background-clip: border;

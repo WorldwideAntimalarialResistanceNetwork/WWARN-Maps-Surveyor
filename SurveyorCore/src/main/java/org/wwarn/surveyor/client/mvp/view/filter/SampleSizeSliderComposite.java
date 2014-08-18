@@ -59,7 +59,7 @@ import java.util.List;
 public class SampleSizeSliderComposite extends Composite {
 
     private static Integer MIN_SAMPLE_SIZE = 0;
-    int minSampleSize, maxSampleSize;
+    int minSampleSize, maxSampleSize, initialValue;
     private int currentMinSampleSize;
     private FlowPanel flowPanel;
     private ClientFactory clientFactory = SimpleClientFactory.getInstance();
@@ -95,6 +95,7 @@ public class SampleSizeSliderComposite extends Composite {
         filterBySampleSizeSettings = (FilterConfig.FilterBySampleSizeSettings) filterSetting;
         minSampleSize = filterBySampleSizeSettings.getStart();
         maxSampleSize = filterBySampleSizeSettings.getEnd();
+        initialValue =  filterBySampleSizeSettings.getInitialValue();
     }
 
     @Override
@@ -106,6 +107,8 @@ public class SampleSizeSliderComposite extends Composite {
 
     public YuiSingleSliderGwtWidgetWithLabelMarkersImpl setupSampleSizeWidget(){
         sampleSizeSliderYuiWidgetImpl = new YuiSingleSliderGwtWidgetWithLabelMarkersImpl(400, 30, minSampleSize, maxSampleSize, 400, 10);
+        startSampleSizeLabel.setText(Integer.toString(initialValue));
+        sampleSizeSliderYuiWidgetImpl.setValue(initialValue);
 
         final ValueChangeHandler<Integer> valueChangeHandler = new ValueChangeHandler<Integer>() {
 

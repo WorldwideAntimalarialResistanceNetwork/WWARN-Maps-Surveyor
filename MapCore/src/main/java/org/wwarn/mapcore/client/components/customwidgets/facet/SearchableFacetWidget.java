@@ -48,6 +48,7 @@ import java.util.List;
  * The logic of this widget is similar to a suggestedBox, but instead of auto-complete
  * the text box, it filters the results in the list box.
  */
+@Deprecated
 public class SearchableFacetWidget extends Composite implements KeyUpHandler {
 
     public static final String STYLE_FILTER_TITLE = "filterTitle";

@@ -62,7 +62,7 @@ public class RecordListOptimizationTest {
 
         long startTime = System.nanoTime();
         CompressRecordListService compressRecordListService = CompressRecordListService.getOurInstance();
-        RecordListCompressed recordListCompressed = compressRecordListService.compressRecordList(schema, recordList);
+        compressRecordListService.compressRecordList(schema, recordList);
         long stopTime = System.nanoTime();
         long elapsedTime = stopTime - startTime;
         int miliseconds = (int) elapsedTime / 1000;

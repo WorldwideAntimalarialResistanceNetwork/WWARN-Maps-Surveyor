@@ -35,6 +35,7 @@ package org.wwarn.surveyor.client.core;
 
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.i18n.shared.DefaultDateTimeFormatInfo;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
 import java.util.Date;
@@ -48,7 +49,7 @@ import java.util.Map;
  * Date: 19/07/13
  * Time: 14:22
  */
-public enum DataType {
+public enum DataType implements IsSerializable {
     String,
     CoordinateLat,
     CoordinateLon,
@@ -90,12 +91,9 @@ public enum DataType {
             for (String pattern : patterns) {
                 try{
                     date = getDateFormatFrom(pattern).parseStrict(fieldValue);
-
                 }catch (IllegalArgumentException e){}
-                finally {
-                    if(date!=null){
-                        break;
-                    }
+                if(date!=null){
+                    break;
                 }
             }
             if(date == null) {

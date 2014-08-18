@@ -39,13 +39,17 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.*;
+import org.wwarn.mapcore.client.i18nstatic.MapTextConstants;
 
 /**
  * Created by suay on 5/23/14.
  */
 public class LegendButton extends Composite {
 
-    Button legendButton = new Button("Legend >");
+    public static final String minimizeString = " <";
+    public static final String maximizeString = " >";
+
+    Button legendButton = new Button();
 
     Image legendImg;
 
@@ -53,34 +57,43 @@ public class LegendButton extends Composite {
 
     HorizontalPanel panel = new HorizontalPanel();
 
-    private int DESIRED_WIDGET_WIDTH = 357;
+    int legendWidth;
+
+    String legendWord;
 
     public LegendButton(String relativeImagePath ){
 
         legendImg = new Image(GWT.getModuleBaseForStaticFiles() + relativeImagePath);
+        setLegendButtonText();
         legendButton.addClickHandler(legendClickHandler);
 
-        legendImg.setWidth("0px");
+        isLegendDisplayed = true;
         panel.add(legendButton);
         panel.add(legendImg);
         initWidget(panel);
     }
 
+    private void setLegendButtonText(){
+        MapTextConstants mapTextConstants = GWT.create(MapTextConstants.class);
+        legendWord = mapTextConstants.legend();
+        legendButton.setText(legendWord+minimizeString);
+    }
 
     ClickHandler legendClickHandler =  new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
                     ResizeWidthAnimation resizeAnimation;
                     if(isLegendDisplayed){
+                        legendWidth = legendImg.getWidth();
                         isLegendDisplayed = false;
                         resizeAnimation = new ResizeWidthAnimation(0);
                         resizeAnimation.run(500);
-                        legendButton.setText("Legend >");
+                        legendButton.setText(legendWord+maximizeString);
                     }else{
                         isLegendDisplayed = true;
-                        resizeAnimation = new ResizeWidthAnimation(DESIRED_WIDGET_WIDTH);
+                        resizeAnimation = new ResizeWidthAnimation(legendWidth);
                         resizeAnimation.run(500);
-                        legendButton.setText("Legend <");
+                        legendButton.setText(legendWord+minimizeString);
 
                     }
                 }

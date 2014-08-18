@@ -275,6 +275,8 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         }
         selectedListItems = new HashSet<String>();
         clearSelectionControl.setVisible(false);
+        searchBox.setText("");
+        updatePanelList(facetWidgetItems);
     }
 
     public String getFacetField() {

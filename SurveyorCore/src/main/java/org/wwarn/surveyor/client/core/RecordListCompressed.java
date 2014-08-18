@@ -40,6 +40,7 @@ import java.util.*;
 /**
  * Created by suay on 6/5/14.
  */
+@Deprecated
 public class RecordListCompressed implements IsSerializable {
 
     private DataSchema schema;

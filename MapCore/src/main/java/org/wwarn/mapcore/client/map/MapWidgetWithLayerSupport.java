@@ -43,8 +43,8 @@
 //import com.google.gwt.maps.client.control.HierarchicalMapTypeControl;
 //import com.google.gwt.maps.client.control.LargeMapControl3D;
 //import com.google.gwt.maps.client.control.ScaleControl;
-//import com.google.gwt.maps.client.geom.LatLng;
-//import com.google.gwt.maps.client.geom.Point;
+//import com.google.gwt.maps.client.plot.LatLng;
+//import com.google.gwt.maps.client.plot.Point;
 //import com.google.gwt.maps.client.overlay.EncodedPolyline;
 //import com.google.gwt.maps.client.overlay.Marker;
 //import com.google.gwt.maps.client.overlay.Polygon;
@@ -401,8 +401,8 @@
 //import com.google.gwt.maps.client.control.HierarchicalMapTypeControl;
 //import com.google.gwt.maps.client.control.LargeMapControl3D;
 //import com.google.gwt.maps.client.control.ScaleControl;
-//import com.google.gwt.maps.client.geom.LatLng;
-//import com.google.gwt.maps.client.geom.Point;
+//import com.google.gwt.maps.client.plot.LatLng;
+//import com.google.gwt.maps.client.plot.Point;
 //import com.google.gwt.maps.client.overlay.EncodedPolyline;
 //import com.google.gwt.maps.client.overlay.Marker;
 //import com.google.gwt.maps.client.overlay.Polygon;

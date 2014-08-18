@@ -44,6 +44,7 @@ import org.wwarn.mapcore.client.utils.EventLogger;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.event.FilterChangedEvent;
 import org.wwarn.surveyor.client.event.ResultChangedEvent;
+import org.wwarn.surveyor.client.mvp.InitialFields;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.mvp.view.filter.FilterView;
 import org.wwarn.surveyor.client.mvp.view.MainPanelView;
@@ -64,7 +65,6 @@ public class FilterPresenter implements Presenter {
     private ResultChangeHandler resultChangeHandler = new ResultChangeHandler(this);
     private ClientFactory clientFactory = SimpleClientFactory.getInstance();
     private final ApplicationContext applicationContext = clientFactory.getApplicationContext();
-    private MainPanelView containerPanel;
     public static final String DEFAULT_CATCH_ALL_OPTION = "All";
 
 
@@ -74,7 +74,6 @@ public class FilterPresenter implements Presenter {
     }
 
     public void go(MainPanelView container) {
-        this.containerPanel = container;
         // add filter view to filter panel
         container.getFilterContainerPanel().add(filterView.asWidget());
         // setup up surveyor
@@ -83,9 +82,9 @@ public class FilterPresenter implements Presenter {
 
     private void setupFilters() {
 
-        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.setupFilters", "getLastQueryResult", "begin");
+//        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.setupFilters", "getLastQueryResult", "begin");
         QueryResult queryResult = clientFactory.getLastQueryResult();
-        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.setupFilters", "getLastQueryResult", "end");
+//        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.setupFilters", "getLastQueryResult", "end");
 
         FacetList facetFields = queryResult.getFacetFields();
 
@@ -94,9 +93,9 @@ public class FilterPresenter implements Presenter {
     }
 
     private void updateFilters() {
-        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.updateFilters", "getLastQueryResult", "begin");
+//        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.updateFilters", "getLastQueryResult", "begin");
         QueryResult queryResult = clientFactory.getLastQueryResult();
-        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.updateFilters", "getLastQueryResult", "end");
+//        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.updateFilters", "getLastQueryResult", "end");
 
         FacetList facetFields = queryResult.getFacetFields();
 
@@ -158,8 +157,31 @@ public class FilterPresenter implements Presenter {
 
         public FilterChangeHandler() {
             eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
+            addInitialFilterQuery();
+
         }
 
+        private void addInitialFilterQuery(){
+            FilterQuery filterQuery = clientFactory.getLastFilterQuery();
+            if (filterQuery != null && filterQuery.getFilterQueries() != null){
+                for( String key: filterQuery.getFilterQueries().keySet()){
+                    FilterChangedEvent filterChangedEvent = new FilterChangedEvent(key);
+                    FilterQuery.FilterQueryElement filterQueryElement = filterQuery.getFilterQueries().get(key);
+                    if(filterQueryElement instanceof FilterQuery.FilterFieldValue){
+                        filterChangedEvent.addFilter(((FilterQuery.FilterFieldValue) filterQueryElement).getFieldsValue());
+                    }else if (filterQueryElement instanceof FilterQuery.FilterFieldGreaterThanInteger) {
+                        int value = ((FilterQuery.FilterFieldGreaterThanInteger) filterQueryElement).getFieldValue();
+                        filterChangedEvent.addFilter(value);
+                    }else if (filterQueryElement instanceof FilterQuery.FilterFieldRangeDate) {
+                        Date minDate = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMinValue();
+                        Date maxDate = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMaxValue();
+                        filterChangedEvent.addFilter(minDate, maxDate);
+                    }
+                    selectedFacetFieldsAndValues.put(key, filterChangedEvent.getSelectedListItems());
+                }
+            }
+
+        }
 
         @EventHandler
         public void onFilterChanged(FilterChangedEvent filterChangedEvent){
@@ -192,10 +214,11 @@ public class FilterPresenter implements Presenter {
         }
 
         private void updateFilter(Map<String, List<FilterChangedEvent.FilterElement>> selectedFacetFieldsAndValues) {
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SurveyorAppController", "clientFactory.getDataProvider()", "begin");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SurveyorAppController", "clientFactory.getDataProvider()", "begin");
             DataProvider dataProvider = clientFactory.getDataProvider();
-            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SurveyorAppController", "clientFactory.getDataProvider()", "end");
+//            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SurveyorAppController", "clientFactory.getDataProvider()", "end");
             FilterQuery filterQuery = new FilterQuery();
+            filterQuery.setFields(getFilterFields());
             for (String filterField : selectedFacetFieldsAndValues.keySet()) {
                 List<FilterChangedEvent.FilterElement> filterElements = selectedFacetFieldsAndValues.get(filterField);
                 if(filterElements.size() > 0){
@@ -239,6 +262,17 @@ public class FilterPresenter implements Presenter {
             }
         }
 
+        private Set<String> getFilterFields(){
+            try{
+                InitialFields initialFields = GWT.create(InitialFields.class);
+                if(initialFields != null){
+                    return initialFields.getInitialFields();
+                }
+            }catch(Exception e){
+                GWT.log("Initial fields has not been implemented in the current application");
+            }
+            return null;
+        }
 
         private void filterDateRange(FilterQuery filterQuery, FilterChangedEvent.FilterElement valueToFilter){
             FilterChangedEvent.DateRange dateRange = (FilterChangedEvent.DateRange) valueToFilter;

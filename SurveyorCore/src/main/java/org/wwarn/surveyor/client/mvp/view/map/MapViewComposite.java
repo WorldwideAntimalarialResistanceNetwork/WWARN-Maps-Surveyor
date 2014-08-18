@@ -35,9 +35,7 @@ package org.wwarn.surveyor.client.mvp.view.map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
@@ -48,10 +46,10 @@ import org.wwarn.mapcore.client.components.customwidgets.LegendButton;
 import org.wwarn.surveyor.client.core.DataSchema;
 import org.wwarn.surveyor.client.core.QueryResult;
 import org.wwarn.surveyor.client.core.RecordList;
+import org.wwarn.surveyor.client.event.InterfaceLoadCompleteEvent;
 import org.wwarn.surveyor.client.model.MapViewConfig;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
-import org.wwarn.surveyor.client.event.MapLoadCompleteEvent;
 import org.wwarn.surveyor.client.event.MarkerClickEvent;
 import org.wwarn.surveyor.client.event.ResultChangedEvent;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
@@ -87,15 +85,15 @@ public class MapViewComposite extends Composite {
 
     // Event Bus bindings
     interface ResultChangedEventBinder extends EventBinder<MapViewComposite> {};
-    private ResultChangedEventBinder eventBinder = GWT.create(ResultChangedEventBinder.class);
 
     public MapViewComposite(final MapViewConfig viewConfig) {
-        if(!(viewConfig != null)){
+        if(viewConfig == null){
             throw new IllegalArgumentException("Expected MapView config");
         }
         this.viewConfig = viewConfig;
         panel = ourUiBinder.createAndBindUi(this);
         initWidget(panel);
+        ResultChangedEventBinder eventBinder = GWT.create(ResultChangedEventBinder.class);
         eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
         setupDisplay();
     }
@@ -104,7 +102,7 @@ public class MapViewComposite extends Composite {
         mapWidget.onLoadComplete(new Runnable() {
             @Override
             public void run() {
-                clientFactory.getEventBus().fireEvent(new MapLoadCompleteEvent());
+                clientFactory.getEventBus().fireEvent(new InterfaceLoadCompleteEvent());
             }
         });
     }
@@ -148,20 +146,22 @@ public class MapViewComposite extends Composite {
         List<RecordList.Record> records = recordList.getRecords();
         List<GenericMarker> markers = new ArrayList<GenericMarker>();
         final MarkerCoordinateSource markerCoordinateSource1 = getMarkerCoordinateSource();
+        final MarkerDisplayFilter markerFilter = getMarkerDisplayFilter();
+        markerFilter.init();
         for (final RecordList.Record record : records) {
             GenericMarker.Builder markerBuilder = new GenericMarker.Builder();
             final MarkerCoordinateSource.LatitudeLongitude latitudeLongitude = markerCoordinateSource1.process(record);
             double lat = latitudeLongitude.getLatitude();
             double lon = latitudeLongitude.getLongitude();
 
-            if(getMarkerDisplayFilter().filter(record)){
+            if(markerFilter.filter(record)){
                 GenericMarker<RecordList.Record> marker = markerBuilder.setMarkerLat(lat).setMarkerLon(lon).setMarkerIconPath(getMarkerIconPathBuilder()).createMarker(record, mapWidget);
                 marker.setupMarkerHoverLabel(getMarkerHoverLabelBuilder());
                 marker.setupMarkerClickInfoWindow(getMarkerClickInfoWindow());
                 marker.addClickHandler(new GenericMarker.MarkerCallBackEventHandler<GenericMarker>() {
                     @Override
                     public void run(GenericMarker sourceElement) {
-                        clientFactory.getEventBus().fireEvent(new MarkerClickEvent(record));
+                    clientFactory.getEventBus().fireEvent(new MarkerClickEvent(record));
                     }
                 });
                 markers.add(marker);
@@ -233,26 +233,6 @@ public class MapViewComposite extends Composite {
         return markerHoverLabelBuilder;
     }
 
-    public static class DefaultMarkerClickInfoWindowBuilder implements GenericMarker.MarkerClickInfoWindowBuilder<RecordList.Record>{
-        SimpleClientFactory simpleClientFactory = SimpleClientFactory.getInstance();
-        DataSchema schema = simpleClientFactory.getSchema();
-        @Override
-        public Widget build(RecordList.Record markerContext) {
-            final Set<String> fieldNames = schema.getColumns();
-            SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-            safeHtmlBuilder.appendHtmlConstant("<ul>");
-            for (String fieldName : fieldNames) {
-                safeHtmlBuilder.appendHtmlConstant("<li>");
-                safeHtmlBuilder.appendEscapedLines(fieldName + " : " + markerContext.getValueByFieldName(fieldName));
-                safeHtmlBuilder.appendHtmlConstant("</li>");
-            }
-            safeHtmlBuilder.appendHtmlConstant("</ul>");
-
-            return new HTMLPanel(safeHtmlBuilder.toSafeHtml());
-
-        }
-    }
-
     public static class DefaultMarkerHoverLabelBuilder implements GenericMarker.MarkerHoverLabelBuilder<RecordList.Record>{
         SimpleClientFactory simpleClientFactory = SimpleClientFactory.getInstance();
         DataSchema schema = simpleClientFactory.getSchema();
@@ -278,7 +258,18 @@ public class MapViewComposite extends Composite {
         setMarkers(resultChangedEvent.getQueryResult());
     }
 
+    /**
+     * Logic to decide if a marker should be displayed is encapsulated here,
+     * Often the decision on which record should be filtered depends on previously filtered items
+     * @param <T>
+     */
     public interface MarkerDisplayFilter<T>{
+        /**
+         * Called once before the first filter call is made,
+         * this allows impl to reset any state, and get a fresh instance
+         */
+        public void init();
+
         /**
          * returns if the current record should be filtered, if false the current record is filtered from display.
          * @param record
@@ -288,6 +279,11 @@ public class MapViewComposite extends Composite {
     }
 
     public static class DefaultMarkerDisplayFilter implements MarkerDisplayFilter<RecordList.Record>{
+        @Override
+        public void init() {
+
+        }
+
         @Override
         public boolean filter(RecordList.Record record) {
             return true;

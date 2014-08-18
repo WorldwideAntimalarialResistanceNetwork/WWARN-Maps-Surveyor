@@ -48,7 +48,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
 
     public GwtTestServerSideSearchDataProvider() {
-        super(new DataProviderSource() {
+        super(new DataProviderTestUtility.DataProviderSource() {
             @Override
             public DataProvider getDataProvider() {
 //                jsonArray = testUtility.getJSONArray();
@@ -86,7 +86,6 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
     @Test
     public void testQuery() throws Exception {
 
-        FilterQuery filterQuery = new FilterQuery();
         delayTestFinish(10*1000);
         final AsyncCallback<QueryResult> callback = new AsyncCallback<QueryResult>() {
             @Override

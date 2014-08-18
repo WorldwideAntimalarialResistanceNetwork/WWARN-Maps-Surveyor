@@ -39,7 +39,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import org.wwarn.surveyor.client.event.InterfaceLoadCompleteEvent;
 import org.wwarn.surveyor.client.model.PanelViewConfig;
+import org.wwarn.surveyor.client.mvp.ClientFactory;
+import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 
 /**
  * Created by suay on 5/16/14.
@@ -54,8 +57,6 @@ public class PanelViewComposite extends Composite {
 
     PanelViewConfig panelViewConfig;
 
-    private final FlowPanel panel;
-
     @UiField
     ListBox listBox = new ListBox();
 
@@ -65,12 +66,14 @@ public class PanelViewComposite extends Composite {
     public PanelViewComposite(PanelViewConfig panelViewConfig){
 
         this.panelViewConfig = panelViewConfig;
-        panel = ourUiBinder.createAndBindUi(this);
+        FlowPanel panel = ourUiBinder.createAndBindUi(this);
         panel.setWidth("100%");
         initWidget(panel);
         String path = HTML_FILES_PATH + panelViewConfig.getStartFile();
         frame.setUrl(path);
         setupListBox();
+        ClientFactory clientFactory = SimpleClientFactory.getInstance();
+        clientFactory.getEventBus().fireEvent(new InterfaceLoadCompleteEvent());
 
     }
 

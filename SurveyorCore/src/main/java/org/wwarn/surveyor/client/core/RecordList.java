@@ -42,7 +42,6 @@ import java.util.*;
 /**
  * Record list holds a list of records, which in turn hold a list of fields
  * Effectively a table data structure
- * Constructor takes a gwt datatable
  * User: nigel
  * Date: 19/07/13
  * Time: 11:33
@@ -169,6 +168,16 @@ public class RecordList implements IsSerializable, Serializable{
             return this.fields[index];
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Record that = (Record) o;
+            return (Arrays.equals(this.fields, that.fields));
+
+        }
+
             @Override
         public String toString() {
             return "Record{" +
@@ -179,5 +188,6 @@ public class RecordList implements IsSerializable, Serializable{
         public String[] getFields() {
             return fields;
         }
+
     }
 }

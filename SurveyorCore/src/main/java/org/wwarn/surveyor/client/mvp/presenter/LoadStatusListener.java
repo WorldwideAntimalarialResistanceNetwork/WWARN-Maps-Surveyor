@@ -54,7 +54,6 @@ public class LoadStatusListener {
 
     // Event Bus bindings
     interface LoadEventBinder extends EventBinder<LoadStatusListener> {};
-    private LoadEventBinder eventBinder = GWT.create(LoadEventBinder.class);
 
     private static LoadStatusListener ourInstance = new LoadStatusListener();
 
@@ -63,6 +62,7 @@ public class LoadStatusListener {
     }
 
     LoadStatusListener() {
+        LoadEventBinder eventBinder = GWT.create(LoadEventBinder.class);
         eventBinder.bindEventHandlers(this, SimpleClientFactory.getInstance().getEventBus());
     }
 

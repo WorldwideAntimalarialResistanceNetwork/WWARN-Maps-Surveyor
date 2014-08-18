@@ -37,7 +37,6 @@ import com.google.gwt.xml.client.*;
 import org.wwarn.mapcore.client.common.types.FilterConfigVisualization;
 import org.wwarn.mapcore.client.components.customwidgets.facet.FacetType;
 import org.wwarn.surveyor.client.model.*;
-import org.wwarn.mapcore.client.utils.EventLogger;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.mapcore.client.utils.XMLUtils;
 
@@ -66,9 +65,9 @@ public class XMLApplicationLoader implements ApplicationContext {
         Document document = XMLParser.parse(xmlConfig);
         Element documentElement = document.getDocumentElement();
 
-        EventLogger.logEvent("org.wwarn.mapcore.client.core.XMLApplicationLoader", "xmlConfigParse", "begin");
+//        EventLogger.logEvent("org.wwarn.mapcore.client.core.XMLApplicationLoader", "xmlConfigParse", "begin");
         (new ConfigElementParser()).parse(documentElement);
-        EventLogger.logEvent("org.wwarn.mapcore.client.core.XMLApplicationLoader", "xmlConfigParse", "begin");
+//        EventLogger.logEvent("org.wwarn.mapcore.client.core.XMLApplicationLoader", "xmlConfigParse", "begin");
     }
 
 
@@ -183,9 +182,42 @@ public class XMLApplicationLoader implements ApplicationContext {
                 else if(viewNode.getNodeName().equals("panel")){
                     viewConfigs.add(parsePanelNode(viewNode));
                 }
+                // View template
+                else if(viewNode.getNodeName().equals("viewTemplate")){
+                    viewConfigs.add(parseViewTemplateNode(viewNode));
+                }
             }
 
             configs.put(ResultsViewConfig.class.getName(), viewConfigs);
+        }
+
+        private ViewConfig parseViewTemplateNode(Node viewNode) throws XMLUtils.ParseException {
+            if(viewNode == null){ throw new IllegalArgumentException("Expected non null view node");}
+            final NodeList childNodes = viewNode.getChildNodes();
+            boolean hasVisitedLayoutNode = false;
+            Node layoutNode = null;
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node node = childNodes.item(i);
+                //layout node
+                if(!node.getNodeName().toLowerCase().contains("layout") && node.getNodeType()== Node.ELEMENT_NODE){
+                    if(hasVisitedLayoutNode) break;
+                    //only singe layout node expected
+                    layoutNode = node;
+                    hasVisitedLayoutNode = true;
+                }
+
+            }
+            if(layoutNode==null)throw new IllegalArgumentException("Expected a layout node, not found");
+            TemplateViewNodesConfig templateViewNodesConfig = new TemplateViewNodesConfig();
+            try {
+                parseTemplateViewNodes(viewNode, templateViewNodesConfig);
+            } catch (XMLUtils.ParseException e) {
+                throw new IllegalStateException(e);
+            }
+            String name = getAttributeByName(viewNode, "name");
+
+            final String label = getNodeCDATAValue(getNodeByName(viewNode, "label"));
+            return new TemplateViewConfig(templateViewNodesConfig, name, label);
         }
 
         /**
@@ -215,11 +247,13 @@ public class XMLApplicationLoader implements ApplicationContext {
             final String sortOrder = StringUtils.ifEmpty(getAttributeByName(columnsNode, "sortOrder"), "desc");
             final String pageSize = StringUtils.ifEmpty(getAttributeByName(tableNode, "pageSize"), "0");
             final String filterBy = StringUtils.ifEmpty(getAttributeByName(tableNode, "filterBy"), "");
+            final String type = StringUtils.ifEmpty(getAttributeByName(tableNode, "type"), "CLIENT_TABLE");
 
             tableViewConfig.setSortColumn(sortOnColumn);
             tableViewConfig.setSortOrder(sortOrder);
             tableViewConfig.setPageSize(Integer.parseInt(pageSize));
             tableViewConfig.setFilterBy(filterBy);
+            tableViewConfig.setType(TableViewConfig.TableType.valueOf(type));
             NodeList childNodes = columnsNode.getChildNodes();
 
             for (int i = 0; i < childNodes.getLength(); i++) {
@@ -254,9 +288,11 @@ public class XMLApplicationLoader implements ApplicationContext {
         private ViewConfig parseMapNode(Node mapNode) throws XMLUtils.ParseException {
             String name = getAttributeByName(mapNode, "name");
             String initialZoomLevelRaw = StringUtils.ifEmpty(getAttributeByName(mapNode, "initialZoomLevel"), "2");
-            String initialMapCenterCoordsLatLonRaw = StringUtils.ifEmpty(getAttributeByName(mapNode, "initialMapCenterCoordsLatLon"),"1.0,1.0");
+            String initialMapCenterCoordsLatLonRaw = StringUtils.ifEmpty(getAttributeByName(mapNode, "initialMapCenterCoordsLatLon"), "1.0,1.0");
             final String[] coords = initialMapCenterCoordsLatLonRaw.split(",");
-            if(coords.length<2){ throw  new IllegalArgumentException("Coordinates should be of the format \"lat,lon\"");}
+            if (coords.length < 2) {
+                throw new IllegalArgumentException("Coordinates should be of the format \"lat,lon\"");
+            }
             final double initialLat = Double.parseDouble(coords[0]);
             final double initialLon = Double.parseDouble(coords[1]);
 
@@ -266,37 +302,141 @@ public class XMLApplicationLoader implements ApplicationContext {
             String imageLegendRelativePath = "";
             Integer imageLegendPositionFromTopInPixels = null;
             NodeList childNodes = mapNode.getChildNodes();
+            TemplateViewNodesConfig templateViewNodesConfig = null;
             for (int i = 0; i < childNodes.getLength(); i++) {
-                try{
+                try {
                     Node mapChildNode = childNodes.item(i);
-                    if(mapChildNode.getNodeName().equals("legend")){
+                    if (mapChildNode.getNodeName().equals("legend")) {
                         Node mapLegendNode = mapChildNode;
                         imageLegendRelativePath = getAttributeByName(mapLegendNode, "relativeImagePath");
                         imageLegendPositionFromTopInPixels = Integer.valueOf(getAttributeByName(mapLegendNode, "positionFromTopInPixels"));
                     }
-                    if(mapChildNode.getNodeName().equals("marker")){
+                    if (mapChildNode.getNodeName().equals("marker")) {
                         Node markerNode = mapChildNode;
 
                         NodeList markerNodeChildren = markerNode.getChildNodes();
                         for (int j = 0; j < markerNodeChildren.getLength(); j++) {
-                            Node markerChildNodes = markerNodeChildren.item(j);
-                            if(markerChildNodes.getNodeName().equals("lonField")){
-                                Node nodeLonField = markerChildNodes;
+                            Node markerChildNode = markerNodeChildren.item(j);
+                            if (markerChildNode.getNodeName().equals("lonField")) {
+                                Node nodeLonField = markerChildNode;
                                 lonFieldName = getAttributeByName(nodeLonField, "fieldName");
                             }
-                            if(markerChildNodes.getNodeName().equals("latField")){
-                                Node nodeLatField = markerChildNodes;
+                            if (markerChildNode.getNodeName().equals("latField")) {
+                                Node nodeLatField = markerChildNode;
                                 latFieldName = getAttributeByName(nodeLatField, "fieldName");
+                            }
+                            System.out.println(markerChildNode.getNodeName());
+                            if (markerChildNode.getNodeName().equals("InfoWindowTemplate")) {
+                                Node infoWindowTemplate = markerChildNode;
+                                templateViewNodesConfig = parseInfoWindowTemplate(infoWindowTemplate);
                             }
                         }
                     }
-                }catch (Exception e){
+
+                } catch (Exception e) {
                     XMLUtils.ParseException parseException = new XMLUtils.ParseException("Unable to parse map node", e);
                     e.printStackTrace();
                     throw parseException;
                 }
             }
-            return new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")));
+
+            final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig);
+            configs.put(MapViewConfig.class.getName(), mapViewConfig);
+            return mapViewConfig;
+        }
+
+        private TemplateViewNodesConfig parseInfoWindowTemplate(Node infoWindowTemplate) throws XMLUtils.ParseException{
+            final TemplateViewNodesConfig templateViewNodesConfig = new TemplateViewNodesConfig();
+            //data="CLON, CLAT, PID"
+            final String data = getAttributeByName(infoWindowTemplate, "dataSourceRestrictedByCurrentMarkerContextFields");
+            final String normaliseDataNode = normaliseDataNode(data);
+            templateViewNodesConfig.setDataSource(normaliseDataNode);
+
+            parseTemplateViewNodes(infoWindowTemplate, templateViewNodesConfig);
+
+            return templateViewNodesConfig;
+        }
+
+        private void parseTemplateViewNodes(Node infoWindowTemplate, final TemplateViewNodesConfig templateViewNodesConfig) throws XMLUtils.ParseException {
+            try{
+                // parse as a tree based structure
+                // walk the nodes
+                final TemplateViewNodesConfig.TemplateNode[] lastNode = new TemplateViewNodesConfig.TemplateNode[1];
+
+                XMLUtils.nodeWalker(infoWindowTemplate.getChildNodes(), new XMLUtils.NodeElementParser() {
+                    @Override
+                    public void parse(Node item) throws XMLUtils.ParseException {
+                        final String nodeName = item.getNodeName();
+                        switch (nodeName){
+                            case "simpleLayout":
+                            case "splitLayout":
+                                // build branch
+                                lastNode[0] = new TemplateViewNodesConfig.LayoutNode(nodeName);
+                                templateViewNodesConfig.setRootTemplateNode(lastNode[0]);
+                                break;
+                            case "left":
+                            case "right":
+                                //build branch and check for text children
+                                final TemplateViewNodesConfig.LayoutNode innerLayoutNode = new TemplateViewNodesConfig.LayoutNode(nodeName);
+                                if(lastNode[0].getName().equals("splitLayout")) {
+                                    lastNode[0].add(innerLayoutNode);
+                                }else{
+                                    lastNode[0].getParent().add(innerLayoutNode);
+                                }
+                                final NodeList childNodes = item.getChildNodes();
+                                StringBuilder stringBuilder = new StringBuilder();
+                                for (int i = 0; i < childNodes.getLength(); i++) {
+                                    final Node node = childNodes.item(i);
+                                    if(node.getNodeType() == Node.TEXT_NODE){
+                                        if(!StringUtils.isEmpty(node.getNodeValue())) {
+                                            stringBuilder.append(node.getNodeValue());
+                                        }
+                                    }
+                                }
+                                final String html = stringBuilder.toString();
+                                if(!StringUtils.isEmpty(html)){
+                                    innerLayoutNode.add(new TemplateViewNodesConfig.HtmlNode(html));
+                                }
+                                lastNode[0] = innerLayoutNode;
+
+                                break;
+                            case "plot":
+                                final String geom = getAttributeByName(item, "geom");
+                                final String data = getAttributeByName(item, "data");
+                                final String x = getAttributeByName(item, "x");
+                                final String y = getAttributeByName(item, "y");
+                                final String xLabel = getAttributeByName(item, "xLabel");
+                                final String yLabel = getAttributeByName(item, "yLabel");
+                                final String mainTitle = getAttributeByName(item, "mainTitle");
+                                final String subTitle = getAttributeByName(item, "subTitle");
+                                final TemplateViewNodesConfig.PlottingNode plottingNode = new TemplateViewNodesConfig.PlottingNode(geom, data, x, y, xLabel, yLabel, mainTitle, subTitle);
+                                lastNode[0].add(plottingNode);
+                                break;
+                            case "label":
+                                break;
+                            default:
+                                throw new XMLUtils.ParseException("Node unexpected"+ nodeName);
+
+                        }
+                    }
+                });
+
+            }catch (Exception e){
+                XMLUtils.ParseException parseException = new XMLUtils.ParseException("Unable to parse InfoWindowTemplate node", e);
+                e.printStackTrace();
+                throw parseException;
+            }
+
+        }
+
+        private String normaliseDataNode(String data) {
+            final String[] dataRaw = data.split(",");
+            StringBuilder sbStr = new StringBuilder();
+            for (int i = 0; i < dataRaw.length; i++) {
+                if(i>0) sbStr.append(",");
+                sbStr.append(dataRaw[i].trim());
+            }
+            return sbStr.toString();
         }
 
         private ViewConfig parsePanelNode(Node panelNode) throws XMLUtils.ParseException {
@@ -460,7 +600,8 @@ public class XMLApplicationLoader implements ApplicationContext {
         private void parseFilterBySampleSize(FilterConfig filterConfig, Node filterNode){
             int start = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "start"), "0"));
             int end = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "end"), "400"));
-            filterConfig.addSampleSizeFilter(filterColumn, filterFieldName, filterFieldLabel, start, end);
+            int initialValue = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "initialValue"), "0"));
+            filterConfig.addSampleSizeFilter(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue);
         }
 
     }

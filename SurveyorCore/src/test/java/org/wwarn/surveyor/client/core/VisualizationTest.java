@@ -113,7 +113,7 @@ public abstract class VisualizationTest extends GWTTestCase {
     }
 
 
-    protected String getVisualizationPackage() {
+    protected String[] getVisualizationPackage() {
         throw new UnsupportedOperationException("Please Override getVisualizationPackage");
     }
 

@@ -29,7 +29,7 @@
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <gae.version>1.9.6</gae.version>
         <gae.home>${settings.localRepository}/com/google/appengine/appengine-java-sdk/${gae.version}/appengine-java-sdk-${gae.version}</gae.home>
-        <surveyor.core.version>1.7.2-SNAPSHOT</surveyor.core.version>
+        <surveyor.core.version>1.7.4-SNAPSHOT</surveyor.core.version>
     </properties>
 
     <build>
@@ -297,10 +297,12 @@
         </dependency>
 
         <!-- Surveyor dependency -->
+        <!-- TODO update this to the correct version -->
+
         <dependency>
-            <groupId>org.wwarn.mapssurveyor</groupId>
+            <groupId>org.wwarn.surveyor</groupId>
             <artifactId>SurveyorCore</artifactId>
-            <version>1.7.2-SNAPSHOT</version>
+            <version>${surveyor.core.version}</version>
         </dependency>
 
 

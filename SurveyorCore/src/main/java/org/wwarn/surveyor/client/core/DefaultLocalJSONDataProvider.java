@@ -164,11 +164,11 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
         // only grab keys that are present in the schema
         dataTypeUtility.setupDataTableColumns(schema, dataTable);
 
-        EventLogger.logEvent("DefaultLocalJSONDataProvider", "setupDataTableRowLength", "begin");
+//        EventLogger.logEvent("DefaultLocalJSONDataProvider", "setupDataTableRowLength", "begin");
         setupDataTableRowLength(jsonArray.size());
-        EventLogger.logEvent("DefaultLocalJSONDataProvider", "setupDataTableRowLength", "end");
+//        EventLogger.logEvent("DefaultLocalJSONDataProvider", "setupDataTableRowLength", "end");
 
-        EventLogger.logEvent("DefaultLocalJSONDataProvider", "loadDataLoop", "begin");
+//        EventLogger.logEvent("DefaultLocalJSONDataProvider", "loadDataLoop", "begin");
         // for each row in array
         final int size = jsonArray.size();
         final int[] rowIndex = {0};
@@ -179,7 +179,7 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
 
 
 //        for (int rowIndex = 0; rowIndex < size; rowIndex++) {
-            EventLogger.logEvent("DefaultLocalJSONDataProvider", "forRowIdxHeader"+rowIndex, "begin");
+//            EventLogger.logEvent("DefaultLocalJSONDataProvider", "forRowIdxHeader"+rowIndex, "begin");
 
                 JSONValue jsonValue = jsonArray.get(rowIndex[0]);
                 JSONObject jsonObject = jsonValue.isObject();
@@ -187,9 +187,9 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
                 // for each field in row, map each field to internal structure
                 Set<String> keys = jsonObject.keySet();
 
-            EventLogger.logEvent("DefaultLocalJSONDataProvider", "forRowIdxHeader"+rowIndex[0], "end");
+//            EventLogger.logEvent("DefaultLocalJSONDataProvider", "forRowIdxHeader"+rowIndex[0], "end");
 
-            EventLogger.logEvent("DefaultLocalJSONDataProvider", "forRowIdxBody"+rowIndex[0], "begin");
+//            EventLogger.logEvent("DefaultLocalJSONDataProvider", "forRowIdxBody"+rowIndex[0], "begin");
 
                 // setup rows
                 for (String key : keys) {
@@ -231,7 +231,7 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
 //                EventLogger.logEvent("DefaultLocalJSONDataProvider", "schema.hasColumn"+key, "end");
 //                EventLogger.logEvent("DefaultLocalJSONDataProvider", "rowLoopBody"+key, "end");
 //                }
-            EventLogger.logEvent("DefaultLocalJSONDataProvider", "forRowIdxBody"+rowIndex[0], "end");
+//            EventLogger.logEvent("DefaultLocalJSONDataProvider", "forRowIdxBody"+rowIndex[0], "end");
 
         }
                 ++rowIndex[0];
@@ -249,7 +249,7 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
             }
         });
 
-        EventLogger.logEvent("DefaultLocalJSONDataProvider", "loadDataLoop", "end");
+//        EventLogger.logEvent("DefaultLocalJSONDataProvider", "loadDataLoop", "end");
     }
 
     // Stop the timeout timer if it is running
@@ -271,7 +271,7 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
 
     @Override
     public void query(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> queryResultCallBack) {
-        EventLogger.logEvent("org.wwarn.surveyor.client.core.DefaultLocalJSONDataProvider", "query(org.wwarn.surveyor.client.core.FilterQuery, java.lang.String[])", "begin");
+//        EventLogger.logEvent("org.wwarn.surveyor.client.core.DefaultLocalJSONDataProvider", "query(org.wwarn.surveyor.client.core.FilterQuery, java.lang.String[])", "begin");
 
         validateFacetFields(facetFields);
         // apply filter query to data dataTable
@@ -280,7 +280,7 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
         final AbstractDataTable table = (filterQuery.fetchAllDistinctFieldValues)?dataTable:filteredResults.getDataTable();
         FacetList facetList = calculateFacetList(table, facetFields);
 
-        EventLogger.logEvent("org.wwarn.surveyor.client.core.DefaultLocalJSONDataProvider", "query(org.wwarn.surveyor.client.core.FilterQuery, java.lang.String[])", "end");
+//        EventLogger.logEvent("org.wwarn.surveyor.client.core.DefaultLocalJSONDataProvider", "query(org.wwarn.surveyor.client.core.FilterQuery, java.lang.String[])", "end");
         final QueryResult queryResult = new QueryResult(filteredResults.getRecordList(), facetList);
         queryResultCallBack.onSuccess(queryResult);
     }
@@ -310,9 +310,9 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
 
     public JSONArray convertToJSONArray(String jsonData) {
 
-        EventLogger.logEvent("AsyncDataSourceLoader", "parseJSON", "begin");
+//        EventLogger.logEvent("AsyncDataSourceLoader", "parseJSON", "begin");
         JSONValue jsonValue = parseJSONFromString(jsonData);
-        EventLogger.logEvent("AsyncDataSourceLoader", "parseJSON", "end");
+//        EventLogger.logEvent("AsyncDataSourceLoader", "parseJSON", "end");
 
         return jsonValue.isArray();
     }
@@ -364,6 +364,7 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
      * Created by nigelthomas on 05/03/2014.
      */
     private class AsyncDataSourceLoader {
+        // TODO repeated all over the place!!
         private ClientFactory clientFactory = SimpleClientFactory.getInstance();
 
         final Resources res = Resources.IMPL;

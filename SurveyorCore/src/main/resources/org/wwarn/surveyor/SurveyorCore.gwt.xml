@@ -7,18 +7,18 @@
   %%
   Redistribution and use in source and binary forms, with or without modification,
   are permitted provided that the following conditions are met:
-  
+
   1. Redistributions of source code must retain the above copyright notice, this
      list of conditions and the following disclaimer.
-  
+
   2. Redistributions in binary form must reproduce the above copyright notice,
      this list of conditions and the following disclaimer in the documentation
      and/or other materials provided with the distribution.
-  
+
   3. Neither the name of the University of Oxford nor the names of its contributors
      may be used to endorse or promote products derived from this software without
      specific prior written permission.
-  
+
   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,30 +33,31 @@
   -->
 
 <module>
-  <!-- Inherit the core Web Toolkit stuff.                        -->
-  <!--<inherits name='com.google.gwt.user.User' />-->
+    <!-- Inherit the core Web Toolkit stuff.                        -->
+    <!--<inherits name='com.google.gwt.user.User' />-->
 
-  <!-- We need the JUnit module in the main module,               -->
-  <!-- otherwise eclipse complains (Google plugin bug?)           -->
-  <inherits name='com.google.gwt.junit.JUnit' />
+    <!-- We need the JUnit module in the main module,               -->
+    <!-- otherwise eclipse complains (Google plugin bug?)           -->
+    <inherits name='com.google.gwt.junit.JUnit' />
 
-  <!-- Inherit the default GWT style sheet.  You can change       -->
-  <!-- the theme of your GWT application by uncommenting          -->
-  <!-- any one of the following lines.                            -->
-  <!--<inherits name='com.google.gwt.user.theme.standard.Standard' />-->
-  <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
-  <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+    <!-- Inherit the default GWT style sheet.  You can change       -->
+    <!-- the theme of your GWT application by uncommenting          -->
+    <!-- any one of the following lines.                            -->
+    <!--<inherits name='com.google.gwt.user.theme.standard.Standard' />-->
+    <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+    <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
-  <!-- Other module inherits                                      -->
-  <inherits name="org.wwarn.mapcore.Map"/>
-  <inherits name="com.google.gwt.visualization.Visualization"/>
-  <inherits name='com.google.web.bindery.event.EventBinder'/>
+    <!-- Other module inherits                                      -->
+    <inherits name="org.wwarn.mapcore.Map"/>
+    <inherits name="com.google.gwt.visualization.Visualization"/>
+    <inherits name='com.google.web.bindery.event.EventBinder'/>
+    <!--<inherits name='com.github.gwtd3.D3' />-->
 
     <!-- Specify the paths for translatable code                    -->
-  <source path='client' />
-  <source path='shared' />
+    <source path='client' />
+    <source path='shared' />
 
-  <!-- Configuration for the app -->
+    <!-- Configuration for the app -->
 
     <replace-with class="org.wwarn.surveyor.client.mvp.SimpleClientFactory">
     	<when-type-is class="org.wwarn.surveyor.client.mvp.ClientFactory"/>
@@ -64,7 +65,7 @@
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerHoverLabelBuilder">
     	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerHoverLabelBuilder"/>
     </replace-with>
-    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerClickInfoWindowBuilder">
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.DefaultMarkerClickInfoWindowBuilder">
     	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerClickInfoWindowBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.DefaultTableRecordsFilter">
@@ -74,13 +75,13 @@
     	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerIconPathBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerDisplayFilter">
-            	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerDisplayFilter"/>
+    	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerDisplayFilter"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerCoordinateSource">
     	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerCoordinateSource"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.ClientBundleConfigLoader">
-            	<when-type-is class="org.wwarn.surveyor.client.mvp.ConfigLoader"/>
+    	<when-type-is class="org.wwarn.surveyor.client.mvp.ConfigLoader"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.core.ServerSideSearchDataProvider.DefaultInitialFilterQuery">
         <when-type-is class="org.wwarn.surveyor.client.core.InitialFilterQuery"/>

@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.model;
  * #L%
  */
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import org.wwarn.surveyor.client.model.ViewConfig;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
@@ -54,6 +55,10 @@ public class TableViewConfig implements ViewConfig {
     private String label;
     private int pageSize;
     private String filterBy;
+
+
+
+    private TableType type;
 
     private TableViewConfig(){};
 
@@ -116,7 +121,15 @@ public class TableViewConfig implements ViewConfig {
         this.filterBy = filterBy;
     }
 
-    public static class TableColumn {
+    public TableType getType() {
+        return type;
+    }
+
+    public void setType(TableType type) {
+        this.type = type;
+    }
+
+    public static class TableColumn implements IsSerializable {
         private String fieldName, fieldTitle, hyperLinkField, dateFormat;
 
         public TableColumn(String fieldName, String fieldTitle, String hyperLinkField, String dateFormat) {
@@ -127,6 +140,9 @@ public class TableViewConfig implements ViewConfig {
             this.fieldTitle = fieldTitle;
             this.hyperLinkField = hyperLinkField;
             this.dateFormat = dateFormat;
+        }
+
+        public TableColumn() {
         }
 
         public String getFieldName() {
@@ -148,9 +164,8 @@ public class TableViewConfig implements ViewConfig {
 
             TableColumn that = (TableColumn) o;
 
-            if (!fieldName.equals(that.fieldName)) return false;
+            return fieldName.equals(that.fieldName);
 
-            return true;
         }
 
         @Override
@@ -161,5 +176,13 @@ public class TableViewConfig implements ViewConfig {
         public String getDateFormat() {
             return dateFormat;
         }
+    }
+
+    public enum TableType{
+        //it will create a TableViewComposite
+        CLIENT_TABLE,
+
+        //It will create a CellTableServer
+        SERVER_TABLE
     }
 }

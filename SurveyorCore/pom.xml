@@ -13,7 +13,7 @@
     <groupId>org.wwarn.mapssurveyor</groupId>
     <artifactId>SurveyorCore</artifactId>
     <packaging>jar</packaging>
-    <version>1.7.2-SNAPSHOT</version>
+    <version>1.7.4-SNAPSHOT</version>
     <name>SurveyorCore</name>
 
     <inceptionYear>2013</inceptionYear>
@@ -38,6 +38,7 @@
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <map.core.version>2.7.1-NVT-RC-SNAPSHOT</map.core.version>
+        <javaVersion>1.7</javaVersion>
     </properties>
 
     <repositories>

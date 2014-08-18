@@ -1,8 +1,8 @@
 SURVEYOR OVERVIEW
 
 The use of the SURVEYOR goes beyond geo visualisation of research data. The platform
-can, for instance, facilitate functions such such as decision support, statistical
-mapping, crime surveillance etc.
+can, for instance, facilitate functions such as decision support, statistical reporting,
+public health surveillance, health research, and cost analysis.
 
 
 Original requirements:

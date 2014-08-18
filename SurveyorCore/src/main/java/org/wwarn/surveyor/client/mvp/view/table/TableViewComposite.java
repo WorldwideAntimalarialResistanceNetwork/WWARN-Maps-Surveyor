@@ -48,6 +48,7 @@ import com.google.web.bindery.event.shared.binder.EventHandler;
 import org.wwarn.surveyor.client.core.DataSchema;
 import org.wwarn.surveyor.client.core.DataType;
 import org.wwarn.surveyor.client.core.RecordList;
+import org.wwarn.surveyor.client.event.InterfaceLoadCompleteEvent;
 import org.wwarn.surveyor.client.model.TableViewConfig;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
@@ -57,6 +58,7 @@ import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A view to show results in a Tabular format
@@ -81,11 +83,9 @@ public class TableViewComposite extends Composite {
     interface ResultChangedEventBinder extends EventBinder<TableViewComposite> {};
     private ResultChangedEventBinder eventBinder = GWT.create(ResultChangedEventBinder.class);
 
-    public TableViewComposite(TableViewConfig viewConfig) {
-        if(!(viewConfig instanceof TableViewConfig)){
-            throw new IllegalArgumentException("Expected Table View Config");
-        }
-        this.tableConfig =  viewConfig;
+    public TableViewComposite(TableViewConfig tableViewConfig) {
+        Objects.requireNonNull(tableViewConfig);
+        this.tableConfig =  tableViewConfig;
         rootElement = ourUiBinder.createAndBindUi(this);
         initWidget(rootElement);
         eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
@@ -128,6 +128,7 @@ public class TableViewComposite extends Composite {
 
         Table table = new Table(dataView, options);
         rootElement.add(table);
+        clientFactory.getEventBus().fireEvent(new InterfaceLoadCompleteEvent());
     }
 
     private TableRecordsFilter getTableRecordsFilter() {
@@ -202,7 +203,6 @@ public class TableViewComposite extends Composite {
                     tableFunctions.resolve(rowIndex, tableColumnIndex);
                 }else{
                     // get column type
-                    int abstractTableColumnIndex = schema.getColumnIndex(columnFieldNameForCurrentRecord);
                     DataType columnType = schema.getType(columnFieldNameForCurrentRecord);
                     final String cellValue = currentRecord.getValueByFieldName(columnFieldNameForCurrentRecord);
                     switch (columnType){
@@ -224,7 +224,7 @@ public class TableViewComposite extends Composite {
                             table.setValue(rowIndex, tableColumnIndex, valueDouble);
                             break;
                         case String:
-                            String valueStringRaw = cellValue;
+                            String valueStringRaw = StringUtils.ifEmpty(cellValue,"");
                             String valueStringFormatted = valueStringRaw;
                             if(!StringUtils.isEmpty(tableColumn.getHyperLinkField())){
                                 int abstractTableColumnIndexForHyperLinkField = schema.getColumnIndex(tableColumn.getHyperLinkField());
@@ -255,7 +255,7 @@ public class TableViewComposite extends Composite {
     }
 
     private String addSpanAttribute(String valueStringRaw, String valueString) {
-        return "<span class=\"tableContentHrefOrderHack\" title=\""+ SafeHtmlUtils.htmlEscape(valueStringRaw)+"\">"+SafeHtmlUtils.htmlEscapeAllowEntities(valueString)+"</span>";
+        return "<span class=\"tableContentHrefOrderHack\" title=\""+SafeHtmlUtils.htmlEscape(valueStringRaw)+"\">"+valueString+"</span>";
     }
 
     @EventHandler

@@ -535,6 +535,6 @@ html>body .gwt-DecoratorPanel {
 .google-visualization-table-table * {
     margin: 0;
     vertical-align: bottom !important;
-    padding: 1 !important;
+    padding: 1px !important;
 }
 

@@ -35,6 +35,7 @@ package org.wwarn.surveyor.client;
 
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.visualization.client.VisualizationUtils;
@@ -49,28 +50,37 @@ import org.wwarn.surveyor.client.mvp.view.MainPanelView;
  */
 public class Surveyor implements EntryPoint {
 
-  /**
-   * This is the entry point method.
-   */
-  public void onModuleLoad() {
-      //load map v3 api
-      MapLoadUtil.loadMapApi(new Runnable() {
-          public void run() {
-              loadVisualisationApi();
-          }
-      });
-  }
+    /**
+     * This is the entry point method.
+     */
+    public void onModuleLoad() {
+        GWT.setUncaughtExceptionHandler(new LoggingUnCaughtExceptionHandler());
+        //load map v3 api
+        MapLoadUtil.loadMapApi(new Runnable() {
+            public void run() {
+                loadVisualisationApi();
+            }
+        });
+    }
+
+    static class LoggingUnCaughtExceptionHandler implements GWT.UncaughtExceptionHandler{
+
+        @Override
+        public void onUncaughtException(Throwable throwable) {
+            GWT.log("Uncaught exception", throwable);
+        }
+    }
 
     private void loadVisualisationApi() {
-      // load visualisation api ... before loading any panels..
-      VisualizationUtils.loadVisualizationApi(new Runnable() {
-          public void run() {
-          EventLogger.logEvent("org.wwarn.surveyor.client.Surveyor", "onModuleLoad", "begin");
-          // setup controller with reference to main panel
-          new SurveyorAppController(createLayout());
-          EventLogger.logEvent("org.wwarn.surveyor.client.Surveyor", "onModuleLoad", "end");
-          }
-      }, Table.PACKAGE);
+        // load visualisation api ... before loading any panels..
+        VisualizationUtils.loadVisualizationApi(new Runnable() {
+            public void run() {
+//                EventLogger.logEvent("org.wwarn.surveyor.client.Surveyor", "onModuleLoad", "begin");
+                // setup controller with reference to main panel
+                new SurveyorAppController(createLayout());
+//                EventLogger.logEvent("org.wwarn.surveyor.client.Surveyor", "onModuleLoad", "end");
+            }
+        }, Table.PACKAGE);
     }
 
     private MainPanelView createLayout() {

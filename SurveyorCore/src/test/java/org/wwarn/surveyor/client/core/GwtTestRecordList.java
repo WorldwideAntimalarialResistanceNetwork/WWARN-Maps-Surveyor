@@ -58,8 +58,8 @@ public class GwtTestRecordList extends VisualizationTest {
     private int rowIndex = 0;
 
     @Override
-    protected String getVisualizationPackage() {
-        return Table.PACKAGE;    //Must Override
+    protected String[] getVisualizationPackage() {
+        return new String[]{Table.PACKAGE};    //Must Override
     }
 
     public String getModuleName() {

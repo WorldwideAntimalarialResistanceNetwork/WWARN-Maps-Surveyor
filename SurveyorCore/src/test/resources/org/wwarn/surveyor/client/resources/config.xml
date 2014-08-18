@@ -69,10 +69,29 @@
             <marker>
                 <lonField fieldName="CLON"/>
                 <latField fieldName="CLAT"/>
+                <InfoWindowTemplate dataSourceRestrictedByCurrentMarkerContextFields="CLON, CLAT">
+                    <splitLayout>
+                        <left>
+                            <!--
+                             plot is inspired by qplot from ggplot2
+                             Attributes
+                             geom: Short for geometry, supports bar, jitter, line, boxplot
+                             data: in this context data fetches all related records by matching to current context record on number of field properties, effectively calling getRelatedRecordsByFields(). Default behaviour for data attribute when absent is to get all records.
+                             TODO:
+                             * Data transformations may be helpful, such as sorting
+                             * Support faceting to break up the data into subsets and allow user to select a subset
+                             * Stats support to summarise the data into useful ways, binning and counting observations for histograms
+                             * Supporting layer based composition like ggplot2 does!! Would require using a more low level drawing api and migrating ggplot logic to js..
+                            -->
+                            <plot geom="bar" data="CLON, CLAT, PID" x="STN" y="OTN" xLabel="x axis" yLabel="y axis" mainTitle="Bar chart example" subTitle="Chart sub title"/>
+                        </left>
+                        <right>
+                            The bar chart shows the the decline in drug effectiveness as time increases
+                        </right>
+                    </splitLayout>
+                </InfoWindowTemplate>
             </marker>
-            <label>
 
-            </label>
         </map>
         <table name="Report table">
             <columns>
@@ -142,7 +161,7 @@
                 <filterLabel fieldValue="Laboratory assembled collections">Studies describing samples that were put together in laboratories to answer chemical rather than epidemiological questions</filterLabel>
             </filterValueLabelMap>
 
-    </filter>
+        </filter>
         <filter field="QI" name="Quality classification">
             <label>
                 We use, unless otherwise specified in the report, the term 'falsified' as a synonym for

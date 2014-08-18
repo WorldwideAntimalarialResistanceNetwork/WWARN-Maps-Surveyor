@@ -140,7 +140,7 @@ public class DataTableExtensions {
         Map<String, FilterQuery.FilterQueryElement> filterQueries = filterQuery.getFilterQueries();
         for (String key : filterQueries.keySet()){
             DataType type = schema.getType(key);
-            JavaScriptObject javaScriptObject = null;
+            JavaScriptObject javaScriptObject;
             int columnIndex = schema.getColumnIndex(key);
 
             FilterQuery.FilterQueryElement filterQueryElement = filterQueries.get(key);

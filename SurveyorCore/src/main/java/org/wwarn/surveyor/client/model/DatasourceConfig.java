@@ -44,8 +44,8 @@ import java.util.Map;
  */
 public class DatasourceConfig implements Config {
     private final DataSourceType dataSourceType;
-    String filename;
-    SchemaConfig config = new SchemaConfig();
+    private final String filename;
+    private final SchemaConfig config = new SchemaConfig();
 
     public DataSourceType getDataSourceType() {
         return dataSourceType;

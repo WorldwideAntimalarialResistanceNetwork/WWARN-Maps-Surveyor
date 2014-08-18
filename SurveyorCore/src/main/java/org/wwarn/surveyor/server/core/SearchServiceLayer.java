@@ -34,6 +34,9 @@ package org.wwarn.surveyor.server.core;
  */
 
 import org.wwarn.surveyor.client.core.*;
+import org.wwarn.surveyor.client.model.TableViewConfig;
+
+import java.util.List;
 
 /**
  * Created by nigelthomas on 03/06/2014.
@@ -46,5 +49,7 @@ public interface SearchServiceLayer {
      */
     public void init(DataSchema dataSchema, GenericDataSource dataSource) throws SearchException;
     public QueryResult query(FilterQuery filterQuery, String[] facetFields) throws SearchException;
+    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length) throws SearchException;
+
 
 }

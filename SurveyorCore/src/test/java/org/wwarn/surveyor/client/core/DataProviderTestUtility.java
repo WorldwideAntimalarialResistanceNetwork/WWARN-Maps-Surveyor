@@ -44,11 +44,11 @@ public class DataProviderTestUtility {
     public DataProviderTestUtility() {
     }
 
-    String[] getSelectorList() {
+    public String[] getSelectorList() {
         return new String[]{"PUB", "PTN", "QI"};
     }
 
-    DataSchema fetchSampleDataSchema() {
+    public DataSchema fetchSampleDataSchema() {
         String dataSourceType = DatasourceConfig.DataSourceType.LocalClientSideDataProvider.name();
         DatasourceConfig dataSourceConfig = new DatasourceConfig("f", dataSourceType);
         DataSchema schema = new DataSchema(dataSourceConfig);
@@ -69,5 +69,12 @@ public class DataProviderTestUtility {
 
     public JSONArray getJSONArray() {
         return JSONParser.parseStrict(getJSON()).isArray();
+    }
+
+    public interface DataProviderSource{
+        final public DataProviderTestUtility testUtility = new DataProviderTestUtility();
+        public JSONArray jsonArray = testUtility.getJSONArray();
+        public DataSchema schema = testUtility.fetchSampleDataSchema();
+        DataProvider getDataProvider();
     }
 }

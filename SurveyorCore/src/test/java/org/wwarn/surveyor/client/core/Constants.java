@@ -74,6 +74,27 @@ public interface Constants {
             "            <marker>\n" +
             "                <lonField fieldName=\"CLON\"/>\n" +
             "                <latField fieldName=\"CLAT\"/>\n" +
+            "                <InfoWindowTemplate dataSourceRestrictedByCurrentMarkerContextFields=\"CLON, CLAT\">\n" +
+            "                        <splitLayout>\n" +
+            "                            <left>\n" +
+            "                                <!--\n" +
+            "                                 plot is inspired by qplot from ggplot2\n" +
+            "                                 Attributes\n" +
+            "                                 geom: Short for geometry, supports bar, jitter, line, boxplot\n" +
+            "                                 data: in this context data fetches all related records by matching to current context record on number of field properties, effectively calling getRelatedRecordsByFields(). Default behaviour for data attribute when absent is to get all records.\n" +
+            "                                 TODO:\n" +
+            "                                 * Data transformations may be helpful, such as sorting\n" +
+            "                                 * Support faceting to break up the data into subsets and allow user to select a subset\n" +
+            "                                 * Stats support to summarise the data into useful ways, binning and counting observations for histograms\n" +
+            "                                 * Supporting layer based composition like ggplot2 does!! Would require using a more low level drawing api and migrating ggplot logic to js..\n" +
+            "                                -->\n" +
+            "                                <plot geom=\"bar\" data=\"CLON, CLAT, PID\" x=\"STN\" y=\"OTN\" xLabel=\"x axis\" yLabel=\"y axis\" mainTitle=\"Bar chart example\" subTitle=\"Chart sub title\"/>\n" +
+            "                            </left>\n" +
+            "                            <right>\n" +
+            "                                The bar chart shows the the decline in drug effectiveness as time increases\n" +
+            "                            </right>\n" +
+            "                        </splitLayout>\n" +
+            "                </InfoWindowTemplate>\n" +
             "            </marker>\n" +
             "            <legend relativeImagePath=\"images/LegendQbL.png\" positionFromTopInPixels=\"250\"/>\n" +
             "            <label>\n" +
@@ -105,6 +126,30 @@ public interface Constants {
             "                <column fieldName=\"CN\" fieldTitle=\"Countries\"/>\n" +
             "            </columns>\n" +
             "        </table>\n" +
+            "        <viewTemplate name=\"Chart view\">\n" +
+            "            <splitLayout>\n" +
+            "                <left>\n" +
+            "                    <!--\n" +
+            "                     plot is inspired by qplot from ggplot2\n" +
+            "                     Attributes\n" +
+            "                     geom: Short for geometry, supports bar, jitter, line, boxplot\n" +
+            "                     data: in this context data fetches all related records by matching to current context record on number of field properties, effectively calling getRelatedRecordsByFields(). Default behaviour for data attribute when absent is to get all records.\n" +
+            "                     TODO:\n" +
+            "                     * Data transformations may be helpful, such as sorting\n" +
+            "                     * Support faceting to break up the data into subsets and allow user to select a subset\n" +
+            "                     * Stats support to summarise the data into useful ways, binning and counting observations for histograms\n" +
+            "                     * Supporting layer based composition like ggplot2 does!! Would require using a more low level drawing api and migrating ggplot logic to js..\n" +
+            "                    -->\n" +
+            "                    <plot geom=\"bar\" x=\"PY\" y=\"CN\" xLabel=\"x axis\" yLabel=\"y axis\" mainTitle=\"Bar chart example\" subTitle=\"Chart sub title\"/>\n" +
+            "                </left>\n" +
+            "                <right>\n" +
+            "                    <plot geom=\"pie\" x=\"PY\" y=\"CN\" xLabel=\"x axis\" yLabel=\"y axis\" mainTitle=\"Pie chart example\" subTitle=\"Chart sub title\"/>\n" +
+            "\n" +
+            "                    The bar chart shows the the decline in drug effectiveness as time increases\n" +
+            "                </right>\n" +
+            "            </splitLayout>\n" +
+            "            <label>A view constructed from a template</label>\n" +
+            "        </viewTemplate>\n" +
             "    </views>\n" +
             "\n" +
             "    <filters>\n" +

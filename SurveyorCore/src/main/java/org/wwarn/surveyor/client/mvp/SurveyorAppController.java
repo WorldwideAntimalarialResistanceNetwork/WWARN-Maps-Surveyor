@@ -34,18 +34,13 @@ package org.wwarn.surveyor.client.mvp;
  */
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import org.wwarn.surveyor.client.event.MapLoadCompleteEvent;
+import org.wwarn.surveyor.client.event.InterfaceLoadCompleteEvent;
 import org.wwarn.surveyor.client.mvp.presenter.FilterPresenter;
 import org.wwarn.surveyor.client.mvp.presenter.LoadStatusListener;
 import org.wwarn.surveyor.client.mvp.presenter.ResultPresenter;
@@ -85,7 +80,7 @@ public class SurveyorAppController implements ValueChangeHandler<String> {
     }
 
     @EventHandler
-    public void onMapLoaded(MapLoadCompleteEvent mapLoadCompleteEvent){
+    public void onInterfaceLoaded(InterfaceLoadCompleteEvent interfaceLoadCompleteEvent){
         // do nothing, could handle load sequence here..
 //        onLoadCompleteToggleLoadingScreen();
     }

@@ -61,6 +61,38 @@
     </datasource>
 
     <views>
+        <viewTemplate name="Charts">
+            <splitLayout>
+                <left>
+                    <!--
+                     plot is inspired by qplot from ggplot2
+                     Attributes
+                     geom: Short for geometry, supports bar, jitter, line, boxplot
+                     data: in this context data fetches all related records by matching to current context record on number of field properties, effectively calling getRelatedRecordsByFields(). Default behaviour for data attribute when absent is to get all records.
+                     TODO:
+                     * Data transformations may be helpful, such as sorting
+                     * Support faceting to break up the data into subsets and allow user to select a subset
+                     * Stats support to summarise the data into useful ways, binning and counting observations for histograms
+                     * Supporting layer based composition like ggplot2 does!! Would require using a more low level drawing api and migrating ggplot logic to js..
+                    -->
+                    <plot geom="bar" x="PY" y="CN" xLabel="x axis" yLabel="y axis" mainTitle="Bar chart example" subTitle="Chart sub title"/>
+                </left>
+                <right>
+                    <plot geom="pie" x="PY" y="CN" xLabel="x axis" yLabel="y axis" mainTitle="Pie chart example" subTitle="Chart sub title"/>
+                    The bar chart shows the the decline in drug effectiveness as time increases
+                </right>
+            </splitLayout>
+
+            <!--<simpleLayout>-->
+                <!--<plot geom="pie" x="PY" y="CN" xLabel="x axis" yLabel="y axis" mainTitle="Pie chart example" subTitle="Chart sub title"/>-->
+                <!--The bar chart shows the the decline in drug effectiveness as time increases-->
+            <!--</simpleLayout>-->
+
+            <label>
+                A view constructed from a template
+            </label>
+        </viewTemplate>
+
         <map name="Medicine Quality Map" maxZoomOutLevel="2" range="World"> <!-- alternative type may be tabular data -->
             <!-- Assuming the range is a enumerated list of places, like World, Asia, Africa, Europe etc-->
             <filter>
@@ -69,9 +101,44 @@
             <marker>
                 <lonField fieldName="CLON"/>
                 <latField fieldName="CLAT"/>
+                <InfoWindowTemplate dataSourceRestrictedByCurrentMarkerContextFields="CLON, CLAT">
+                    <!--<dataView>-->
+                    <!--<filter field="CLON" value="{marker.CLON}"/>-->
+                    <!--<filter field="CLAT" value="{marker.CLAT}"/>-->
+                    <!--<filter field="PID" value="{marker.PID}"/>-->
+                    <!--<getRecordsRestrictedBy currentMarkerContextFields="CLON, CLAT, PID"/>-->
+                    <!--</dataView>-->
+                    <!--<simpleLayout>-->
+                        <!--<plot geom="pie" x="PY" y="CN" xLabel="x axis" yLabel="y axis" mainTitle="Pie chart example" subTitle="Chart sub title"/>-->
+                        <!--The bar chart shows the the decline in drug effectiveness as time increases-->
+                    <!--</simpleLayout>-->
+
+                    <splitLayout>
+                        <left>
+                            <!--
+                             plot is inspired by qplot from ggplot2
+                             Attributes
+                             geom: Short for geometry, supports bar, jitter, line, boxplot
+                             data: in this context data fetches all related records by matching to current context record on number of field properties, effectively calling getRelatedRecordsByFields(). Default behaviour for data attribute when absent is to get all records.
+                             TODO:
+                             * Data transformations may be helpful, such as sorting
+                             * Support faceting to break up the data into subsets and allow user to select a subset
+                             * Stats support to summarise the data into useful ways, binning and counting observations for histograms
+                             * Supporting layer based composition like ggplot2 does!! Would require using a more low level drawing api and migrating ggplot logic to js..
+                            -->
+                            <plot geom="bar" x="PY" y="CN" xLabel="x axis" yLabel="y axis" mainTitle="Bar chart example" subTitle="Chart sub title"/>
+                        </left>
+                        <right>
+                            <plot geom="pie" x="PY" y="CN" xLabel="x axis" yLabel="y axis" mainTitle="Pie chart example" subTitle="Chart sub title"/>
+
+                            The bar chart shows the the decline in drug effectiveness as time increases
+                        </right>
+                    </splitLayout>
+                </InfoWindowTemplate>
+
             </marker>
             <label>
-
+                A geo spatial view of the data
             </label>
         </map>
         <table name="Report table">
@@ -83,7 +150,7 @@
                 <column fieldName="CN" fieldTitle="Countries"/>
             </columns>
             <label>
-
+                A tabular view of the data
             </label>
         </table>
     </views>

@@ -144,18 +144,19 @@ public class FilterConfig implements Config {
 
 
     public class FilterBySampleSizeSettings extends FilterSetting{
-        int start, end;
+        int start, end, initialValue;
 
         private FilterBySampleSizeSettings(String filterFieldName, String filterTitle, String filterFieldLabel) {
             super(filterFieldName, filterTitle, filterFieldLabel, null);
         }
 
         FilterBySampleSizeSettings(String filterFieldName, String filterTitle, String filterFieldLabel, int start,
-                                  int end) {
+                                  int end, int initialValue) {
             super(filterFieldName, filterTitle, filterFieldLabel, null);
 
             this.start = start;
             this.end = end;
+            this.initialValue = initialValue;
         }
 
         public int getStart() {
@@ -165,10 +166,15 @@ public class FilterConfig implements Config {
         public int getEnd() {
             return end;
         }
+
+        public int getInitialValue() {
+            return initialValue;
+        }
+
     }
 
     public void addSampleSizeFilter(String filterColumn, String filterFieldName, String filterFieldLabel, int start,
-                                   int end) {
-        filters.add(new FilterBySampleSizeSettings(filterColumn, filterFieldName, filterFieldLabel, start, end));
+                                   int end, int initialValue) {
+        filters.add(new FilterBySampleSizeSettings(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue));
     }
 }

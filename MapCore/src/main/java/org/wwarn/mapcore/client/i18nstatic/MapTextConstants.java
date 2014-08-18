@@ -1,4 +1,4 @@
-package org.wwarn.surveyor.client.event;
+package org.wwarn.mapcore.client.i18nstatic;
 
 /*
  * #%L
@@ -33,15 +33,15 @@ package org.wwarn.surveyor.client.event;
  * #L%
  */
 
-import com.google.web.bindery.event.shared.binder.GenericEvent;
-import org.wwarn.surveyor.client.core.QueryResult;
+import com.google.gwt.i18n.client.Constants;
 
 /**
- * An event to register that the map has finished loading.
- * User: nigelthomas
- * Date: 12/09/2013
- * Time: 23:03
+ * Created by suay on 7/29/14.
  */
-public class MapLoadCompleteEvent extends GenericEvent {
+public interface MapTextConstants extends Constants {
+
+    @DefaultStringValue("Legend")
+    public String legend();
+
 
 }

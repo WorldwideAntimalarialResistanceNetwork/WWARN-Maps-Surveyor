@@ -50,6 +50,7 @@ import java.util.Set;
  * Date: 19/07/13
  * Time: 11:42
  */
+@Deprecated
 public class DataSchema implements Serializable {
     LinkedHashMap<String, DataSchemaRecord> fieldNameAndAssociatedType = new LinkedHashMap<String, DataSchemaRecord>();
     private int ordinal = 0;

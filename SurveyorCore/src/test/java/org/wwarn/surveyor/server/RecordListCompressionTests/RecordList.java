@@ -48,6 +48,7 @@ import java.util.*;
  * Date: 19/07/13
  * Time: 11:33
  */
+@Deprecated
 public class RecordList implements Serializable{
     private DataSchema schema;
     private List<Record> records = new ArrayList<Record>();
