@@ -95,6 +95,13 @@
         </license>
     </licenses>
 
+    <!-- Added for com.google.gwt.google-apis gwt-visualization 1.1.2-->
+    <repositories>
+        <repository>
+        <id>Activiti</id>
+        <url>http://maven.alfresco.com/nexus/content/repositories/activiti-thirdparty</url>
+        </repository>
+    </repositories>
 
     <build>
         <defaultGoal>install</defaultGoal>
