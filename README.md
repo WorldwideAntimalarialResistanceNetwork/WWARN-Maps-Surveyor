@@ -30,16 +30,14 @@ Features supported in XML configuration:
 
 Limitations:
 
-* For Big data, ie billions of records visualisation, consider [Google fusion tables] which down samples very large data sets, or [imMens](http://vis.stanford.edu/projects/immens/) which aggregates over very large data sets and partitions the data based on the projection of the data needed for visualisation
+* For Big data, ie billions of records, consider solutions which down samples very large data sets such as [imMens](http://vis.stanford.edu/projects/immens/) which aggregates over very large data sets and partitions the data based on the projection of the data needed for visualisation
     
 ## Demos and implementations
 
-### [Live demonstrator](http://wwarn-maps-surveyor-demo.appspot.com) based on [SurveyorSimpleDemoApp](#/SurveyorSimpleDemoApp)
-### [AQ Surveyor](http://www.wwarn.org/aqsurveyor/)
-### [Molecular Surveyor](http://www.wwarn.org/surveyor/)
-### [NMFI Fever Series Surveyor - TODO](#)
-### [NMFI Case Reports Surveyor - TODO](#)
-
+#### [Live demonstrator](http://wwarn-maps-surveyor-demo.appspot.com) based on [SurveyorSimpleDemoApp](https://github.com/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor/tree/master/SurveyorSimpleDemoApp)
+#### [AQ Surveyor](http://www.wwarn.org/aqsurveyor/) - Custom views of published poor-quality antimalarial medicine reports
+#### [Molecular Surveyor](http://www.wwarn.org/surveyor/) - Visualise data from publications  examining molecular markers of antimalarial resistance in malaria-endemic countries
+#### [NMFI Fever Series Surveyor - TODO](#) and [NMFI Case Reports Surveyor - TODO](#) - A visual analysis of published health literature for causes of non-malaria febrile disease
 
 ## How do I use it?
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
@@ -66,3 +64,6 @@ The use of this framework assumes some familiarity with GWT framework, mvn, and 
 
 ## Where can I learn more
 Check the README files in the SurveyorCore and MapCore modules
+
+## Get in touch
+We have setup a google web forum at [Worldwide Antimalarial Resistance Network Open Source Software](https://groups.google.com/forum/?hl=en#!forum/worldwide-antimalarial-resistance-network-open-source-software), please use this to get in touch if you have any questions. Alternatively, if you have noticed a bug/have a new feature request use [GitHub issue tracking system to report this](https://github.com/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor/issues). 
