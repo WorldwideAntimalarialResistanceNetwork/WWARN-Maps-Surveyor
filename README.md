@@ -34,10 +34,10 @@ Limitations:
     
 ## Demos and implementations
 
-#### [Live demonstrator](http://wwarn-maps-surveyor-demo.appspot.com) based on [SurveyorSimpleDemoApp](https://github.com/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor/tree/master/SurveyorSimpleDemoApp)
-#### [AQ Surveyor](http://www.wwarn.org/aqsurveyor/) - Custom views of published poor-quality antimalarial medicine reports
-#### [Molecular Surveyor](http://www.wwarn.org/surveyor/) - Visualise data from publications  examining molecular markers of antimalarial resistance in malaria-endemic countries
-#### [NMFI Fever Series Surveyor - TODO](#) and [NMFI Case Reports Surveyor - TODO](#) - A visual analysis of published health literature for causes of non-malaria febrile disease
+* [Live demonstrator](http://wwarn-maps-surveyor-demo.appspot.com) based on [SurveyorSimpleDemoApp](https://github.com/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor/tree/master/SurveyorSimpleDemoApp)
+* [AQ Surveyor](http://www.wwarn.org/aqsurveyor/) - Custom views of published poor-quality antimalarial medicine reports
+* [Molecular Surveyor](http://www.wwarn.org/surveyor/) - Visualise data from publications  examining molecular markers of antimalarial resistance in malaria-endemic countries
+* [NMFI Fever Series Surveyor - TODO](#) and [NMFI Case Reports Surveyor - TODO](#) - A visual analysis of published health literature for causes of non-malaria febrile disease
 
 ## How do I use it?
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
