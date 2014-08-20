@@ -11,7 +11,7 @@
     <artifactId>MapCore</artifactId>
     <packaging>jar</packaging>
     <name>MapCore</name>
-    <version>2.7.1-NVT-RC-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
 
     <inceptionYear>2013</inceptionYear>
 
