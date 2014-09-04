@@ -6,14 +6,14 @@
     <parent>
         <groupId>org.wwarn.mapssurveyor</groupId>
         <artifactId>maps-surveyor-parent</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
     <!-- POM file generated with GWT webAppCreator -->
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wwarn.mapssurveyor</groupId>
     <artifactId>SurveyorCore</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <name>SurveyorCore</name>
 
     <inceptionYear>2013</inceptionYear>
@@ -37,7 +37,7 @@
         <!-- GWT needs at least java 1.5 -->
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <map.core.version>2.7.1-NVT-RC-SNAPSHOT</map.core.version>
+        <map.core.version>1.0.1-SNAPSHOT</map.core.version>
         <javaVersion>1.7</javaVersion>
     </properties>
 
