@@ -34,12 +34,21 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <ui:style>
-        @external .clearLink .disabledCheckBox;
+        @external .clearLink .disabledCheckBox .checkBoxes;
+
+        .checkBoxes {
+            border: 1px solid #ccc;
+            width: 240px;
+        }
 
         .facetCheckBox a, .facetCheckBox a.clearLink, a.clearLink {
             float: right!important;
             font-size: 1em!important;
             font-weight: bold!important;
+        }
+
+        .facetCheckBoxPanel{
+            display: none!important;
         }
 
         input[readonly], .disabledCheckBox{

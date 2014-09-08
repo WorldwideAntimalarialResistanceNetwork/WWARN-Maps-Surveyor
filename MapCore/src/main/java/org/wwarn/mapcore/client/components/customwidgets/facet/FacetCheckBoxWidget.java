@@ -162,7 +162,7 @@ public class FacetCheckBoxWidget extends Composite implements FacetWidget {
     public FacetWidget buildDisplay(){
         panel = new VerticalPanel();
         setupListPanel();
-        scrollpanel.setHeight(+calculateScrollPanelHeight()+"px");
+        scrollpanel.setHeight(+calculateScrollPanelHeight() + "px");
         scrollpanel.add(listPanel);
         scrollpanel.setStyleName(STYLE_CHECKBOXLIST);
         panel.add(buildHTMLHeader());
@@ -371,7 +371,8 @@ public class FacetCheckBoxWidget extends Composite implements FacetWidget {
         return facetWidgetItems;
     }
 
-    public int calculateScrollPanelHeight() {
-        return CHECKBOX_HEIGHT*visibleItemCount;
+    public double calculateScrollPanelHeight() {
+        final double halfCheckBoxHeight = CHECKBOX_HEIGHT * .7d; // by showing only half of the checkbox of second item, the end user may remember to scroll.
+        return (CHECKBOX_HEIGHT*visibleItemCount) + halfCheckBoxHeight;
     }
 }
