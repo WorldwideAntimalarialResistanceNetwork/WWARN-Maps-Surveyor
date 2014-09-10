@@ -117,7 +117,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             DatasourceConfig datasourceConfig = null;
 
             final String type = getAttributeByName(item, "type");
-            String dataSourceType = StringUtils.ifEmpty(DatasourceConfig.DataSourceType.valueOf(type).name(), DatasourceConfig.DataSourceType.LocalClientSideDataProvider.name());
+            String dataSourceType = StringUtils.ifEmpty(DataSourceProvider.valueOf(type).name(), DataSourceProvider.LocalClientSideDataProvider.name());
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node currentNode = childNodes.item(i);
                 if (currentNode.getNodeName().equals("property")) {

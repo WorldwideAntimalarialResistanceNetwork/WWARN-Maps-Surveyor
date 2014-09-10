@@ -34,6 +34,8 @@ package org.wwarn.surveyor.server.core;
  */
 
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.googlecode.luceneappengine.GaeDirectory;
+import com.googlecode.luceneappengine.GaeLuceneUtil;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.facet.*;
@@ -49,12 +51,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.*;
-import org.wwarn.surveyor.client.model.TableViewConfig;
+import org.wwarn.surveyor.client.model.DataSourceProvider;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -64,8 +63,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LuceneSearchServiceImpl implements SearchServiceLayer {
     public static final String DATE_FORMAT_YEAR = "yyyy";
     private static LuceneSearchServiceImpl ourInstance = new LuceneSearchServiceImpl();
-    private Directory indexDirectory = new RAMDirectory();
-    private Directory taxonomyDirectory = new RAMDirectory();
+    private Directory indexDirectory = null;
+    private Directory taxonomyDirectory = null;
     private static final String ISO8601_PATTERN = DataType.ISO_DATE_FORMAT;
     private AtomicBoolean hasInitialised = new AtomicBoolean(false);
     private DataSchema dataSchema;
@@ -84,14 +83,17 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         Objects.requireNonNull(dataSchema); this.dataSchema = dataSchema;
         //setup index
         JSONArray jsonContent = getJsonArrayFrom(dataSource);
-        setupIndex(dataSchema, jsonContent);
+        setupIndex(dataSource, dataSchema, jsonContent);
         this.hasInitialised.getAndSet(true);
         setupIndexMonitor(dataSchema, dataSource);
     }
 
     private void setupIndexMonitor(final DataSchema dataSchema, final GenericDataSource dataSource) throws SearchException {
+        if(dataSource.getDataSourceProvider() != DataSourceProvider.ServerSideLuceneDataProvider){
+            return; // only use for pure lucene tomcat implementation, doesn't work on GAE.
+        }
         FileChangeMonitor fileChangeMonitor;
-        if(dataSource.getDataSourceType()== GenericDataSource.DataSourceType.ServletRelativeDataSource && dataSource.getLocation()!=null) {
+        if( dataSource.getDataSourceType()== GenericDataSource.DataSourceType.ServletRelativeDataSource && dataSource.getLocation()!=null) {
             assertFilePathExists(dataSource.getLocation(), "jsonPath invalid:");
             File json = new File(dataSource.getLocation());
             try {
@@ -113,7 +115,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                 } catch (SearchException e) {
                     throw new IllegalStateException(e);
                 }
-                setupIndex(dataSchema, jsonContent);
+                setupIndex(dataSource, dataSchema, jsonContent);
             }
         });
     }
@@ -150,11 +152,13 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         return arrayObjects;
     }
 
-    private void setupIndex(DataSchema schema, JSONArray jsonContent) {
-        IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_48, new StandardAnalyzer(Version.LUCENE_48));
+    private void setupIndex(GenericDataSource dataSource, DataSchema schema, JSONArray jsonContent) {
+        IndexWriterConfig conf = getConfigFrom(dataSource);//get configuration
+        indexDirectory = getDirectoryFrom(dataSource);//create a default index
+        taxonomyDirectory = new RAMDirectory();//create a default index
         try (
-            IndexWriter indexWriter = new IndexWriter(indexDirectory, conf);
-            DirectoryTaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxonomyDirectory);
+                IndexWriter indexWriter = new IndexWriter(indexDirectory, conf);
+                DirectoryTaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxonomyDirectory);
         ){
             // parse json into index using schema
             List<Document> indexDocuments = parseJSONToIndexDocument(jsonContent, schema);
@@ -166,6 +170,14 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private IndexWriterConfig getConfigFrom(GenericDataSource dataSource) {
+        return (dataSource.getDataSourceProvider() == DataSourceProvider.GoogleAppEngineLuceneDataSource)?GaeLuceneUtil.getIndexWriterConfig(Version.LUCENE_4_9, new StandardAnalyzer(Version.LUCENE_4_9)): new IndexWriterConfig(Version.LUCENE_4_9, new StandardAnalyzer(Version.LUCENE_4_9));
+    }
+
+    private Directory getDirectoryFrom(GenericDataSource dataSource) {
+        return (dataSource.getDataSourceProvider() == DataSourceProvider.GoogleAppEngineLuceneDataSource)?new GaeDirectory():new RAMDirectory();
     }
 
     private List<Document> parseJSONToIndexDocument(JSONArray jsonArray, DataSchema schema) {
@@ -232,7 +244,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     }
 
     private void assertFilePathExists(String path, String messageOnFail) {
-        if(Files.notExists(Paths.get(path), LinkOption.NOFOLLOW_LINKS)){
+        if(!(new File(path)).canRead()){
             throw new IllegalArgumentException(messageOnFail + path);
         }
     }

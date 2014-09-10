@@ -37,6 +37,7 @@ import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.visualizations.Table;
 import org.junit.Test;
+import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.DatasourceConfig;
 
 import java.util.List;
@@ -76,7 +77,7 @@ public class GwtTestRecordList extends VisualizationTest {
     }
 
     public void setupDefaultData(){
-        String dataSourceType = DatasourceConfig.DataSourceType.LocalClientSideDataProvider.name();
+        String dataSourceType = DataSourceProvider.LocalClientSideDataProvider.name();
         schema = new DataSchema(new DatasourceConfig("", dataSourceType));
         schema.addField(UNIQUE_FIELD, DataType.Integer);
         schema.addField(NON_UNIQUE_FIELD, DataType.String);

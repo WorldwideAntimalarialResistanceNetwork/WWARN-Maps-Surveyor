@@ -33,11 +33,6 @@ package org.wwarn.surveyor.server.RecordListCompressionTests;
  * #L%
  */
 
-import com.google.gwt.rpc.client.ast.HasValues;
-import com.google.gwt.rpc.client.ast.ReturnCommand;
-import com.google.gwt.rpc.client.impl.HasValuesCommandSink;
-import com.google.gwt.rpc.server.CommandServerSerializationStreamWriter;
-import com.google.gwt.rpc.server.HostedModeClientOracle;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -45,6 +40,7 @@ import org.junit.Test;
 import org.wwarn.surveyor.client.core.DataType;
 import org.wwarn.surveyor.client.core.RecordListBuilder;
 import org.wwarn.surveyor.client.core.RecordListCompressedImpl;
+import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.DatasourceConfig;
 
 
@@ -138,12 +134,12 @@ public class RecordListCompressionTest {
     }
 
     private org.wwarn.surveyor.client.core.DataSchema getNativeDataSourceSchema() {
-        String dataSourceType = DatasourceConfig.DataSourceType.LocalClientSideDataProvider.name();
+        String dataSourceType = DataSourceProvider.LocalClientSideDataProvider.name();
         return new org.wwarn.surveyor.client.core.DataSchema(new DatasourceConfig("", dataSourceType));
     }
 
     private void setup(){
-        String dataSourceType = DatasourceConfig.DataSourceType.LocalClientSideDataProvider.name();
+        String dataSourceType = DataSourceProvider.LocalClientSideDataProvider.name();
         schema = new DataSchema(new DatasourceConfig("", dataSourceType));
 
         List<String> jsonFields = Arrays.asList("MGroup", "Present", "Author", "StudyID", "SiteName",

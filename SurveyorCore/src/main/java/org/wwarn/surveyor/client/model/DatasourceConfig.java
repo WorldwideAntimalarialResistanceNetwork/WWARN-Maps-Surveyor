@@ -33,8 +33,6 @@ package org.wwarn.surveyor.client.model;
  * #L%
  */
 
-import org.wwarn.surveyor.client.model.Config;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -43,12 +41,12 @@ import java.util.Map;
  * Date: 31/07/13
  */
 public class DatasourceConfig implements Config {
-    private final DataSourceType dataSourceType;
+    private final DataSourceProvider dataSourceProvider;
     private final String filename;
     private final SchemaConfig config = new SchemaConfig();
 
-    public DataSourceType getDataSourceType() {
-        return dataSourceType;
+    public DataSourceProvider getDataSourceProvider() {
+        return dataSourceProvider;
     }
 
     public static class SchemaConfig {
@@ -83,7 +81,7 @@ public class DatasourceConfig implements Config {
 
     public DatasourceConfig(String filename, String dataSourceType) {
         this.filename = filename;
-        this.dataSourceType = DataSourceType.valueOf(dataSourceType);
+        this.dataSourceProvider = DataSourceProvider.valueOf(dataSourceType);
     }
 
     public String getFilename() {
@@ -94,7 +92,4 @@ public class DatasourceConfig implements Config {
         return config;
     }
 
-    public enum DataSourceType{
-        LocalClientSideDataProvider, ServerSideLuceneDataProvider
-    }
 }

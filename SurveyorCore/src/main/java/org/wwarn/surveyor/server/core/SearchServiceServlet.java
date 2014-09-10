@@ -34,11 +34,14 @@ package org.wwarn.surveyor.server.core;
  */
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.TableViewConfig;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -48,12 +51,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by nigelthomas on 28/05/2014.
  */
 public class SearchServiceServlet extends RemoteServiceServlet implements SearchService {
+    public static final String DEFAULT_DATA_PUBLICATIONS_JSON = "/data/publications.json";
     private SearchServiceLayer searchServiceLayer;
+    private static Map<String, String> filePathCache = new ConcurrentHashMap<>();
 
     @Override
     public void init() throws ServletException {
         super.init();
         searchServiceLayer = LuceneSearchServiceImpl.getInstance();
+        // add filePath to publications.json
     }
 
     @Override
@@ -75,20 +81,24 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         Objects.requireNonNull(dataSource);
         //relative path to absolute path
         final String fileInServletContext = (dataSource.getLocation()==null)?null:findFileInServletContext(dataSource.getLocation());
-        final GenericDataSource source = new GenericDataSource(fileInServletContext, dataSource.getResource(), dataSource.getDataSourceType());
+        final GenericDataSource source = new GenericDataSource(fileInServletContext, dataSource.getResource(), dataSource.getDataSourceType(), dataSource.getDataSourceProvider());
         searchServiceLayer.init(schema, source);
         return this.query(filterQuery, facetFields);
     }
 
-    private static Map<String, String> filePathCache = new ConcurrentHashMap<>();
 
     private String findFileInServletContext(final String relativeFilePath) {
         if(filePathCache.containsKey(relativeFilePath)){
             return filePathCache.get(relativeFilePath);
         }
-        String realPath = getServletContextFilePath();
+
+        final String publicationsPathDefault = getDefaultPublicationPath(relativeFilePath);
+        if(!StringUtils.isEmpty(publicationsPathDefault)){ return publicationsPathDefault;}
+
+
+        final String realPath = getServletContextFilePath();
         final Path fileToFind = Paths.get(relativeFilePath);
-        final String[] publicationsPath = {realPath};
+        final String[] publicationsPath = new String[]{""};
         try {
             Files.walkFileTree(Paths.get(realPath), new SimpleFileVisitor<Path>() {
                 @Override
@@ -102,9 +112,17 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
         return publicationsPath[0];
+    }
+
+    private String getDefaultPublicationPath(String relativeFilePath) {
+        //relative path to absolute path
+        final String resource = this.getServletContext().getRealPath(DEFAULT_DATA_PUBLICATIONS_JSON);
+        if(StringUtils.isEmpty(resource)) return null;
+        filePathCache.put(relativeFilePath, resource);
+        return resource;
     }
 
     private String getServletContextFilePath(){

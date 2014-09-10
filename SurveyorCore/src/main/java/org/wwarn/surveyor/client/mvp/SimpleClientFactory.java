@@ -36,15 +36,10 @@ package org.wwarn.surveyor.client.mvp;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
-import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import org.wwarn.mapcore.client.utils.EventLogger;
 import org.wwarn.surveyor.client.core.*;
-import org.wwarn.surveyor.client.model.Config;
-import org.wwarn.surveyor.client.model.DatasourceConfig;
-import org.wwarn.surveyor.client.model.FilterConfig;
+import org.wwarn.surveyor.client.model.*;
 import org.wwarn.mapcore.client.utils.XMLUtils;
-import org.wwarn.surveyor.client.model.FilterSetting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,12 +105,21 @@ public class SimpleClientFactory implements ClientFactory {
             final ApplicationContext applicationContext1 = getApplicationContext();
             final DatasourceConfig config = applicationContext1.getConfig(DatasourceConfig.class);
             GenericDataSource dataSource = new GenericDataSource(config.getFilename(), null, GenericDataSource.DataSourceType.ServletRelativeDataSource);
-            if(config.getDataSourceType() == DatasourceConfig.DataSourceType.ServerSideLuceneDataProvider){
-                this.dataProvider = new ServerSideSearchDataProvider(dataSource, schema, facetFieldList);
-            }else{
-                this.dataProvider =  new DefaultLocalJSONDataProvider(dataSource, schema, facetFieldList);
+
+            switch (config.getDataSourceProvider()){
+                case ServerSideLuceneDataProvider:
+                    dataSource.setDataSourceProvider(DataSourceProvider.ServerSideLuceneDataProvider);
+                    this.dataProvider = new ServerSideSearchDataProvider(dataSource, schema, facetFieldList);
+                    break;
+                case GoogleAppEngineLuceneDataSource:
+                    dataSource.setDataSourceProvider(DataSourceProvider.GoogleAppEngineLuceneDataSource);
+                    this.dataProvider = new ServerSideSearchDataProvider(dataSource, schema, facetFieldList);
+                    break;
+                default:
+                    dataSource.setDataSourceProvider(DataSourceProvider.LocalClientSideDataProvider);
+                    this.dataProvider =  new DefaultLocalJSONDataProvider(dataSource, schema, facetFieldList);
+                    break;
             }
-            //TODO refactor this too!!
 //            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "DefaultLocalJSONDataProvider", "end");
 //            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getDataProvider", "end");
 

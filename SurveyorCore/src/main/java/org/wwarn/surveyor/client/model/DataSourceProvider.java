@@ -1,4 +1,4 @@
-package org.wwarn.surveyor.server.core;
+package org.wwarn.surveyor.client.model;
 
 /*
  * #%L
@@ -33,21 +33,11 @@ package org.wwarn.surveyor.server.core;
  * #L%
  */
 
-import org.wwarn.surveyor.client.core.*;
-import org.wwarn.surveyor.client.model.TableViewConfig;
-
-import java.util.List;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Created by nigelthomas on 03/06/2014.
- */
-public interface SearchServiceLayer {
-    /**
-     * Call first to initialise the search service
-     * @param dataSchema
-     * @param dataSource
-     */
-    public void init(DataSchema dataSchema, GenericDataSource dataSource) throws SearchException;
-    public QueryResult query(FilterQuery filterQuery, String[] facetFields) throws SearchException;
-    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length) throws SearchException;
+* Created by nigelthomas on 10/09/2014.
+*/
+public enum DataSourceProvider implements IsSerializable{
+    LocalClientSideDataProvider, ServerSideLuceneDataProvider, GoogleAppEngineLuceneDataSource
 }

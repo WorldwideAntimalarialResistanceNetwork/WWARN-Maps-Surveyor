@@ -35,6 +35,7 @@ package org.wwarn.surveyor.client.core;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
+import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.DatasourceConfig;
 
 public class DataProviderTestUtility {
@@ -49,7 +50,7 @@ public class DataProviderTestUtility {
     }
 
     public DataSchema fetchSampleDataSchema() {
-        String dataSourceType = DatasourceConfig.DataSourceType.LocalClientSideDataProvider.name();
+        String dataSourceType = DataSourceProvider.LocalClientSideDataProvider.name();
         DatasourceConfig dataSourceConfig = new DatasourceConfig("f", dataSourceType);
         DataSchema schema = new DataSchema(dataSourceConfig);
         schema.addField(FIELD_PUBLICATION_YEAR, DataType.DateYear);

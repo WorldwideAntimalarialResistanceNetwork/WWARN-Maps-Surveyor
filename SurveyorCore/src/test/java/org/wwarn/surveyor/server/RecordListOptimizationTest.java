@@ -38,6 +38,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.junit.Test;
 import org.wwarn.surveyor.client.core.*;
+import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.DatasourceConfig;
 import org.wwarn.surveyor.server.core.CompressRecordListService;
 
@@ -73,7 +74,7 @@ public class RecordListOptimizationTest {
 
 
     private void setup(){
-        String dataSourceType = DatasourceConfig.DataSourceType.LocalClientSideDataProvider.name();
+        String dataSourceType = DataSourceProvider.LocalClientSideDataProvider.name();
         schema = new DataSchema(new DatasourceConfig("", dataSourceType));
 
         List<String> jsonFields = Arrays.asList("MGroup", "Present", "Author", "StudyID", "SiteName",

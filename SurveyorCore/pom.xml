@@ -250,21 +250,27 @@
         </dependency>
 
         <dependency>
+            <groupId>com.googlecode.luceneappengine</groupId>
+            <artifactId>luceneappengine</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
-            <version>4.8.1</version>
+            <version>4.9.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-analyzers-common</artifactId>
-            <version>4.8.1</version>
+            <version>4.9.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-facet</artifactId>
-            <version>4.8.1</version>
+            <version>4.9.0</version>
         </dependency>
 
         <!-- json Parser -->

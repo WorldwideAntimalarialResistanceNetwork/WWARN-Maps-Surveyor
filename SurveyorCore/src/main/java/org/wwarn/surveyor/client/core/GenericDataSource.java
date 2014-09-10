@@ -34,6 +34,7 @@ package org.wwarn.surveyor.client.core;
  */
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.mvp.DataSource;
 
 /**
@@ -45,8 +46,18 @@ public class GenericDataSource implements IsSerializable, DataSource {
     private String resource;
     String location;
 
+    public void setDataSourceProvider(DataSourceProvider dataSourceProvider) {
+        this.dataSourceProvider = dataSourceProvider;
+    }
+
+    DataSourceProvider dataSourceProvider = DataSourceProvider.LocalClientSideDataProvider;
+
     public String getLocation() {
         return location;
+    }
+
+    public DataSourceProvider getDataSourceProvider() {
+        return dataSourceProvider;
     }
 
     public DataSourceType getDataSourceType() {
@@ -56,9 +67,14 @@ public class GenericDataSource implements IsSerializable, DataSource {
     DataSourceType dataSourceType = DataSourceType.ServletRelativeDataSource;
 
     public GenericDataSource(String location, String resource, DataSourceType type) {
+        this(location, resource, type, DataSourceProvider.LocalClientSideDataProvider);
+    }
+
+    public GenericDataSource(String location, String resource, DataSourceType type, DataSourceProvider dataSourceProvider) {
         this.location = location;
         this.dataSourceType = type;
         this.resource = resource;
+        this.dataSourceProvider = dataSourceProvider;
     }
 
     public GenericDataSource() {
@@ -71,4 +87,5 @@ public class GenericDataSource implements IsSerializable, DataSource {
     public enum DataSourceType implements IsSerializable{
         ServletRelativeDataSource, FusionTable, GoogleSpreadSheet, JSONPropertyList;
     }
+
 }

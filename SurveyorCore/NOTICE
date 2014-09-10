@@ -212,6 +212,7 @@ Objenesis - MIT license
 Hamcrest - BSD license
 ========================================================================================================================
 Lists of 20 third-party dependencies.
+     (Apache License 2.0) Lucene App Engine (com.googlecode.luceneappengine:luceneappengine:2.1.0 - https://github.com/UltimaPhoenix/luceneappengine/)
      (Apache License 2.0) GWT Maps API V3 - Core API (com.github.branflake2267:gwt-maps-api:3.10.0-alpha-6 - https://github.com/branflake2267/GWT-Maps-V3-Api/gwt-maps-api/)
      (GWT Terms) gwt-dev (com.google.gwt:gwt-dev:2.6.1 - http://www.gwtproject.org/gwt-dev/)
      (GWT Terms) gwt-servlet (com.google.gwt:gwt-servlet:2.6.1 - http://www.gwtproject.org/gwt-servlet/)

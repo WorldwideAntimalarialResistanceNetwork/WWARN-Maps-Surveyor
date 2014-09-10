@@ -38,7 +38,7 @@
 
         .checkBoxes {
             border: 1px solid #ccc;
-            width: 240px;
+            width: 240px!important;
         }
 
         .facetCheckBox a, .facetCheckBox a.clearLink, a.clearLink {
