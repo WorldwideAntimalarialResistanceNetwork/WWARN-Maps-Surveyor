@@ -86,5 +86,8 @@
     <replace-with class="org.wwarn.surveyor.client.core.ServerSideSearchDataProvider.DefaultInitialFilterQuery">
         <when-type-is class="org.wwarn.surveyor.client.core.InitialFilterQuery"/>
     </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.DefaultInitialFields">
+        <when-type-is class="org.wwarn.surveyor.client.mvp.InitialFields"/>
+    </replace-with>
     <servlet path="/SearchService" class="org.wwarn.surveyor.server.core.SearchServiceServlet"/>
 </module>

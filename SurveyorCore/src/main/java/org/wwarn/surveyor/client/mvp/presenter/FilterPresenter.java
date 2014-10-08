@@ -40,7 +40,6 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.FilterConfig;
-import org.wwarn.mapcore.client.utils.EventLogger;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.event.FilterChangedEvent;
 import org.wwarn.surveyor.client.event.ResultChangedEvent;
@@ -66,6 +65,7 @@ public class FilterPresenter implements Presenter {
     private ClientFactory clientFactory = SimpleClientFactory.getInstance();
     private final ApplicationContext applicationContext = clientFactory.getApplicationContext();
     public static final String DEFAULT_CATCH_ALL_OPTION = "All";
+    private static InitialFields initialFields;
 
 
     public FilterPresenter(FilterView filterView) {
@@ -262,15 +262,12 @@ public class FilterPresenter implements Presenter {
             }
         }
 
-        private Set<String> getFilterFields(){
-            try{
-                InitialFields initialFields = GWT.create(InitialFields.class);
-                if(initialFields != null){
-                    return initialFields.getInitialFields();
-                }
-            }catch(Exception e){
-                GWT.log("Initial fields has not been implemented in the current application");
-            }
+        private Set<String> getFilterFields() {
+            final InitialFields initialFields = getInitialFields();
+            if (initialFields != null) {
+                return initialFields.getInitialFields();
+            };
+
             return null;
         }
 
@@ -295,6 +292,26 @@ public class FilterPresenter implements Presenter {
         private void filterMultipleValues(FilterQuery filterQuery, FilterChangedEvent.FilterElement valueToFilter){
             FilterChangedEvent.MultipleFilterValue listValues = (FilterChangedEvent.MultipleFilterValue) valueToFilter;
             filterQuery.addMultipleValuesFilter(valueToFilter.getFacetField(), listValues.getFacetFieldValues());
+        }
+    }
+
+    private static InitialFields getInitialFields() {
+        if(initialFields!=null) return initialFields;
+        try {
+            initialFields = GWT.create(InitialFields.class);
+
+        } catch (RuntimeException e) {
+            if (!e.getMessage().startsWith("Deferred binding")) throw e;
+            initialFields = new DefaultInitialFields();
+            GWT.log("Initial fields has not been implemented in the current application");
+        }
+        return initialFields;
+    }
+
+    static private class DefaultInitialFields implements InitialFields{
+        @Override
+        public Set<String> getInitialFields() {
+            return Collections.EMPTY_SET;
         }
     }
 }
