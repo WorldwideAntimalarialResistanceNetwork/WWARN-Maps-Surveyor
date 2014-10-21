@@ -39,9 +39,12 @@
         .facetWidgetHolder select{
             width: 190px !important;
         }
-        a:link.resetAnchor{
+        .resetAnchor{
             font-size: 1em;
             font-weight: bold;
+        }
+        .resetAnchor:hover{
+            color: cornflowerblue;
         }
     </ui:style>
     <g:VerticalPanel addStyleNames="{style.facetWidgetHolder}">
