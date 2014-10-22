@@ -36,18 +36,20 @@
     Configure facet widget width
     -->
     <ui:style>
-        .facetWidgetHolder select{
+        .facetWidgetHolder select {
             width: 190px !important;
         }
-        .resetAnchor{
+
+        .resetAnchor {
             font-size: 1em;
             font-weight: bold;
         }
-        .resetAnchor:hover{
-            color: cornflowerblue;
+
+        .resetAnchor:hover {
+            color: #44608b;
         }
     </ui:style>
     <g:VerticalPanel addStyleNames="{style.facetWidgetHolder}">
-        <g:Anchor ui:field="resetAnchor" addStyleNames="{style.resetAnchor}"/>
+        <g:Anchor href="#" ui:field="resetAnchor" addStyleNames="{style.resetAnchor}"/>
     </g:VerticalPanel>
 </ui:UiBinder>
