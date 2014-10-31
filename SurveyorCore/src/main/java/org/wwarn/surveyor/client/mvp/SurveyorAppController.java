@@ -46,6 +46,7 @@ import org.wwarn.surveyor.client.mvp.presenter.LoadStatusListener;
 import org.wwarn.surveyor.client.mvp.presenter.ResultPresenter;
 import org.wwarn.surveyor.client.mvp.view.filter.FilterViewUI;
 import org.wwarn.surveyor.client.mvp.view.MainPanelView;
+import org.wwarn.surveyor.client.mvp.view.result.ResultView;
 import org.wwarn.surveyor.client.mvp.view.result.ResultViewUI;
 
 /**
@@ -61,6 +62,12 @@ public class SurveyorAppController implements ValueChangeHandler<String> {
     protected LoadStatusListener loadStatusListener = LoadStatusListener.getInstance();
     protected MainPanelView layout;
     protected ResultPresenter resultPresenter;
+
+    public ResultView getResultView() {
+        return resultView;
+    }
+
+    private ResultView resultView = new ResultViewUI();
 
     // Event Bus bindings
     interface MapLoadedEventBinder extends EventBinder<SurveyorAppController> {};
@@ -114,7 +121,7 @@ public class SurveyorAppController implements ValueChangeHandler<String> {
      */
     protected void display() {
         new FilterPresenter(new FilterViewUI()).go(layout);
-        resultPresenter = new ResultPresenter(new ResultViewUI());
+        resultPresenter = new ResultPresenter(getResultView());
         loadStatusListener.registerObserver(resultPresenter);
         resultPresenter.go(layout);
 

@@ -41,20 +41,23 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
-import org.wwarn.surveyor.client.core.RecordList;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
+import org.wwarn.surveyor.client.event.InterfaceLoadCompleteEvent;
+import org.wwarn.surveyor.client.event.RegisterNewTabEvent;
 import org.wwarn.surveyor.client.model.*;
 import org.wwarn.mapcore.client.utils.StringUtils;
+import org.wwarn.surveyor.client.mvp.ClientFactory;
+import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.mvp.presenter.LoadStatusListener;
 import org.wwarn.surveyor.client.mvp.presenter.ResultPresenter;
-import org.wwarn.surveyor.client.mvp.view.template.TemplateBasedViewBuilder;
 import org.wwarn.surveyor.client.mvp.view.map.MapViewComposite;
 import org.wwarn.surveyor.client.mvp.view.panel.PanelViewComposite;
 import org.wwarn.surveyor.client.mvp.view.table.CellTableServer;
 import org.wwarn.surveyor.client.mvp.view.table.TableViewComposite;
 import org.wwarn.surveyor.client.mvp.view.template.TemplateViewComposite;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Responsible for taking the view elements and creating tabs corresponding to each view
@@ -70,6 +73,8 @@ public class ResultViewUI extends Composite implements ResultView {
     final SimplePanel tabContentHolder = new SimplePanel();
     private Widget[] loadedDisplays;
     private PopupPanel loadingPopup = new PopupPanel(false);
+    private Map<Integer, RegisterNewTabEvent> registeredTabs = new HashMap<>();
+    private int viewConfigCount;
 
     public void setPresenter(ResultPresenter presenter) {
         this.presenter = presenter;
@@ -79,15 +84,12 @@ public class ResultViewUI extends Composite implements ResultView {
         return this;
     }
 
-    private List<Widget> widgets = new ArrayList<Widget>();
-
     public void setup(final ResultsViewConfig viewConfigs) {
-        int viewConfigCount = 0;
+        viewConfigCount = 0;
         for (final ViewConfig viewConfig : viewConfigs) {
             viewConfigCount++;
             String tabName = viewConfig.getViewName();
-            final HTMLPanel htmlPanel = new HTMLPanel("<FONT SIZE = 2>" + tabName + "</FONT>");
-            htmlPanel.setWidth("150px");
+            final HTMLPanel htmlPanel = getTabMarkup(tabName);
             final FocusPanel focusPanel = new FocusPanel(htmlPanel);
             final String viewLabel = viewConfig.getViewLabel();
             if(!StringUtils.isEmpty(viewLabel)){
@@ -125,15 +127,61 @@ public class ResultViewUI extends Composite implements ResultView {
         tabContentHolder.getElement().setId("surveyorTabContentHolder");
     }
 
+    private HTMLPanel getTabMarkup(String tabName) {
+        final HTMLPanel htmlPanel = new HTMLPanel("<FONT SIZE = 2>" + tabName + "</FONT>");
+        htmlPanel.setWidth("150px");
+        return htmlPanel;
+    }
+
+    @EventHandler
+    public void onRegisterNewTabEvent(RegisterNewTabEvent registerNewTabEvent){
+        //get index of last item
+        int index = getIndexOfLastItem();
+        if(registeredTabs.values().contains(registerNewTabEvent)){
+            return; // if tab with this name is already present the just exit.
+        }
+
+        // do nothing, could handle load sequence here..
+        this.registeredTabs.put(index, registerNewTabEvent);
+
+        //setup header
+        final String tabName = registerNewTabEvent.getTabName();
+
+        vTabBar.addTab(getTabMarkup(tabName));
+    }
+
+    private int getIndexOfLastItem() {
+        int index = 0;
+        if(registeredTabs.size() == 0) {
+            index = viewConfigCount;
+        }else {
+            index = registeredTabs.size() + viewConfigCount;
+        }
+        return index;
+    }
+
     private Widget initializeWidget(ResultsViewConfig viewConfigs, Integer tabSelected){
-        int indexOfViewConfigs = 0;
+        //todo add logic to find widget from externally added tabs
+        int indexOfViewConfigs = 0; boolean hasFoundInViewConfig = false;
         for (ViewConfig viewConfig : viewConfigs) {
             if(tabSelected == indexOfViewConfigs){
                  setupWidget(viewConfig, tabSelected);
+                hasFoundInViewConfig = true;
             }
             indexOfViewConfigs++;
         }
+        if(!hasFoundInViewConfig){
+            final RegisterNewTabEvent registerNewTabEvent = registeredTabs.get(tabSelected);
+            setupWidget(registerNewTabEvent, tabSelected);
+        }
         return new HTML("No content found");
+    }
+
+    private void setupWidget(RegisterNewTabEvent registerNewTabEvent, Integer tabSelected) {
+        final RegisterNewTabEvent.AsyncDisplayWidget widgetBuilder = registerNewTabEvent.getWidgetBuilder();
+        final SimplePanel simplePanel = new SimplePanel();
+        widgetBuilder.draw(simplePanel);
+        tabContentHolder.setWidget(simplePanel);
     }
 
     private void setupWidget(final ViewConfig viewConfig, final Integer tabSelected) {
@@ -222,7 +270,9 @@ public class ResultViewUI extends Composite implements ResultView {
     }
 
     public void selectTab(final Integer tabSelection){
-        vTabBar.selectTab(tabSelection);
+        if(vTabBar.getTabCount() > 0) {
+            vTabBar.selectTab(tabSelection);
+        }
     }
 
     @Override
@@ -244,10 +294,18 @@ public class ResultViewUI extends Composite implements ResultView {
     VerticalPanel verticalPanel = new VerticalPanel();
 
     private static ResultsViewUIUiBinder ourUiBinder = GWT.create(ResultsViewUIUiBinder.class);
+    protected ClientFactory clientFactory = SimpleClientFactory.getInstance();
+
+    // Event Bus bindings
+    interface RegisterNewTabEventBinder extends EventBinder<ResultViewUI> {};
+    private RegisterNewTabEventBinder eventBinder = GWT.create(RegisterNewTabEventBinder.class);
+
 
     public ResultViewUI() {
         verticalPanel = ourUiBinder.createAndBindUi(this);
         initWidget(verticalPanel);
+        eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
+
     }
 
     public DecoratedTabBar getvTabBar() {
