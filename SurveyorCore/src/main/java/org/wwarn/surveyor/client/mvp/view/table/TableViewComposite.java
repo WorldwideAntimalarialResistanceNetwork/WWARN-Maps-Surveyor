@@ -37,17 +37,17 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.DataView;
 import com.google.gwt.visualization.client.visualizations.Table;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import org.wwarn.surveyor.client.core.DataSchema;
-import org.wwarn.surveyor.client.core.DataType;
-import org.wwarn.surveyor.client.core.RecordList;
+import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.event.InterfaceLoadCompleteEvent;
 import org.wwarn.surveyor.client.model.TableViewConfig;
 import org.wwarn.mapcore.client.utils.StringUtils;
@@ -55,10 +55,7 @@ import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.event.ResultChangedEvent;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A view to show results in a Tabular format
@@ -87,10 +84,37 @@ public class TableViewComposite extends Composite {
         Objects.requireNonNull(tableViewConfig);
         this.tableConfig =  tableViewConfig;
         rootElement = ourUiBinder.createAndBindUi(this);
+        rootElement.add(new HTMLPanel("Loading data..."));
         initWidget(rootElement);
         eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
         schema = clientFactory.getSchema();
-        setupDisplay();
+        setupTableAndFetchData();
+    }
+
+    private void setupTableAndFetchData() {
+        try {
+            final FilterQuery filterQuery;
+            if(clientFactory.getLastFilterQuery()!=null){
+                filterQuery = clientFactory.getLastFilterQuery();
+                filterQuery.setFields(Collections.EMPTY_SET);
+            }else {
+                filterQuery = new FilterQuery();
+            }
+
+            clientFactory.getDataProvider().query(filterQuery, new AsyncCallback<QueryResult>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    throw new IllegalStateException(throwable);
+                }
+
+                @Override
+                public void onSuccess(QueryResult queryResult) {
+                    setupDisplay(queryResult);
+                }
+            });
+        } catch (SearchException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public interface TableRecordsFilter{
@@ -100,14 +124,17 @@ public class TableViewComposite extends Composite {
     }
 
 
-    private void setupDisplay() {
+    private void setupDisplay(QueryResult queryResult) {
         rootElement.clear();
 
         final TableRecordsFilter tableRecordsFilter1 = getTableRecordsFilter();
+        final RecordList list;
+        list = queryResult.getRecordList();
+
         if(StringUtils.isEmpty(tableConfig.getFilterBy())){
-            recordList = tableRecordsFilter1.filter(clientFactory.getLastQueryResult().getRecordList());
+            recordList = tableRecordsFilter1.filter(list);
         }else{
-            recordList = tableRecordsFilter1.filter(clientFactory.getLastQueryResult().getRecordList(), tableConfig.getFilterBy());
+            recordList = tableRecordsFilter1.filter(list, tableConfig.getFilterBy());
         }
 
         Table.Options options = Table.Options.create();
@@ -130,6 +157,7 @@ public class TableViewComposite extends Composite {
         rootElement.add(table);
         clientFactory.getEventBus().fireEvent(new InterfaceLoadCompleteEvent());
     }
+
 
     private TableRecordsFilter getTableRecordsFilter() {
         if(tableRecordsFilter != null){return tableRecordsFilter;}
@@ -251,7 +279,7 @@ public class TableViewComposite extends Composite {
 
     }
     private String addHyperLink(String valueString, String hyperLinkValue) {
-        return "<a href=\""+SafeHtmlUtils.htmlEscape(hyperLinkValue)+"\">"+SafeHtmlUtils.htmlEscapeAllowEntities(valueString)+"</a>";
+        return "<a target=\"_blank\" href=\""+SafeHtmlUtils.htmlEscape(hyperLinkValue)+"\">"+SafeHtmlUtils.htmlEscapeAllowEntities(valueString)+"</a>";
     }
 
     private String addSpanAttribute(String valueStringRaw, String valueString) {
@@ -260,7 +288,7 @@ public class TableViewComposite extends Composite {
 
     @EventHandler
     public void onResultChanged(ResultChangedEvent resultChangedEvent){
-        setupDisplay();
+        setupDisplay(resultChangedEvent.getQueryResult());
     }
 
     private boolean isFunction(String fieldName){
