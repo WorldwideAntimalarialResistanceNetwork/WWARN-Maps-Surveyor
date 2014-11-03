@@ -116,7 +116,7 @@ public class CellTableServer extends Composite {
                             public String asString() {
                                 String hyperLinkValue = record.getValueByFieldName(column.getHyperLinkField());
                                 String valueString = record.getValueByFieldName(column.getFieldName());
-                                return  "<a href=\""+hyperLinkValue+"\">"+valueString+"</a>";
+                                return  "<a href=\""+hyperLinkValue+"\" target=\"_blank\" >"+valueString+"</a>";
                             }
                         };
                         return safeHtml;
