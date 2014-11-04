@@ -303,6 +303,7 @@ public class FacetCheckBoxWidget extends Composite implements FacetWidget {
         for(CheckBox checkBox : checkBoxes){
             final boolean isChecked = false;
             checkBox.setValue(isChecked);
+            checkBox.setEnabled(true);
         }
         selectedListItems = new HashSet<String>();
         clearSelectionControl.setVisible(false);

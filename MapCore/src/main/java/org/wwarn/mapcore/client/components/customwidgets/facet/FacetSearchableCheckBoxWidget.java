@@ -270,13 +270,19 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     @Override
     public void unSelectAndReset() {
         for(CheckBox checkBox : checkBoxList){
-            checkBox.setValue(false);
-            checkBox.removeStyleName(STYLE_CHECKBOXLIST_ITEM_CHECKED);
+            clearCheckBox(checkBox);
         }
         selectedListItems = new HashSet<String>();
         clearSelectionControl.setVisible(false);
         searchBox.setText("");
         updatePanelList(facetWidgetItems);
+    }
+
+    private void clearCheckBox(CheckBox checkBox){
+        checkBox.setValue(false);
+        checkBox.setEnabled(true);
+        checkBox.removeStyleName(STYLE_CHECKBOXLIST_ITEM_CHECKED);
+        checkBox.removeStyleName(STYLE_CHECKBOXLIST_ITEM_DISABLED);
     }
 
     public String getFacetField() {
