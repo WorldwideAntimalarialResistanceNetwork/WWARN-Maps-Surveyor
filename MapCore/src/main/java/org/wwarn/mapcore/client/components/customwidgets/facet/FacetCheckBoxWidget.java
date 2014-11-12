@@ -301,12 +301,16 @@ public class FacetCheckBoxWidget extends Composite implements FacetWidget {
     @Override
     public void unSelectAndReset() {
         for(CheckBox checkBox : checkBoxes){
-            final boolean isChecked = false;
-            checkBox.setValue(isChecked);
-            checkBox.setEnabled(true);
+            clearCheckBox(checkBox);
         }
         selectedListItems = new HashSet<String>();
         clearSelectionControl.setVisible(false);
+    }
+
+    private void clearCheckBox(CheckBox checkBox){
+        checkBox.setValue(false);
+        checkBox.setEnabled(true);
+        checkBox.removeStyleName(STYLE_DISABLED_CHECK_BOX);
     }
 
     private int getItemIndices(int mousePos, FocusPanel focusPanel) {
