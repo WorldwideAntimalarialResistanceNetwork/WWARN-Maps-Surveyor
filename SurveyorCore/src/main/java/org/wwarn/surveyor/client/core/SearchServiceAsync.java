@@ -44,7 +44,7 @@ import java.util.List;
 public interface SearchServiceAsync {
     void query(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> async) throws SearchException;
 
-    void queryTable(FilterQuery filterQuery, String[] facetFields, int start, int length, AsyncCallback<List<RecordList.Record>> async) throws SearchException;
+    void queryTable(FilterQuery filterQuery, String[] facetFields, int start, int length, TableViewConfig tableViewConfig, AsyncCallback<List<RecordList.Record>> async) throws SearchException;
 
     void preFetchData(DataSchema schema, GenericDataSource dataSource, String[] facetList,FilterQuery filterQuery, AsyncCallback<QueryResult> async) throws SearchException;
 

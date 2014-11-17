@@ -49,5 +49,5 @@ public interface SearchServiceLayer {
      */
     public void init(DataSchema dataSchema, GenericDataSource dataSource) throws SearchException;
     public QueryResult query(FilterQuery filterQuery, String[] facetFields) throws SearchException;
-    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length) throws SearchException;
+    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length, TableViewConfig tableViewConfig) throws SearchException;
 }

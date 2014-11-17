@@ -81,6 +81,7 @@ public class DataAsyncDataProvider extends AsyncDataProvider<RecordList.Record> 
 //        if (range == null){
 
             updateResults(0, tableViewConfig.getPageSize());
+
 //        }else{
 //            updateResults(range.getStart(), range.getLength());
 //        }
@@ -107,7 +108,7 @@ public class DataAsyncDataProvider extends AsyncDataProvider<RecordList.Record> 
         try {
             ServerSideSearchDataProvider serverSideSearchDataProvider = (ServerSideSearchDataProvider)clientFactory.getDataProvider();
 
-            rpcService.queryTable(filterQuery, serverSideSearchDataProvider.facetFieldList, rangeStart, rangeLength, new AsyncCallback<List<RecordList.Record>>() {
+            rpcService.queryTable(filterQuery, serverSideSearchDataProvider.facetFieldList, rangeStart, rangeLength, tableViewConfig, new AsyncCallback<List<RecordList.Record>>() {
                 @Override
                 public void onFailure(Throwable throwable) {
                     throw new IllegalStateException(throwable);
