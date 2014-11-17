@@ -70,8 +70,8 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
     }
 
     @Override
-    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length) throws SearchException {
-        final List<RecordList.Record> records = searchServiceLayer.queryTable(filterQuery,facetFields,  start, length);
+    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length, TableViewConfig tableViewConfig) throws SearchException {
+        final List<RecordList.Record> records = searchServiceLayer.queryTable(filterQuery,facetFields,  start, length, tableViewConfig);
         return records;
     }
 
