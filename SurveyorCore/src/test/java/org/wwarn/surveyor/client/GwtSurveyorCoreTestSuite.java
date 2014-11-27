@@ -35,10 +35,7 @@ package org.wwarn.surveyor.client;
 
 import junit.framework.Test;
 import com.google.gwt.junit.tools.GWTTestSuite;
-import org.wwarn.surveyor.client.core.GwtTestDefaultLocalJSONDataProvider;
-import org.wwarn.surveyor.client.core.GwtTestRecordList;
-import org.wwarn.surveyor.client.core.GwtTestServerSideSearchDataProvider;
-import org.wwarn.surveyor.client.core.GwtTestXMLApplicationLoader;
+import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.mvp.view.plot.GwtTestGWTVizPlot;
 
 /**
@@ -53,7 +50,8 @@ public class GwtSurveyorCoreTestSuite {
         suite.addTestSuite( GwtTestXMLApplicationLoader.class );
         suite.addTestSuite( GwtTestRecordList.class );
         suite.addTestSuite( GwtTestDefaultLocalJSONDataProvider.class );
-        suite.addTestSuite( GwtTestServerSideSearchDataProvider.class );
+        suite.addTestSuite( GwtTestClientSideSearchDataProvider.class );
+        suite.addTestSuite( GwtTestClientSideSearchDataProvider.class );
         suite.addTestSuite( GwtTestGWTVizPlot.class );
         return suite;
     }

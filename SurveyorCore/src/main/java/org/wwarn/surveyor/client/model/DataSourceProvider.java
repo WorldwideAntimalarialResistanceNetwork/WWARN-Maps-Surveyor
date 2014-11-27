@@ -39,5 +39,5 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 * Created by nigelthomas on 10/09/2014.
 */
 public enum DataSourceProvider implements IsSerializable{
-    LocalClientSideDataProvider, ServerSideLuceneDataProvider, GoogleAppEngineLuceneDataSource
+    LocalClientSideDataProvider, ClientSideSeachDataProvider, ServerSideLuceneDataProvider, GoogleAppEngineLuceneDataSource
 }

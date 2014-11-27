@@ -85,7 +85,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
             return new MatchAllQuery();
         }
     }
-    private InitialFilterQuery getInitialFilterQuery() {
+    InitialFilterQuery getInitialFilterQuery() {
         if(initialFilterQuery != null){ return initialFilterQuery; }
         try {
             initialFilterQuery = GWT.create(InitialFilterQuery.class);

@@ -62,6 +62,10 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
         });
     }
 
+    public GwtTestServerSideSearchDataProvider(DataProviderTestUtility.DataProviderSource dataProviderSource) {
+        super(dataProviderSource);
+    }
+
     @Override
     protected void gwtSetUp() throws Exception {
         super.gwtSetUp();

@@ -48,7 +48,7 @@ public class RecordListBuilder {
     }
 
     public enum CompressionMode{
-        NONE, CANONICAL
+        NONE, CANONICAL, CANONICAL_WITH_INVERTED_INDEX
     }
 
     public RecordListBuilder(DataSchema dataSchema) {
@@ -57,10 +57,17 @@ public class RecordListBuilder {
 
     public RecordListBuilder(CompressionMode compressionMode, DataSchema schema) {
         this.compressionMode = compressionMode;
-        if(compressionMode == CompressionMode.NONE){
-            this.recordList = new RecordList(schema);
-        }else{
-            this.recordList = new RecordListCompressedImpl(schema);
+        switch (compressionMode){
+            case NONE:
+                this.recordList = new RecordList(schema);
+                break;
+            default:
+            case CANONICAL:
+                this.recordList = new RecordListCompressedImpl(schema);
+                break;
+            case CANONICAL_WITH_INVERTED_INDEX:
+                this.recordList = new RecordListCompressedWithInvertedIndexImpl(schema);
+                break;
         }
     }
 

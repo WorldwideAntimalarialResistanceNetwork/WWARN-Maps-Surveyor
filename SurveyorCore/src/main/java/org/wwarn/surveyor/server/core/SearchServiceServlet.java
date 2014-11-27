@@ -71,7 +71,6 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
 
     @Override
     public QueryResult query(FilterQuery filterQuery, String[] facetFields) throws SearchException {
-
         final QueryResult query = searchServiceLayer.query(filterQuery, facetFields);
         return query;
     }
@@ -87,10 +86,16 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         Objects.requireNonNull(schema);
         Objects.requireNonNull(dataSource);
         //relative path to absolute path
-        final String fileInServletContext = (dataSource.getLocation()==null)?null:findFileInServletContext(dataSource.getLocation());
+        final String fileInServletContext = (dataSource.getLocation() == null) ? null : findFileInServletContext(dataSource.getLocation());
         final GenericDataSource source = new GenericDataSource(fileInServletContext, dataSource.getResource(), dataSource.getDataSourceType(), dataSource.getDataSourceProvider());
         searchServiceLayer.init(schema, source);
-        return this.query(filterQuery, facetFields);
+        QueryResult queryResult = null;
+        if (dataSource.getDataSourceProvider() == DataSourceProvider.ClientSideSeachDataProvider) {
+            queryResult = ((LuceneSearchServiceImpl)searchServiceLayer).queryWithBitset(filterQuery, facetFields);
+        } else {
+            queryResult = this.query(filterQuery, facetFields);
+        }
+        return queryResult;
     }
 
 

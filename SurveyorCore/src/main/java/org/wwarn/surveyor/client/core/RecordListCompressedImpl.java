@@ -123,9 +123,9 @@ public class RecordListCompressedImpl extends RecordList {
     }
 
     public void initialise() {
-        // initialise heap from inverse heap, null inverse heap
+        // initialise heap from inverse heap
         heap  = new ArrayList<>(inverseHeap.keySet());
-        inverseHeap = null;
+        inverseHeap = null; //null inverse heap to save space
     }
 
     public static class RecordCompressedImpl extends Record {
