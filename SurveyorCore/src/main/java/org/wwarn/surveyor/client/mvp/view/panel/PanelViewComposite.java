@@ -63,6 +63,9 @@ public class PanelViewComposite extends Composite {
     @UiField
     Frame frame = new Frame();
 
+    @UiField
+    Panel topicSelectionPanel = new HorizontalPanel();
+
     public PanelViewComposite(PanelViewConfig panelViewConfig){
 
         this.panelViewConfig = panelViewConfig;
@@ -74,7 +77,14 @@ public class PanelViewComposite extends Composite {
         setupListBox();
         ClientFactory clientFactory = SimpleClientFactory.getInstance();
         clientFactory.getEventBus().fireEvent(new InterfaceLoadCompleteEvent());
+        setupTopicSelection();
 
+    }
+
+    void setupTopicSelection(){
+        if(!panelViewConfig.getPages().isEmpty() && panelViewConfig.getPages().size() == 1){
+            topicSelectionPanel.setVisible(false);
+        }
     }
 
     void setupListBox(){

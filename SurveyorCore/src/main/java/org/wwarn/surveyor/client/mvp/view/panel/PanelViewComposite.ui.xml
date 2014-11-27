@@ -70,9 +70,9 @@
 
     </ui:style>
     <g:FlowPanel addStyleNames="{style.frameContainer}">
-        <g:HorizontalPanel addStyleNames="{style.horizontalPanel}">
+        <g:HorizontalPanel addStyleNames="{style.horizontalPanel}" ui:field="topicSelectionPanel">
             <g:Label addStyleNames="{style.label}"> Please select a topic: </g:Label>
-            <g:ListBox ui:field="listBox"></g:ListBox>
+            <g:ListBox ui:field="listBox"/>
         </g:HorizontalPanel>
 
         <g:Frame addStyleNames="{style.frame}" ui:field="frame" height="500px"/>

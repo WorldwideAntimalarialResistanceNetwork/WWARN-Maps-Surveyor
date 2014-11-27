@@ -47,7 +47,11 @@ import java.util.List;
  * Date: 15/08/13
  * Time: 15:29
  */
-public class TableViewConfig implements ViewConfig {
+public class TableViewConfig implements ViewConfig, IsSerializable {
+
+    public final static String DESCENDENT_ORDER = "desc";
+    public final static String ASCENDENT_ORDER = "asc";
+
     String viewName = "";
     private List<TableColumn> columns = new ArrayList<TableColumn>();
     private String sortColumn;
@@ -184,5 +188,12 @@ public class TableViewConfig implements ViewConfig {
 
         //It will create a CellTableServer
         SERVER_TABLE
+    }
+
+    public boolean isDescendentOrder(){
+        if (DESCENDENT_ORDER.equals(sortOrder)){
+            return true;
+        }
+        return false;
     }
 }

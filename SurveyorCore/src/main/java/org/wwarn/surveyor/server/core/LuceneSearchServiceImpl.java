@@ -52,6 +52,7 @@ import org.json.simple.JSONObject;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
+import org.wwarn.surveyor.client.model.TableViewConfig;
 
 import java.io.*;
 import java.util.*;
@@ -415,12 +416,13 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
 
     }
 
-    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length) throws SearchException{
+    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length, TableViewConfig tableViewConfig) throws SearchException{
         try{
             QueryResult queryResult = this.query(filterQuery, facetFields);
             RecordList recordList = queryResult.getRecordList();
-            List<RecordList.Record> searchedRecords = recordList.getRecords();
-            List<RecordList.Record> uniqueRecords = subsetUniqueRecords(filterQuery,searchedRecords);
+            List<RecordList.Record>  searchedRecords = recordList.getRecords();
+            List<RecordList.Record> orderRecords = orderRecords(searchedRecords, tableViewConfig);
+            List<RecordList.Record> uniqueRecords = subsetUniqueRecords(filterQuery,orderRecords);
             return getPageRecords(uniqueRecords, start,length);
         }catch(Exception e){
             throw new SearchException("Unable to query the table",e);
@@ -459,6 +461,34 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         }
 
         return pageRecords;
+    }
+
+    List<RecordList.Record> orderRecords(List<RecordList.Record> records, final TableViewConfig tableViewConfig){
+
+        if(tableViewConfig == null || tableViewConfig.getSortColumn().isEmpty()){
+            return records;
+        }
+
+        List<RecordList.Record> orderList = new ArrayList<>(records.size());
+        orderList.addAll(records);
+
+        Collections.sort(orderList,new Comparator<RecordList.Record>() {
+            @Override
+            public int compare(RecordList.Record o1, RecordList.Record o2) {
+                if (o1 == o2) {
+                    return 0;
+                }
+
+                String sortColumn = tableViewConfig.getSortColumn();
+                int diff = -1;
+                if (o1 != null) {
+                    diff = (o2 != null) ? o1.getValueByFieldName(sortColumn).compareTo(o2.getValueByFieldName(sortColumn)) : 1;
+                }
+
+                return tableViewConfig.isDescendentOrder() ? -diff : diff;
+            }
+        });
+        return orderList;
     }
 
     private List<RecordList.Record>  getPageRecords(List<RecordList.Record> uniqueRecords, int start, int length){

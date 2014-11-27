@@ -37,6 +37,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.wwarn.surveyor.client.core.*;
+import org.wwarn.surveyor.client.model.TableViewConfig;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -55,7 +56,7 @@ public class LuceneSearchServiceImplTest {
     public void setup() throws Exception{
 
         final DataSchema schema = testUtility.fetchSampleDataSchema();
-        final GenericDataSource dataSource = new GenericDataSource(null, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList);
+        final GenericDataSource dataSource = new GenericDataSource(null, Constants.JSON_DATA_SOURCE_EXTENDED, GenericDataSource.DataSourceType.JSONPropertyList);
 
         luceneSearchService.init(schema, dataSource);
         assertNotNull(luceneSearchService);
@@ -125,7 +126,7 @@ public class LuceneSearchServiceImplTest {
         filterQuery.addFilter("PID", "128");
         filterQuery.addFilter("PY", "2010");
 
-        List<RecordList.Record> records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 10);
+        List<RecordList.Record> records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 10, null);
         assertNotNull(records);
 
         assertEquals(records.size(), 1);
@@ -145,14 +146,14 @@ public class LuceneSearchServiceImplTest {
         //Add filter
         filterQuery.addFilter("PTN", "Lay press");
 
-        List<RecordList.Record> records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 50);
-        assertEquals(17,records.size());
+        List<RecordList.Record> records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 50, null);
+        assertEquals(18,records.size());
 
-        records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 10);
+        records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 10, null);
         assertEquals(10,records.size());
 
-        records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 10, 10);
-        assertEquals(7, records.size());
+        records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 10, 10, null);
+        assertEquals(8, records.size());
 
     }
 
@@ -164,8 +165,28 @@ public class LuceneSearchServiceImplTest {
         filterQuery.addFilter("PID", "128");
         filterQuery.addFilter("PY", "2010");
 
-        List<RecordList.Record> records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 10);
+        List<RecordList.Record> records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 10, null);
+    }
 
+    @Test
+    public void testSortedTable() throws Exception{
+
+        FilterQuery filterQuery = new FilterQuery();
+        Set<String> selectedFields = new HashSet<String>(Arrays.asList("PID", "PUB", "PY"));
+        filterQuery.setFields(selectedFields);
+        filterQuery.addFilter("PID", "166");
+
+        TableViewConfig tableViewConfig = new TableViewConfig("tableView", "tableLabel");
+        tableViewConfig.setSortColumn("PY");
+        tableViewConfig.setSortOrder("desc");
+
+        List<RecordList.Record> records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 10, tableViewConfig);
+
+        assertEquals(3, records.size());
+
+        assertEquals("2012", records.get(0).getValueByFieldName("PY").substring(0,4));
+        assertEquals("2011", records.get(1).getValueByFieldName("PY").substring(0,4));
+        assertEquals("2010", records.get(2).getValueByFieldName("PY").substring(0,4));
     }
 
 

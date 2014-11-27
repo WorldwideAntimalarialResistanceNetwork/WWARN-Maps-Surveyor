@@ -36,6 +36,7 @@ package org.wwarn.surveyor.client.mvp.view.table;
 import com.google.gwt.cell.client.ActionCell;
 import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.cell.client.SafeHtmlCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -51,8 +52,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.HasRows;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.Range;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.RecordList;
+import org.wwarn.surveyor.client.event.ResultChangedEvent;
 import org.wwarn.surveyor.client.model.TableViewConfig;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
@@ -65,37 +69,43 @@ import java.util.List;
  */
 public class CellTableServer extends Composite {
 
+    ClientFactory clientFactory = SimpleClientFactory.getInstance();
+    interface CellTableServerEventBinder extends EventBinder<CellTableServer> {};
+
     TableViewConfig tableViewConfig;
 
     CellTable<RecordList.Record> cellTable;
-
-    ClientFactory clientFactory = SimpleClientFactory.getInstance();
 
     SimplePager pager;
 
     DataAsyncDataProvider dataProviderAsync;
 
     public CellTableServer(TableViewConfig tableViewConfig) {
+        CellTableServerEventBinder eventBinder = GWT.create(CellTableServerEventBinder.class);
+        eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
         this.tableViewConfig = tableViewConfig;
-        cellTable = new CellTable<RecordList.Record>();
 
-        VerticalPanel panel = new VerticalPanel();
-        pager = new SimplePager();
-        pager.setDisplay(cellTable);
-        panel.add(cellTable);
-        panel.add(pager);
-        initWidget(panel);
-
-        cellTable.setPageSize(tableViewConfig.getPageSize());
-
+        initWidget(setupPanel());
         buildTable();
         createWithAsyncDataProvider();
 
     }
+
+    private VerticalPanel setupPanel(){
+        VerticalPanel panel = new VerticalPanel();
+        cellTable = new CellTable<RecordList.Record>();
+        cellTable.setPageSize(tableViewConfig.getPageSize());
+        pager = new SimplePager();
+        pager.setDisplay(cellTable);
+        panel.add(cellTable);
+        panel.add(pager);
+        return panel;
+    }
+
+
     private void createWithAsyncDataProvider() {
         dataProviderAsync = new DataAsyncDataProvider(tableViewConfig);
         dataProviderAsync.addDataDisplay(cellTable);
-
     }
 
 
@@ -116,7 +126,7 @@ public class CellTableServer extends Composite {
                             public String asString() {
                                 String hyperLinkValue = record.getValueByFieldName(column.getHyperLinkField());
                                 String valueString = record.getValueByFieldName(column.getFieldName());
-                                return  "<a href=\""+hyperLinkValue+"\">"+valueString+"</a>";
+                                return  "<a href=\""+hyperLinkValue+"\" target=\"_blank\" >"+valueString+"</a>";
                             }
                         };
                         return safeHtml;
@@ -138,7 +148,6 @@ public class CellTableServer extends Composite {
                     }
                 };
             }
-
             cellTable.addColumn(tableColumn, column.getFieldTitle());
         }
 
@@ -148,32 +157,9 @@ public class CellTableServer extends Composite {
         return fieldName.startsWith("func");
     }
 
-//    public class MySimplePager extends SimplePager {
-//
-//        public MySimplePager() {
-//            this.setRangeLimited(true);
-//        }
-//
-//        public MySimplePager(TextLocation location, Resources resources, boolean showFastForwardButton, int fastForwardRows, boolean showLastPageButton) {
-//            super(location, resources, showFastForwardButton, fastForwardRows, showLastPageButton);
-//            this.setRangeLimited(true);
-//        }
-//
-//        public void setPageStart(int index) {
-//
-//            if (this.getDisplay() != null) {
-//                Range range = getDisplay().getVisibleRange();
-//                int pageSize = range.getLength();
-//                if (!isRangeLimited() && getDisplay().isRowCountExact()) {
-//                    index = Math.min(index, getDisplay().getRowCount() - pageSize);
-//                }
-//                index = Math.max(0, index);
-//                if (index != range.getStart()) {
-//                    getDisplay().setVisibleRange(index, pageSize);
-//                }
-//            }
-//        }
-//
-//    }
+    @EventHandler
+    public void onResultChanged(ResultChangedEvent resultChangedEvent){
+        pager.firstPage();
+    }
 
 }
