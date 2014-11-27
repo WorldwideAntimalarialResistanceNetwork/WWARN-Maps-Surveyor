@@ -33,10 +33,17 @@ package org.wwarn.surveyor.server.core;
  * #L%
  */
 
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.*;
+import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.TableViewConfig;
+
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
+import net.sf.jsr107cache.CacheFactory;
+import net.sf.jsr107cache.CacheManager;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -127,6 +134,21 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
 
     private String getServletContextFilePath(){
         return this.getServletContext().getRealPath("/");
+    }
+
+    private static class CacheMap {
+        Cache cache;
+
+        private CacheMap() {
+            Map props = new HashMap();
+            props.put(GCacheFactory.EXPIRATION_DELTA, 3600*24);
+
+            try {
+                CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
+                cache = cacheFactory.createCache(Collections.emptyMap());
+            } catch (CacheException e) {}
+        }
+
     }
 
 }

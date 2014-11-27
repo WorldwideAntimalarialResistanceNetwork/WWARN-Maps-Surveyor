@@ -281,6 +281,12 @@
             <version>1.1.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.sf.jsr107cache</groupId>
+            <artifactId>jsr107cache</artifactId>
+            <version>1.1</version>
+        </dependency>
+
     </dependencies>
 
 </project>
