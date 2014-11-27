@@ -37,6 +37,7 @@
         <!-- GWT needs at least java 1.5 -->
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <map.core.version>${pom.version}</map.core.version>
         <javaVersion>1.7</javaVersion>
     </properties>
