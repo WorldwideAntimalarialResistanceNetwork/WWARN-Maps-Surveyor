@@ -38,6 +38,7 @@ import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.DataView;
 import com.google.gwt.visualization.client.Properties;
+import org.wwarn.mapcore.client.utils.StringUtils;
 
 import java.util.*;
 
@@ -96,11 +97,13 @@ public class DataTableExtensions {
         //noinspection deprecation
         JsArrayMixed rawDistinctValues = DataTableExtensions.getDistinctValues(table, columnIndex);
 
-        String[] parsedDistinctValues = new String[rawDistinctValues.length()];
+        List<String> parsedDistinctValues = new ArrayList<>();
         for (int i = 0; i < rawDistinctValues.length(); i++) {
-            parsedDistinctValues[i] = rawDistinctValues.getString(i);
+            final String s = rawDistinctValues.getString(i);
+            if(StringUtils.isEmpty(s)) continue;
+            parsedDistinctValues.add(s);
         }
-        return addAll(new TreeSet<String>(), parsedDistinctValues);
+        return addAll(new TreeSet<String>(), parsedDistinctValues.toArray(new String[parsedDistinctValues.size()]));
     }
 
     private Set<String> addAll(Set<String> distinctColumnValues, String[] parsedDistinctValues) {
