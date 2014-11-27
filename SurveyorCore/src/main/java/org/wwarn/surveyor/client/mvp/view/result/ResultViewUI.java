@@ -269,8 +269,9 @@ public class ResultViewUI extends Composite implements ResultView {
         widget[0].setWidth("100%");
     }
 
-    public void selectTab(final Integer tabSelection){
+    public void selectTab(Integer tabSelection){
         if(vTabBar.getTabCount() > 0) {
+            tabSelection = (vTabBar.getTabCount() > tabSelection)?tabSelection:0;
             vTabBar.selectTab(tabSelection);
         }
     }
