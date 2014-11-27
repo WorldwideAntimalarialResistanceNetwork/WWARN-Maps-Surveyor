@@ -294,13 +294,19 @@ public class MapViewComposite extends Composite {
         @Override
         public LatitudeLongitude process(RecordList.Record record) {
             double lat = getDefaultMarkerLatitude(record);
-            double lon = Double.parseDouble(record.getValueByFieldName(viewConfig.getMarkerLongitudeField()));
+            final String markerLongitudeField = viewConfig.getMarkerLongitudeField();
+            double lon = Double.parseDouble(getCoordinateWithDefault(record,markerLongitudeField));
             return new LatitudeLongitude(lat, lon);
         }
     }
 
     private static double getDefaultMarkerLatitude(RecordList.Record record) {
-        return Double.parseDouble(record.getValueByFieldName(viewConfig.getMarkerLatitudeField()));
+        final String markerLatitudeField = viewConfig.getMarkerLatitudeField();
+        return Double.parseDouble(getCoordinateWithDefault(record, markerLatitudeField));
+    }
+
+    private static String getCoordinateWithDefault(RecordList.Record record, String markerLatitudeField) {
+        return StringUtils.ifEmpty(record.getValueByFieldName(markerLatitudeField), "0");
     }
 
     public interface MarkerCoordinateSource<T>{
