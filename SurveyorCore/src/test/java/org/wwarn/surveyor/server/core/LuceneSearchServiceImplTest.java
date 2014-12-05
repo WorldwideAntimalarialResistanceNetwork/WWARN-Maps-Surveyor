@@ -183,7 +183,6 @@ public class LuceneSearchServiceImplTest {
         List<RecordList.Record> records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 10, tableViewConfig);
 
         assertEquals(3, records.size());
-
         assertEquals("2012", records.get(0).getValueByFieldName("PY").substring(0,4));
         assertEquals("2011", records.get(1).getValueByFieldName("PY").substring(0,4));
         assertEquals("2010", records.get(2).getValueByFieldName("PY").substring(0,4));
