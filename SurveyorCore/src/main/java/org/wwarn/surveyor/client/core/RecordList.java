@@ -58,7 +58,7 @@ public class RecordList implements IsSerializable, Serializable{
     }
 
     public List<Record> getRecords() {
-        return Collections.unmodifiableList(records);
+        return (records);
     }
 
     /**

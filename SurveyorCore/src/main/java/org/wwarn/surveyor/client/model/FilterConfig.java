@@ -80,7 +80,7 @@ public class FilterConfig implements Config {
 
 
     public List<FilterSetting> getFilters(){
-        return Collections.unmodifiableList(this.filters);
+        return (this.filters);
     }
 
     public int getFilterCount(){

@@ -82,7 +82,7 @@ public class TableViewConfig implements ViewConfig, IsSerializable {
     }
 
     public List<TableColumn> getColumns() {
-        return Collections.unmodifiableList(columns);
+        return (columns);
     }
 
     public void add(TableColumn tableColumn){

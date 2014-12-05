@@ -77,7 +77,7 @@ public class FilterChangedEvent extends GenericEvent {
     }
 
     public List<FilterElement> getSelectedListItems() {
-        return Collections.unmodifiableList(selectedListItems);
+        return (selectedListItems);
     }
 
     public void addFilter(String facetFieldValue){
