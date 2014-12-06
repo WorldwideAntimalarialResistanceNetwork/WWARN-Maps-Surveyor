@@ -47,8 +47,6 @@ import net.sf.jsr107cache.CacheManager;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -90,11 +88,10 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         final GenericDataSource source = new GenericDataSource(fileInServletContext, dataSource.getResource(), dataSource.getDataSourceType(), dataSource.getDataSourceProvider());
         searchServiceLayer.init(schema, source);
         QueryResult queryResult = null;
-        if (dataSource.getDataSourceProvider() == DataSourceProvider.ClientSideSeachDataProvider) {
-            queryResult = ((LuceneSearchServiceImpl)searchServiceLayer).queryWithBitset(filterQuery, facetFields);
-        } else {
-            queryResult = this.query(filterQuery, facetFields);
+        if(dataSource.getDataSourceProvider() == DataSourceProvider.ClientSideSearchDataProvider){
+            filterQuery.setBuildInvertedIndex(true);
         }
+        queryResult = this.query(filterQuery, facetFields);
         return queryResult;
     }
 

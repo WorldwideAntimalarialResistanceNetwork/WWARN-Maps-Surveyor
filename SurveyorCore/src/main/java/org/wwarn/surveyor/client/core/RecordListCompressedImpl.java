@@ -47,7 +47,7 @@ public class RecordListCompressedImpl extends RecordList {
     // eg. 1.342, 1.212, Africa, Some Journal Title
     //String[] heap;
 
-    private transient Map<String, Integer> inverseHeap = new LinkedHashMap<>() /*Only used in initialisation phase, kep null afterwards*/;
+    private transient Map<String, Integer> inverseHeap = new LinkedHashMap<>() /*Only used in initialisation phase, kept null afterwards*/;
     private List<String> heap = new ArrayList<>();
     private int heapIndex = -1;
 

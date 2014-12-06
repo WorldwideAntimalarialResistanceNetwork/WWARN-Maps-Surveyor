@@ -33,60 +33,57 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.google.gwt.core.client.GWT;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
-* Created by nigelthomas on 05/07/2014.
-*/
-public class RecordListBuilder {
+ * Backed by a record list, this is a restricted view of the backing list
+ */
+public class RecordListView extends RecordList{
+    private UnsupportedOperationException unsupportedOperationException = new UnsupportedOperationException();
 
-    private final CompressionMode compressionMode;
-    private final RecordList recordList;
-
-    public void add(RecordList.Record currentRecord) {
-        recordList.add(currentRecord);
-    }
-
-    public enum CompressionMode{
-        NONE, CANONICAL, CANONICAL_WITH_INVERTED_INDEX
-    }
-
-    public RecordListBuilder(DataSchema dataSchema) {
-        this(CompressionMode.NONE, dataSchema);
-    }
-
-    public RecordListBuilder(CompressionMode compressionMode, DataSchema schema) {
-        this.compressionMode = compressionMode;
-        switch (compressionMode){
-            case NONE:
-                this.recordList = new RecordList(schema);
-                break;
-            default:
-            case CANONICAL:
-                this.recordList = new RecordListCompressedImpl(schema);
-                break;
-            case CANONICAL_WITH_INVERTED_INDEX:
-                this.recordList = new RecordListCompressedWithInvertedIndexImpl(schema);
-                break;
+    public RecordListView(RecordList recordList, BitSet bitSet) {
+        final List<Record> records = recordList.getRecords();
+        if(bitSet.length() < 1){
+            super.records = recordList.records;
+        }else {
+            for (int i = 0; i < records.size(); i++) {
+                if (bitSet.get(i)) {
+                    super.records.add(records.get(i));
+                }
+            }
         }
     }
 
-    public RecordListBuilder addRecord(String... fields){
-        recordList.addRecord(fields);
-        return this;
+    public RecordListView() {
     }
 
-    public RecordList createRecordList() {
-        switch (compressionMode) {
-            case NONE:
-                GWT.log("Using RecordList uncompressed");
-                break;
-            case CANONICAL:
-            case CANONICAL_WITH_INVERTED_INDEX:
-            default:
-                ((RecordListCompressedImpl) this.recordList).initialise();
-                break;
-        }
-        return recordList;
+    public RecordListView(DataSchema schema) {
+        throw unsupportedOperationException;
+    }
+
+    @Override
+    public RecordList getUniqueRecordsBy(String fieldName) {
+        throw unsupportedOperationException;
+    }
+
+    @Override
+    public void add(Record record) {
+        throw unsupportedOperationException;
+    }
+
+    @Override
+    public void addRecord(String... fields) {
+        throw unsupportedOperationException;
+    }
+
+    @Override
+    public int size() {
+        return super.size();
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

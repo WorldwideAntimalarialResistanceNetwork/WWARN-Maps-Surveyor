@@ -49,6 +49,16 @@ public class FilterQuery implements IsSerializable{
 
     boolean fetchAllDistinctFieldValues = true;
 
+    public boolean buildInvertedIndex() {
+        return buildInvertedIndex;
+    }
+
+    public void setBuildInvertedIndex(boolean buildInvertedIndex) {
+        this.buildInvertedIndex = buildInvertedIndex;
+    }
+
+    boolean buildInvertedIndex = false;
+
     Set<String> fields;
 
     public FilterQuery() {

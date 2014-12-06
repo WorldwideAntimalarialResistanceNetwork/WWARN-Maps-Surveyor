@@ -57,6 +57,7 @@ public class GwtTestRecordList extends VisualizationTest {
     private DataTable table;
     private DataSchema schema;
     private int rowIndex = 0;
+    private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
 
     @Override
     protected String[] getVisualizationPackage() {
@@ -122,5 +123,43 @@ public class GwtTestRecordList extends VisualizationTest {
                 assertEquals(2, uniqueRecords.size());
             }
         });
+    }
+
+    @Test
+    public void testRecordListCompressedBuilder() throws Exception {
+        // test base case
+
+        final RecordListBuilder.CompressionMode[] values = RecordListBuilder.CompressionMode.values();
+        assertTrue(values.length > 0);
+        for (RecordListBuilder.CompressionMode compressionMode : values) {
+            System.out.println(compressionMode);
+
+            RecordListBuilder recordListBuilder = new RecordListBuilder(compressionMode, dataProviderTestUtility.fetchSampleDataSchema());
+            RecordList recordList = recordListBuilder.createRecordList();
+            assertNotNull(recordList);
+            switch (compressionMode) {
+                case NONE:
+                    assertTrue(recordList instanceof RecordList);
+                    break;
+                case CANONICAL:
+                    assertTrue(recordList instanceof RecordListCompressedImpl);
+                    break;
+                case CANONICAL_WITH_INVERTED_INDEX:
+                    assertTrue(recordList instanceof RecordListCompressedWithInvertedIndexImpl);
+                    break;
+            }
+            assertNotNull(recordList.toString());
+
+            // test adding records
+            recordListBuilder = new RecordListBuilder(RecordListBuilder.CompressionMode.CANONICAL_WITH_INVERTED_INDEX, dataProviderTestUtility.fetchSampleDataSchema());
+            for (int i = 0; i < 7; i++) {
+                recordListBuilder.addRecord("200"+i,"2b","3c","4d","5e","6f","7g", "180"+i);
+            }
+            recordList = recordListBuilder.createRecordList();
+            assertNotNull(recordList);
+            assertTrue(recordList instanceof RecordListCompressedWithInvertedIndexImpl);
+            assertNotNull(recordList.toString());
+        }
+
     }
 }

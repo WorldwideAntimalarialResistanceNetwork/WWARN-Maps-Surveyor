@@ -107,6 +107,11 @@ public class SimpleClientFactory implements ClientFactory {
             GenericDataSource dataSource = new GenericDataSource(config.getFilename(), null, GenericDataSource.DataSourceType.ServletRelativeDataSource);
 
             switch (config.getDataSourceProvider()){
+                case ClientSideSearchDataProvider:
+                    dataSource.setDataSourceProvider(DataSourceProvider.ClientSideSearchDataProvider);
+                    this.dataProvider = new ClientSideSearchDataProvider(dataSource, schema, facetFieldList);
+
+                break;
                 case ServerSideLuceneDataProvider:
                     dataSource.setDataSourceProvider(DataSourceProvider.ServerSideLuceneDataProvider);
                     this.dataProvider = new ServerSideSearchDataProvider(dataSource, schema, facetFieldList);
@@ -115,6 +120,7 @@ public class SimpleClientFactory implements ClientFactory {
                     dataSource.setDataSourceProvider(DataSourceProvider.GoogleAppEngineLuceneDataSource);
                     this.dataProvider = new ServerSideSearchDataProvider(dataSource, schema, facetFieldList);
                     break;
+                case LocalClientSideDataProvider:
                 default:
                     dataSource.setDataSourceProvider(DataSourceProvider.LocalClientSideDataProvider);
                     this.dataProvider =  new DefaultLocalJSONDataProvider(dataSource, schema, facetFieldList);

@@ -56,7 +56,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
     protected JSONArray jsonArray;
     protected DataSchema schema;
-    private DataProvider dataProvider;
+    DataProvider dataProvider;
 
 
     public GwtTestDefaultLocalJSONDataProvider(DataProviderTestUtility.DataProviderSource source) {
@@ -123,6 +123,10 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                             assertEquals(QUERY_SIZE, recordList.size());
 
                             // validate all records are present in the query
+
+                            final DataProviderTestUtility testUtility = new DataProviderTestUtility();
+                            jsonArray = testUtility.getJSONArray();
+                            schema = testUtility.fetchSampleDataSchema();
                             assertNotNull(jsonArray);
                             assertNotNull(schema);
                             List<RecordList.Record> records = recordList.getRecords();

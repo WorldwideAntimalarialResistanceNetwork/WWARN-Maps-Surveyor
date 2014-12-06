@@ -33,60 +33,62 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+import java.util.*;
 
 /**
-* Created by nigelthomas on 05/07/2014.
+* Created by nigelthomas on 27/11/2014.
 */
-public class RecordListBuilder {
+class FieldInvertedIndex implements IsSerializable {
+    private final transient DataSchema schema; // don't want this to be serialised as it is already present in parent
+    int docPosition=0;
+    List<Map<String,Set<Integer>>> fields = new ArrayList<>(); // List of fields in schema order, each with field with a map of fields values to terms to document positions
 
-    private final CompressionMode compressionMode;
-    private final RecordList recordList;
-
-    public void add(RecordList.Record currentRecord) {
-        recordList.add(currentRecord);
-    }
-
-    public enum CompressionMode{
-        NONE, CANONICAL, CANONICAL_WITH_INVERTED_INDEX
-    }
-
-    public RecordListBuilder(DataSchema dataSchema) {
-        this(CompressionMode.NONE, dataSchema);
-    }
-
-    public RecordListBuilder(CompressionMode compressionMode, DataSchema schema) {
-        this.compressionMode = compressionMode;
-        switch (compressionMode){
-            case NONE:
-                this.recordList = new RecordList(schema);
-                break;
-            default:
-            case CANONICAL:
-                this.recordList = new RecordListCompressedImpl(schema);
-                break;
-            case CANONICAL_WITH_INVERTED_INDEX:
-                this.recordList = new RecordListCompressedWithInvertedIndexImpl(schema);
-                break;
+    public FieldInvertedIndex(DataSchema schema) {
+        this.schema = schema;
+        for (String field : schema.getColumns()) {
+            final HashMap<String, Set<Integer>> e = new HashMap<String, Set<Integer>>();
+            fields.add(e);
         }
     }
 
-    public RecordListBuilder addRecord(String... fields){
-        recordList.addRecord(fields);
-        return this;
+    public List<Map<String, Set<Integer>>> getFields(){
+        return fields;
     }
 
-    public RecordList createRecordList() {
-        switch (compressionMode) {
-            case NONE:
-                GWT.log("Using RecordList uncompressed");
-                break;
-            case CANONICAL:
-            case CANONICAL_WITH_INVERTED_INDEX:
-            default:
-                ((RecordListCompressedImpl) this.recordList).initialise();
-                break;
+    /**
+     * Number of documents in this index
+     * @return
+     */
+    public int docSize(){
+        return docPosition+1;
+    }
+
+    FieldInvertedIndex() {
+        schema = null;
+    }
+
+    //add fields on index
+    public void addDocument(String... fields){
+        for (int i = 0; i < fields.length; i++) {
+            String field = fields[i];
+            final Map<String, Set<Integer>> stringSetMap = this.fields.get(i);
+            Set<Integer> integers = stringSetMap.get(field);
+            if(integers == null){
+                integers = new TreeSet<>();
+            }
+            integers.add(docPosition);
+            stringSetMap.put(field, integers);
         }
-        return recordList;
+        docPosition++;
+    }
+
+    @Override
+    public String toString() {
+        return "InvertedIndex{" +
+                " docPosition=" + docPosition +
+                ", fields=" + fields +
+                '}';
     }
 }

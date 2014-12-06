@@ -185,7 +185,7 @@ public class GwtTestBitSetImpl extends GWTTestCase {
         bs.andNot(bs2);
         assertEquals("Incorrect bitset after andNot",
                 "{0,1,4,6,7}", bs.toString());
-        bs = new BitSet(0);
+        bs = new BitSet();
         bs.andNot(bs2);
         assertEquals("Incorrect size", 0, bs.length());
     }

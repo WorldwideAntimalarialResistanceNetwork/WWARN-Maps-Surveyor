@@ -51,7 +51,8 @@ public class GwtSurveyorCoreTestSuite {
         suite.addTestSuite( GwtTestRecordList.class );
         suite.addTestSuite( GwtTestDefaultLocalJSONDataProvider.class );
         suite.addTestSuite( GwtTestClientSideSearchDataProvider.class );
-        suite.addTestSuite( GwtTestClientSideSearchDataProvider.class );
+        suite.addTestSuite( GwtTestServerSideSearchDataProvider.class );
+        suite.addTestSuite( GwtTestBitSetImpl.class );
         suite.addTestSuite( GwtTestGWTVizPlot.class );
         return suite;
     }

@@ -278,7 +278,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             final List<ScoreDoc> hits = simpleCollector.getHits();
 
             // convert scoredoc to recordlist
-            recordList = convertSearchResultToRecordList(indexSearcher, hits, filterQuery.getFields());
+            recordList = convertSearchResultToRecordList(indexSearcher, hits, filterQuery);
         } catch (IOException e) {
             throw new SearchException("Unable to open index or error while fetching documents", e);
         }
@@ -368,8 +368,13 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         return ((FilterQuery.FilterFieldValue) filterQueryElement).getFieldsValue();
     }
 
-    private RecordList convertSearchResultToRecordList(IndexSearcher indexSearcher, List<ScoreDoc> docs, Set<String> filterFields) throws IOException {
-        final RecordListBuilder recordListBuilder = new RecordListBuilder(RecordListBuilder.CompressionMode.CANONICAL, dataSchema);
+    private RecordList convertSearchResultToRecordList(IndexSearcher indexSearcher, List<ScoreDoc> docs, FilterQuery filterQuery) throws IOException {
+        RecordListBuilder recordListBuilder;
+        if(filterQuery.buildInvertedIndex()) {
+            recordListBuilder = new RecordListBuilder(RecordListBuilder.CompressionMode.CANONICAL_WITH_INVERTED_INDEX, dataSchema);
+        }else{
+            recordListBuilder = new RecordListBuilder(RecordListBuilder.CompressionMode.CANONICAL, dataSchema);
+        }
         for (ScoreDoc doc : docs) {
             final Document document = indexSearcher.doc(doc.doc);
             String[] fieldValues = new String[dataSchema.size()];
@@ -377,7 +382,8 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                 final String fieldName = indexableField.name();
                 final int columnIndex = dataSchema.getColumnIndex(fieldName);
                 final DataType type = dataSchema.getType(fieldName);
-                if(columnIndex < 0 || !isFieldSelected(fieldName, filterFields)){continue;}
+                final Set<String> strings = filterQuery.getFields();
+                if(columnIndex < 0 || !isFieldSelected(fieldName, strings)){continue;}
                 fieldValues[columnIndex] = mapIndexFieldValueToDataSchemaType(type, indexableField);
             }
             recordListBuilder.addRecord(fieldValues);
@@ -435,7 +441,6 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             throw new IllegalArgumentException("Table fields cannot be null. Please see them into the FilterQuery");
         }
 
-        int uniqueRecordsCount = 0;
         List<RecordList.Record> pageRecords = new ArrayList<>();
         int schemaSize = dataSchema.size();
 

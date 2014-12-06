@@ -44,7 +44,6 @@ import java.util.*;
  * Created by nigelthomas on 29/05/2014.
  */
 public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSONDataProvider{
-    private static DataProvider dataProvider;
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
 
     public GwtTestServerSideSearchDataProvider() {
@@ -94,7 +93,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
         final AsyncCallback<QueryResult> callback = new AsyncCallback<QueryResult>() {
             @Override
             public void onFailure(Throwable throwable) {
-
+                fail();
             }
 
             @Override
@@ -104,6 +103,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                 final RecordList recordList = queryResult.getRecordList();
                 assertNotNull(recordList);
                 assertTrue(recordList.size()>1);
+                assertEquals(3, recordList.size());
                 for (RecordList.Record record : recordList.getRecords()) {
                     final String publicationYear = record.getValueByFieldName(DataProviderTestUtility.FIELD_PUBLICATION_YEAR);
                     assertDateFormatIsISO(publicationYear, DataType.ISO_DATE_FORMAT);
@@ -126,7 +126,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                     dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
                         @Override
                         public void onFailure(Throwable throwable) {
-
+                            fail();
                         }
 
                         @Override
@@ -163,7 +163,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                     dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
                         @Override
                         public void onFailure(Throwable throwable) {
-
+                            fail();
                         }
 
                         @Override
@@ -223,6 +223,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                         @Override
                         public void onFailure(Throwable throwable) {
                             System.out.println("error");
+                            fail();
                         }
 
                         @Override
@@ -238,6 +239,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                         }
                     });
                 } catch (SearchException e) {
+                    fail(e.getMessage());
                     throw new IllegalStateException(e);
                 }
             }
