@@ -1,4 +1,4 @@
-package org.wwarn.mapcore.client.components.customwidgets;
+package org.wwarn.mapcore.client.components.customwidgets.map;
 
 /*
  * #%L
@@ -33,46 +33,47 @@ package org.wwarn.mapcore.client.components.customwidgets;
  * #L%
  */
 
-import com.google.gwt.maps.client.LoadApi;
-import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
-import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3MapWidget;
-import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
-import org.wwarn.mapcore.client.utils.AbstractMapsGWTTestHelper;
+import com.google.gwt.event.logical.shared.HasAttachHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.EventListener;
+import com.google.gwt.user.client.ui.*;
+
+import java.util.List;
 
 /**
- *
+ * Created by nigelthomas on 09/12/2014.
  */
-public class GwtTestGenericMarker extends AbstractMapsGWTTestHelper{
+public abstract class GenericMapWidget extends Composite {
+    int LEGEND_X_INDENT = 42; /*just to the right of the map zoom controls */
+    int FILTERS_PANEL_Y_POS = 45;
 
-    public void testMarkerSetup() throws Exception {
-        asyncLibTest(new Runnable() {
-            @Override
-            public void run() {
-                GenericMarker.Builder builder = new GenericMarker.Builder();
-                builder.setMarkerLon(47.8);
-                builder.setMarkerLat(-121.4);
-                builder.setTitle("marker title");
-                GenericMarker marker = builder.createMarker(new String(), getMap());
-                assertNotNull(marker);
-                //must call
-                finishTest();
-            }
-        });
-    }
+    public abstract void indicateLoading();
 
-    private GoogleV3MapWidget getMap() {
-        MapBuilder builder = new MapBuilder();
-        GoogleV3MapWidget mapWidget = (GoogleV3MapWidget) builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).createMapWidget();
-        return mapWidget;
-    }
+    public abstract void removeLoadingIndicator();
 
-    @Override
-    public LoadApi.LoadLibrary[] getLibraries() {
-        return null;
-    }
+    public abstract int getZoomLevel();
 
-    @Override
-    public String getModuleName() {
-        return "org.wwarn.mapcore.Map";
-    }
+    public abstract void setZoomLevel(int zoomLevel);
+
+    public abstract CoordinatesLatLon getCenter();
+
+    public abstract void setCenter(CoordinatesLatLon center);
+
+    public abstract void addMarkers(List<GenericMarker> m);
+
+    public abstract void clearMarkers();
+
+    public abstract HandlerRegistration onLoadComplete(Runnable onLoadComplete);
+
+    public abstract HandlerRegistration addMapZoomEndHandler(Runnable zoomhandler);
+
+    public abstract HandlerRegistration addDragEndHandler(Runnable draghandler);
+
+    public abstract void justResizeMapWidget();
+
+    public abstract void resizeMapWidget();
+
+    public abstract void setMapLegend(Widget legendImage, int legendPixelsFromBottom);
+
+    public abstract void setMapFiltersDisplay(Widget filtersWidget);
 }

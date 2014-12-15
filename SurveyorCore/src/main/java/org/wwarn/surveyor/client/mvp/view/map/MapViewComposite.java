@@ -40,9 +40,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import org.wwarn.mapcore.client.components.customwidgets.GenericMapWidget;
-import org.wwarn.mapcore.client.components.customwidgets.GenericMarker;
+import org.wwarn.mapcore.client.components.customwidgets.map.GenericMapWidget;
+import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
 import org.wwarn.mapcore.client.components.customwidgets.LegendButton;
+import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3MapWidget;
+import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
 import org.wwarn.surveyor.client.core.DataSchema;
 import org.wwarn.surveyor.client.core.QueryResult;
 import org.wwarn.surveyor.client.core.RecordList;
@@ -116,8 +118,8 @@ public class MapViewComposite extends Composite {
         scheduler.scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
-                GenericMapWidget.Builder builder = new GenericMapWidget.Builder();
-                mapWidget = builder.configureMapDimension(400, 500).setCenter(viewConfig.getInitialLat(), viewConfig.getInitialLon()).setZoomLevel(viewConfig.getInitialZoomLevel()).createMapWidget();
+                MapBuilder builder = new MapBuilder();
+                mapWidget = builder.configureMapDimension(400, 500).setCenter(viewConfig.getInitialLat(), viewConfig.getInitialLon()).setZoomLevel(viewConfig.getInitialZoomLevel()).createMapWidget(MapBuilder.MapType.OPEN_LAYERS_OS_OFFLINE);
                 final String relativeImagePath = viewConfig.getMapImageRelativePath();
                 if (!StringUtils.isEmpty(relativeImagePath)) {
                     Integer imageLegendPositionFromTopInPixels = viewConfig.getImageLegendPositionFromTopInPixels();

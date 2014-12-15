@@ -39,7 +39,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.wwarn.mapcore.client.components.customwidgets.GenericMarker;
+import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.TemplateViewNodesConfig;
 import org.wwarn.surveyor.client.model.MapViewConfig;

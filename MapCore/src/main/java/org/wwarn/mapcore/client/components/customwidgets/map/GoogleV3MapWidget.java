@@ -1,4 +1,4 @@
-package org.wwarn.mapcore.client.components.customwidgets;
+package org.wwarn.mapcore.client.components.customwidgets.map;
 
 /*
  * #%L
@@ -65,15 +65,13 @@ import java.util.List;
 * Use MAP v3 api...
 * User: nigel
 */
-public class GenericMapWidget extends Composite {
-    private final Builder builder;
+public class GoogleV3MapWidget extends GenericMapWidget {
+    private final MapBuilder builder;
 
     AbsolutePanel absoluteMapContentOverlayPanel = new AbsolutePanel();
 
     private final String mapWidgetStyleName = "mapWidget";
     private final MapWidget mapWidget;
-    public static final int LEGEND_X_INDENT = 42; //just to the right of the map zoom controls
-    public static final int FILTERS_PANEL_Y_POS = 45;
     private int legendPixelsFromBottom;
     final private SimplePanel legendWidgetPlaceHolder = new SimplePanel();
     final private SimplePanel filtersDisplayWidgetPlaceHolder = new SimplePanel();
@@ -81,16 +79,17 @@ public class GenericMapWidget extends Composite {
     private MapCanvasProjection mapCanvasProjection;
     final private PopupPanel loadingPanelPopup = new PopupPanel();
 
-    private GenericMapWidget() {
+    GoogleV3MapWidget() {
         this.builder = null;
         this.mapWidget = new MapWidget(null);
         absoluteMapContentOverlayPanel.add(filtersDisplayWidgetPlaceHolder, calcFiltersPanelXPos(), FILTERS_PANEL_Y_POS);
     }
 
-    public GenericMapWidget(Builder builder) {
+    public GoogleV3MapWidget(MapBuilder builder) {
         this.builder = builder;
         initWidget(this.absoluteMapContentOverlayPanel);
-        MapOptions mapOptions = setupDisplay(builder.options);
+        MapOptions options = MapOptions.newInstance();
+        MapOptions mapOptions = setupDisplay(options);
         mapWidget = new MapWidget(mapOptions);
         mapWidget.setSize(Integer.toBinaryString(builder.mapWidth), Integer.toString(builder.mapHeight) + "px");
 
@@ -118,6 +117,7 @@ public class GenericMapWidget extends Composite {
         absoluteMapContentOverlayPanel.add(filtersDisplayWidgetPlaceHolder, calcFiltersPanelXPos(), FILTERS_PANEL_Y_POS);
     }
 
+    @Override
     public void indicateLoading() {
         loadingPanelPopup.setWidget(new HTML("Loading data... please wait"));
         loadingPanelPopup.show();
@@ -125,6 +125,7 @@ public class GenericMapWidget extends Composite {
         loadingPanelPopup.setPopupPosition(loadingPanelPopup.getAbsoluteLeft(), mapWidget.getAbsoluteTop());
     }
 
+    @Override
     public void removeLoadingIndicator() {
         loadingPanelPopup.hide();
     }
@@ -154,33 +155,44 @@ public class GenericMapWidget extends Composite {
 
         options.setMinZoom(builder.minZoomLevel);
         options.setZoom(builder.zoomLevel);
-        options.setCenter(builder.latLng);
+        options.setCenter(getLatLng(builder.coordinatesLatLon));
 
         return options;
+    }
+
+    private LatLng getLatLng(CoordinatesLatLon coordinatesLatLon) {
+        return LatLng.newInstance(coordinatesLatLon.getMapCenterLat(), coordinatesLatLon.getMapCentreLon());
     }
 
     /**
      * Returns map zoom level
      * @return
      */
+    @Override
     public int getZoomLevel(){
         return mapWidget.getZoom();
     }
+    @Override
     public void setZoomLevel(int zoomLevel) {
         mapWidget.setZoom(zoomLevel);
     }
 
-    public LatLng getCenter() {
-        return mapWidget.getCenter();
+    @Override
+    public CoordinatesLatLon getCenter() {
+        final LatLng center = mapWidget.getCenter();
+        return CoordinatesLatLon.newInstance(center.getLatitude(), center.getLongitude());
     }
-    public void setCenter(LatLng center) {
-        mapWidget.setCenter(center);
+
+    @Override
+    public void setCenter(CoordinatesLatLon center) {
+        mapWidget.setCenter(getLatLng(center));
     }
 
     /**
      * Set markers for the map
      * @param m
      */
+    @Override
     public void addMarkers(List<GenericMarker> m){
         this.markers = m;
         for (GenericMarker marker : m) {
@@ -188,6 +200,7 @@ public class GenericMapWidget extends Composite {
         }
     }
 
+    @Override
     public void clearMarkers(){
         if(markers == null){
             return;
@@ -196,6 +209,7 @@ public class GenericMapWidget extends Composite {
             marker.clear();
         }
     }
+    @Override
     public HandlerRegistration onLoadComplete(final Runnable onLoadComplete){
         mapWidget.triggerResize(); // Added to prevent only single tile showing : http://stackoverflow.com/a/16348551/192040
         return mapWidget.addIdleHandler(new IdleMapHandler() {
@@ -211,6 +225,7 @@ public class GenericMapWidget extends Composite {
      * Add zoom handler, event is not exposed at present
      * @param zoomhandler
      */
+    @Override
     public HandlerRegistration addMapZoomEndHandler(final Runnable zoomhandler){
         return mapWidget.addZoomChangeHandler(new ZoomChangeMapHandler() {
             @Override
@@ -220,6 +235,7 @@ public class GenericMapWidget extends Composite {
         });
     }
 
+    @Override
     public HandlerRegistration addDragEndHandler(final Runnable draghandler) {
         return mapWidget.addDragEndHandler(new DragEndMapHandler() {
             @Override
@@ -229,16 +245,19 @@ public class GenericMapWidget extends Composite {
         });
     }
 
+    @Override
     public void justResizeMapWidget() {
         mapWidget.setWidth("100%");
     }
 
+    @Override
     public void resizeMapWidget() {
         justResizeMapWidget();
 
         absoluteMapContentOverlayPanel.setWidgetPosition(filtersDisplayWidgetPlaceHolder, calcFiltersPanelXPos(), FILTERS_PANEL_Y_POS);
     }
 
+    @Override
     public void setMapLegend(Widget legendImage, int legendPixelsFromBottom) {
         //setup map legend position
         absoluteMapContentOverlayPanel.add(legendWidgetPlaceHolder, LEGEND_X_INDENT, calcLegendPanelYPos(legendPixelsFromBottom));
@@ -247,6 +266,7 @@ public class GenericMapWidget extends Composite {
         legendWidgetPlaceHolder.setWidget(legendImage);
     }
 
+    @Override
     public void setMapFiltersDisplay(Widget filtersWidget) {
         //setup map filters display position
         absoluteMapContentOverlayPanel.add(filtersDisplayWidgetPlaceHolder, calcFiltersPanelXPos(), FILTERS_PANEL_Y_POS);
@@ -263,85 +283,8 @@ public class GenericMapWidget extends Composite {
         return mapWidget.getAbsoluteLeft() + mapWidget.getOffsetWidth() - 413;
     }
 
-    protected MapWidget getInternalGoogleMapWidget() {
+    public MapWidget getInternalGoogleMapWidget() {
         return mapWidget;
     }
 
-    public static class Builder {
-        public static final String STOCK_NO_STUDIES_MSG = "No studies found matching the filters chosen.<br/>" +
-                "Please choose less stringent criteria.";
-        private int minZoomLevel = 0;
-        private String noStudiesFoundMsg = STOCK_NO_STUDIES_MSG;
-        private static final int DEFAULT_ZOOM_LEVEL = 2;
-        private MapOptions options = MapOptions.newInstance();
-        int mapHeight = 0;
-        int mapWidth = 0;
-        private int zoomLevel = DEFAULT_ZOOM_LEVEL;
-        private LatLng latLng;
-
-        /**
-         * set max zoom out level
-         * @param minZoomLevel
-         * @return
-         */
-        public Builder setMinZoomLevel(int minZoomLevel) {
-            this.minZoomLevel = minZoomLevel;
-            return this;
-        }
-
-        /**
-         * Set map zoom level
-         * @param i
-         * @return
-         */
-        public Builder setZoomLevel(int i) {
-            this.zoomLevel = i;
-            return this;
-        }
-
-        public Builder setCenter(double mapCentreLat, double mapCentreLon){
-            latLng = LatLng.newInstance(mapCentreLat, mapCentreLon);
-            return this;
-        }
-
-        /**
-         * sent value to show, when no studies found
-         * @param noStudiesFoundMsg
-         * @return
-         */
-        public Builder setNoStudiesFoundMsg(String noStudiesFoundMsg) {
-            this.noStudiesFoundMsg = noStudiesFoundMsg;
-            return this;
-        }
-
-        /**
-         * Setup map display properties
-         * @param width value in px
-         * @param height value in px
-         */
-        public Builder configureMapDimension(Integer width, Integer height) {
-            this.mapHeight = height;
-            this.mapWidth = width;
-            return this;
-        }
-
-        /**
-         * Call to return a map widget
-         * @return
-         */
-        public GenericMapWidget createMapWidget() {
-            validate();
-            return new GenericMapWidget(this);
-        }
-
-        private void validate() {
-            if(this.mapHeight == 0 || this.mapWidth == 0){
-                throw new IllegalArgumentException("Expected map width and height to be set");
-            }
-
-            if(this.latLng == null){
-                throw new IllegalArgumentException("Expected centre coordinates to be set");
-            }
-        }
-    }
 }
