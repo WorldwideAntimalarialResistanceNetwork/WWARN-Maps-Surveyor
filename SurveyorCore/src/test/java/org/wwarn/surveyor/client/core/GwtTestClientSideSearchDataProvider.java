@@ -84,5 +84,25 @@ public class GwtTestClientSideSearchDataProvider extends GwtTestServerSideSearch
 
     }
 
+    @Override
+    public void testQueryWithGreaterThan() throws Exception {
+        //not yet implemented
+    }
+
+    @Override
+    public void testQueryWithSelectors() throws Exception {
+        //not yet implemented
+    }
+
+    @Override
+    public void testQueryWithRangeDateYearOnly() throws Exception {
+        //not yet implemented
+    }
+
+    @Override
+    public void testQueryWithRangeDate() throws Exception {
+        //not yet implemented
+    }
+
 
 }
