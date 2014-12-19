@@ -101,8 +101,8 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
             return filePathCache.get(relativeFilePath);
         }
 
-        final String publicationsPathDefault = getDefaultPublicationPath(relativeFilePath);
-        if(!StringUtils.isEmpty(publicationsPathDefault)){ return publicationsPathDefault;}
+//        final String publicationsPathDefault = getDefaultPublicationPath(relativeFilePath);
+//        if(!StringUtils.isEmpty(publicationsPathDefault)){ return publicationsPathDefault;}
 
 
         final String realPath = getServletContextFilePath();
