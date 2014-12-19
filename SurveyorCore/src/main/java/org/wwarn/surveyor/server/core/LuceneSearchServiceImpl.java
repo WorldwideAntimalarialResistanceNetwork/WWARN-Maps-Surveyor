@@ -321,9 +321,11 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                             String minValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue();
                             String maxValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue();
                             query.add(filterField, TermRangeQuery.newStringRange(filterField, minValue, maxValue, true, true));
-                        }else if(filterQueryElement instanceof FilterQuery.FilterFieldGreaterThanInteger){
+                        }else if(filterQueryElement instanceof FilterQuery.FilterFieldGreaterThanInteger) {
                             int minValue = ((FilterQuery.FilterFieldGreaterThanInteger) filterQueryElement).getFieldValue();
                             query.add(filterField, NumericRangeFilter.newIntRange(filterField, minValue, Integer.MAX_VALUE, true, true));
+                        }else if(filterQueryElement instanceof FilterQuery.FilterFieldRangeDate){
+                            query.add(filterField, setYearYangeQuery(filterField, filterQueryElement));
                         }else{
                             for(String fieldValue : getFieldValues(filterQueryElement)){
                                 query.add(filterField, fieldValue);
@@ -360,6 +362,17 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         }
 
         return query;
+    }
+
+    private NumericRangeQuery<Integer> setYearYangeQuery(String filterField, FilterQuery.FilterQueryElement filterQueryElement){
+        Date minValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMinValue();
+        Date maxValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMaxValue();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(minValue);
+        int minYear = calendar.get(Calendar.YEAR);
+        calendar.setTime(maxValue);
+        int maxYear = calendar.get(Calendar.YEAR);
+        return NumericRangeQuery.newIntRange(filterField, minYear, maxYear, true, true);
     }
 
 
