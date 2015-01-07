@@ -160,6 +160,15 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
                 }
             }
         });
+        searchBox.addBlurHandler(new BlurHandler() {
+            @Override
+            public void onBlur(BlurEvent blurEvent) {
+                if("".equals(searchBox.getText())) {
+                    searchBox.setText(DEFAULT_SEARCH_TEXT);
+                    searchBox.addStyleName(STYLE_INITIAL_SEARCHBOX_TEXT);
+                }
+            }
+        });
     }
 
     private void setupPanel(){
@@ -285,7 +294,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         }
         selectedListItems = new HashSet<String>();
         clearSelectionControl.setVisible(false);
-        searchBox.setText("");
+        setupSearchBox();
         updatePanelList(facetWidgetItems);
     }
 
