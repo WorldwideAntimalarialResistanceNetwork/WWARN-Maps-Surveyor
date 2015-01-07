@@ -122,3 +122,13 @@
     margin-bottom: 2px;
     margin-top: 2px;
 }
+
+.initialSearchBoxText{
+    color:darkgrey;
+}
+
+.searchableCheckBoxClearAnchor{
+    float: right;
+    font-size: 1em;
+    font-weight: bold;
+}

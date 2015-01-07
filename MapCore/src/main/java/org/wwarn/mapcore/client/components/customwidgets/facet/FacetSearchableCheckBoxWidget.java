@@ -53,8 +53,11 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     public static final String STYLE_CHECKBOXLIST = "searchCheckBoxList";
     public static final String STYLE_CHECKBOXLIST_ITEM_CHECKED = "searchCheckBoxListItemChecked";
     public static final String STYLE_CHECKBOXLIST_ITEM_DISABLED = "searchCheckBoxListItemDisabled";
+    public static final String STYLE_INITIAL_SEARCHBOX_TEXT = "initialSearchBoxText";
+    public static final String STYLE_SELECTION_CLEAR_ANCHOR = "searchableCheckBoxClearAnchor";
     public static final String STYLE_SEARCH_BOX = "searchBox";
     public static final int DEFAULT_VISIBLE_ITEM_COUNT = 5;
+    public static final String DEFAULT_SEARCH_TEXT = "Search...";
 
     private String facetField = null;
     String facetTitle = null;
@@ -93,7 +96,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         this.visibleItemCount = (builder.getVisibleItemCount() < 1)?DEFAULT_VISIBLE_ITEM_COUNT:builder.getVisibleItemCount();
 
         buildDisplay();
-        unSelectAndReset();
+        //unSelectAndReset();
         setOracle();
         initWidget(panel);
 
@@ -104,11 +107,8 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         panel = new VerticalPanel();
         setupListPanel(facetWidgetItems);
         setupScrollPanel();
-        panel.add(buildHTMLHeader());
-        searchBox.addKeyUpHandler(this);
-        searchBox.addStyleName(STYLE_SEARCH_BOX);
-        panel.add(searchBox);
-        panel.add(scrollpanel);
+        setupSearchBox();
+        setupPanel();
         return this;
     }
 
@@ -139,8 +139,6 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
     }
 
-
-
     private void setupScrollPanel(){
         scrollpanel.add(listPanel);
         scrollpanel.setStyleName(STYLE_CHECKBOXLIST);
@@ -148,10 +146,32 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         scrollpanel.setHeight(panelHeight+"px");
     }
 
+    private void setupSearchBox(){
+        searchBox.addKeyUpHandler(this);
+        searchBox.addStyleName(STYLE_SEARCH_BOX);
+        searchBox.setText(DEFAULT_SEARCH_TEXT);
+        searchBox.addStyleName(STYLE_INITIAL_SEARCHBOX_TEXT);
+        searchBox.addFocusHandler(new FocusHandler() {
+            @Override
+            public void onFocus(FocusEvent focusEvent) {
+                if(DEFAULT_SEARCH_TEXT.equals(searchBox.getText())) {
+                    searchBox.setText("");
+                    searchBox.removeStyleName(STYLE_INITIAL_SEARCHBOX_TEXT);
+                }
+            }
+        });
+    }
+
+    private void setupPanel(){
+        panel.add(buildHTMLHeader());
+        panel.add(searchBox);
+        panel.add(scrollpanel);
+    }
+
     private Anchor getClearSelectionAnchor() {
         final Anchor clear = new Anchor("clear");
         clear.setVisible(false);
-        setAnchorStyle(clear);
+        clear.setStyleName(STYLE_SELECTION_CLEAR_ANCHOR);
         clear.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent clickEvent) {
@@ -162,14 +182,6 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
             }
         });
         return clear;
-    }
-
-    private void setAnchorStyle(Anchor clear) {
-        /*TODO feels like a hack, refactor to use UI binder*/
-        final Element element = clear.getElement();
-        DOM.setStyleAttribute(element, "cssFloat", "right");
-        DOM.setStyleAttribute(element, "fontSize", "1em");
-        DOM.setStyleAttribute(element, "fontWeight", "bold");
     }
 
     private void check(CheckBox checkBox){
@@ -200,7 +212,6 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         String text = searchBox.getText();
 
         if(text.isEmpty() ){
-            //setupListPanel(facetWidgetItems);
             updatePanelList(facetWidgetItems);
         }else{
             oracle.requestSuggestions(new SuggestOracle.Request(text, 20), callback);
