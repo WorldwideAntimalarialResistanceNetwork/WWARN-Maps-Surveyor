@@ -59,10 +59,10 @@ import java.util.*;
  * Date: 01/08/13
  */
 public class FilterPresenter implements Presenter {
-    private FilterView filterView;
+    protected FilterView filterView;
     private FilterChangeHandler filterChangeHandler = new FilterChangeHandler();
     private ResultChangeHandler resultChangeHandler = new ResultChangeHandler(this);
-    private ClientFactory clientFactory = SimpleClientFactory.getInstance();
+    protected ClientFactory clientFactory = SimpleClientFactory.getInstance();
     private final ApplicationContext applicationContext = clientFactory.getApplicationContext();
     public static final String DEFAULT_CATCH_ALL_OPTION = "All";
     private static InitialFields initialFields;

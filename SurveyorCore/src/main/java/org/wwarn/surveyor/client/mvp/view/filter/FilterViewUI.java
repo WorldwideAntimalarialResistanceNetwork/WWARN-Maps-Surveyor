@@ -86,11 +86,15 @@ public class FilterViewUI extends Composite implements  FilterView {
 
     public void setupFilterDisplay(final FacetList facetList, FilterConfig filterConfig){
 //        EventLogger.logEvent("org.wwarn.surveyor.client.mvp.view.FilterView", "renderListBox", "begin");
-
         panel.clear();
         final VerticalPanel  facetWidgetsPanel = new VerticalPanel();
         panel.add(createMainSectionPanel(filterConfig, facetWidgetsPanel));
+        addFilters(facetList, filterConfig, facetWidgetsPanel);
+        setupResetAnchor();
+        panel.add(resetAnchor);
+    }
 
+    protected void addFilters(final FacetList facetList, FilterConfig filterConfig, VerticalPanel  facetWidgetsPanel){
         for (final FacetList.FacetField facetField : facetList) {
             List<FilterSetting> filterSettings = filterConfig.getFilterConfigBy(facetField.getFacetField());
             if(filterSettings.size() < 1){ continue;}
@@ -103,12 +107,9 @@ public class FilterViewUI extends Composite implements  FilterView {
                 facetWidgetsPanel.add((IsWidget) facetWidget);
             }
         }
-        setupResetAnchor();
-        panel.add(resetAnchor);
-
     }
 
-    private void setupResetAnchor(){
+    protected void setupResetAnchor(){
        resetAnchor = addResetLinkClickHandler(filterList);
        TextConstants textConstants = GWT.create(TextConstants.class);
        resetAnchor.setText(textConstants.resetFilter());
