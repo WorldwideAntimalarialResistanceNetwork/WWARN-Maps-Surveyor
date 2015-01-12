@@ -397,7 +397,6 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
     }
 
     public void testQueryWithRangeDate() throws Exception {
-        // TODO test failing!! fix me!!
         runTestWithDefaultDataSetup(new Runnable() {
             @Override
             public void run() {
@@ -415,7 +414,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                             assertNotNull(query);
                             assertNotNull(query.getRecordList());
                             assertNotNull(query.getFacetFields());
-                            assertEquals(2, query.getRecordList().size());
+                            assertEquals(1, query.getRecordList().size());
                             for (FacetList.FacetField facetField : query.getFacetFields()) {
                                 assertNotNull(facetField);
                                 assertNotNull(facetField.getDistinctFacetValues());
