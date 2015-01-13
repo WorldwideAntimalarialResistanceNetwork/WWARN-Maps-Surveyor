@@ -69,4 +69,4 @@ Check the README files in the SurveyorCore and MapCore modules
 We have setup a google web forum at [Worldwide Antimalarial Resistance Network Open Source Software](https://groups.google.com/forum/?hl=en#!forum/worldwide-antimalarial-resistance-network-open-source-software), please use this to get in touch if you have any questions. Alternatively, if you have noticed a bug/have a new feature request use [GitHub issue tracking system to report this](https://github.com/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor/issues). 
 
 ## Project Sponsored by
-![alt tag](https://www.jetbrains.com/objc/docs/logo_appcode.png)
+![alt tag](https://www.jetbrains.com/idea/docs/logo_intellij_idea.png)
