@@ -71,6 +71,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     private DataSchema dataSchema;
     private final FacetsConfig config = new FacetsConfig();
     public static final int MAX_RESULTS = 100;
+    private String location;
 
     public static LuceneSearchServiceImpl getInstance() {
         return ourInstance;
@@ -80,8 +81,9 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     }
 
     public void init(final DataSchema dataSchema, final GenericDataSource dataSource) throws SearchException {
-        if(this.hasInitialised.get()){return;}
+        if(this.hasInitialised.get() && dataSource != null && dataSource.getLocation() == location){return;}
         Objects.requireNonNull(dataSchema); this.dataSchema = dataSchema;
+        location = dataSource.getLocation();
         //setup index
         JSONArray jsonContent = getJsonArrayFrom(dataSource);
         setupIndex(dataSource, dataSchema, jsonContent);
