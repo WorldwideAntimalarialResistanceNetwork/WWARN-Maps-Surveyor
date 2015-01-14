@@ -106,7 +106,7 @@ public class SampleSizeSliderComposite extends Composite {
     }
 
     public YuiSingleSliderGwtWidgetWithLabelMarkersImpl setupSampleSizeWidget(){
-        sampleSizeSliderYuiWidgetImpl = new YuiSingleSliderGwtWidgetWithLabelMarkersImpl(400, 30, minSampleSize, maxSampleSize, 400, 10);
+        sampleSizeSliderYuiWidgetImpl = new YuiSingleSliderGwtWidgetWithLabelMarkersImpl(400, 30, minSampleSize, maxSampleSize, maxSampleSize, 5);
         startSampleSizeLabel.setText(Integer.toString(initialValue));
         sampleSizeSliderYuiWidgetImpl.setValue(initialValue);
 
