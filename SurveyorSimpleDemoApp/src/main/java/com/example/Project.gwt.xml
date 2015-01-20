@@ -51,12 +51,14 @@
 
     <!-- enable the cross-site linking -->
     <add-linker name="xsiframe"/>
+    <set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
     <!-- <set-configuration-property name="devModeRedirectEnabled" value="true"/> -->
 
 
     <replace-with class="com.example.client.impl.ClientBundleConfigLoader">
         <when-type-is class="org.wwarn.surveyor.client.mvp.ConfigLoader"/>
     </replace-with>
+
 
 
 
