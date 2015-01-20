@@ -33,6 +33,8 @@ package org.wwarn.surveyor.client.model;
  * #L%
  */
 
+import com.google.gwt.maps.client.MapTypeId;
+
 /**
  * Holds map model
  * User: nigel
@@ -50,6 +52,7 @@ public class MapViewConfig implements ViewConfig {
     String markerLatitudeField = "";
     String mapImageRelativePath = "";
     private String viewLabel;
+    private MapTypeId mapType;
 
     private MapViewConfig(){};
 
@@ -108,5 +111,13 @@ public class MapViewConfig implements ViewConfig {
 
     public TemplateViewNodesConfig getTemplateViewNodesConfig() {
         return templateViewNodesConfig;
+    }
+
+    public MapTypeId getMapType() {
+        return mapType;
+    }
+
+    public void setMapType(MapTypeId mapType) {
+        this.mapType = mapType;
     }
 }

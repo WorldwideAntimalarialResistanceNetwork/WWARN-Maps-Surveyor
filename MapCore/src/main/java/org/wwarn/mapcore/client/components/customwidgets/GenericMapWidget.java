@@ -145,7 +145,8 @@ public class GenericMapWidget extends Composite {
         mapTypeControlOptions.setMapTypeIds(new MapTypeId[]{MapTypeId.TERRAIN, MapTypeId.SATELLITE, MapTypeId.HYBRID, MapTypeId.ROADMAP});
         options.setMapTypeControl(true);
         options.setMapTypeControlOptions(mapTypeControlOptions);
-        options.setMapTypeId(MapTypeId.TERRAIN);
+        MapTypeId mapTypeId = builder.mapTypeId != null ? builder.mapTypeId: MapTypeId.TERRAIN;
+        options.setMapTypeId(mapTypeId);
 
 
         options.setStreetViewControl(false);
@@ -278,6 +279,7 @@ public class GenericMapWidget extends Composite {
         int mapWidth = 0;
         private int zoomLevel = DEFAULT_ZOOM_LEVEL;
         private LatLng latLng;
+        MapTypeId mapTypeId;
 
         /**
          * set max zoom out level
@@ -301,6 +303,11 @@ public class GenericMapWidget extends Composite {
 
         public Builder setCenter(double mapCentreLat, double mapCentreLon){
             latLng = LatLng.newInstance(mapCentreLat, mapCentreLon);
+            return this;
+        }
+
+        public Builder setMapTypeId(MapTypeId mapTypeId){
+            this.mapTypeId = mapTypeId;
             return this;
         }
 

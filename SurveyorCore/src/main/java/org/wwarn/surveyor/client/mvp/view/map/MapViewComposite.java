@@ -117,7 +117,7 @@ public class MapViewComposite extends Composite {
             @Override
             public void execute() {
                 GenericMapWidget.Builder builder = new GenericMapWidget.Builder();
-                mapWidget = builder.configureMapDimension(400, 500).setCenter(viewConfig.getInitialLat(), viewConfig.getInitialLon()).setZoomLevel(viewConfig.getInitialZoomLevel()).createMapWidget();
+                mapWidget = builder.configureMapDimension(400, 500).setCenter(viewConfig.getInitialLat(), viewConfig.getInitialLon()).setZoomLevel(viewConfig.getInitialZoomLevel()).setMapTypeId(viewConfig.getMapType()).createMapWidget();
                 final String relativeImagePath = viewConfig.getMapImageRelativePath();
                 if (!StringUtils.isEmpty(relativeImagePath)) {
                     Integer imageLegendPositionFromTopInPixels = viewConfig.getImageLegendPositionFromTopInPixels();

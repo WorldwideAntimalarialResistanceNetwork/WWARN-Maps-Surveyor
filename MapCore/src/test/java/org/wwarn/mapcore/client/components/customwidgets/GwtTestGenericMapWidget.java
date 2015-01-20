@@ -34,6 +34,7 @@ package org.wwarn.mapcore.client.components.customwidgets;
  */
 
 import com.google.gwt.maps.client.LoadApi;
+import com.google.gwt.maps.client.MapTypeId;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -99,6 +100,20 @@ public class GwtTestGenericMapWidget extends AbstractMapsGWTTestHelper {
 
     }
 
+    public void testMapType() throws Exception {
+        asyncLibTest(new Runnable() {
+            @Override
+            public void run() {
+                GenericMapWidget.Builder builder = new GenericMapWidget.Builder();
+                GenericMapWidget mapWidget = builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).setMapTypeId(MapTypeId.HYBRID).createMapWidget();
+                assertEquals(MapTypeId.HYBRID, builder.mapTypeId);
+                assertNotNull(mapWidget);
+                assertNotNull(mapWidget.getInternalGoogleMapWidget());
+                finishTest();
+            }
+        });
+    }
+
     public class MarkerHoverLabelTestImpl implements GenericMarker.MarkerHoverLabelBuilder<String> {
         public Widget build(String markerContext) {
             return new Label("hello");
@@ -110,4 +125,6 @@ public class GwtTestGenericMapWidget extends AbstractMapsGWTTestHelper {
         }
 
     }
+
+
 }

@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import com.google.gwt.maps.client.MapTypeId;
 import com.google.gwt.xml.client.*;
 import org.wwarn.mapcore.client.common.types.FilterConfigVisualization;
 import org.wwarn.mapcore.client.components.customwidgets.facet.FacetType;
@@ -341,8 +342,14 @@ public class XMLApplicationLoader implements ApplicationContext {
             }
 
             final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig);
+            String mapType = StringUtils.ifEmpty(getAttributeByName(mapNode, "mapType"), "TERRAIN");
+            mapViewConfig.setMapType(resolveMapType(mapType));
             configs.put(MapViewConfig.class.getName(), mapViewConfig);
             return mapViewConfig;
+        }
+
+        private MapTypeId resolveMapType(String mapType){
+            return MapTypeId.valueOf(mapType);
         }
 
         private TemplateViewNodesConfig parseInfoWindowTemplate(Node infoWindowTemplate) throws XMLUtils.ParseException{
