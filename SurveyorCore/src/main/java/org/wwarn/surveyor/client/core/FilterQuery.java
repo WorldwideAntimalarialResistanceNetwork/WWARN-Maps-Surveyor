@@ -175,6 +175,26 @@ public class FilterQuery implements IsSerializable{
         public String getFilterField() {
             return field;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof FilterFieldValue)) return false;
+
+            FilterFieldValue that = (FilterFieldValue) o;
+
+            if (field != null ? !field.equals(that.field) : that.field != null) return false;
+            if (fieldValues != null ? !fieldValues.equals(that.fieldValues) : that.fieldValues != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = field != null ? field.hashCode() : 0;
+            result = 31 * result + (fieldValues != null ? fieldValues.hashCode() : 0);
+            return result;
+        }
     }
 
     public static class FilterFieldRange implements FilterQueryElement, IsSerializable{
@@ -204,6 +224,28 @@ public class FilterQuery implements IsSerializable{
         @Override
         public String getFilterField() {
             return field;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof FilterFieldRange)) return false;
+
+            FilterFieldRange that = (FilterFieldRange) o;
+
+            if (field != null ? !field.equals(that.field) : that.field != null) return false;
+            if (maxValue != null ? !maxValue.equals(that.maxValue) : that.maxValue != null) return false;
+            if (minValue != null ? !minValue.equals(that.minValue) : that.minValue != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = field != null ? field.hashCode() : 0;
+            result = 31 * result + (minValue != null ? minValue.hashCode() : 0);
+            result = 31 * result + (maxValue != null ? maxValue.hashCode() : 0);
+            return result;
         }
     }
 
@@ -236,6 +278,28 @@ public class FilterQuery implements IsSerializable{
         public String getFilterField() {
             return field;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof FilterFieldRangeDate)) return false;
+
+            FilterFieldRangeDate that = (FilterFieldRangeDate) o;
+
+            if (field != null ? !field.equals(that.field) : that.field != null) return false;
+            if (maxValue != null ? !maxValue.equals(that.maxValue) : that.maxValue != null) return false;
+            if (minValue != null ? !minValue.equals(that.minValue) : that.minValue != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = field != null ? field.hashCode() : 0;
+            result = 31 * result + (minValue != null ? minValue.hashCode() : 0);
+            result = 31 * result + (maxValue != null ? maxValue.hashCode() : 0);
+            return result;
+        }
     }
 
     public static class FilterFieldGreaterThanInteger implements FilterQueryElement, IsSerializable{
@@ -258,9 +322,44 @@ public class FilterQuery implements IsSerializable{
         public String getFilterField() {
             return field;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof FilterFieldGreaterThanInteger)) return false;
+
+            FilterFieldGreaterThanInteger that = (FilterFieldGreaterThanInteger) o;
+
+            if (fieldValue != that.fieldValue) return false;
+            if (field != null ? !field.equals(that.field) : that.field != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = field != null ? field.hashCode() : 0;
+            result = 31 * result + fieldValue;
+            return result;
+        }
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FilterQuery)) return false;
 
+        FilterQuery that = (FilterQuery) o;
 
+        if (filterQueries != null ? !filterQueries.equals(that.filterQueries) : that.filterQueries != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return filterQueries != null ? filterQueries.hashCode() : 0;
+    }
 }
