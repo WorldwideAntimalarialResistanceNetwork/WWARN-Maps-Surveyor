@@ -593,13 +593,15 @@ public class XMLApplicationLoader implements ApplicationContext {
             boolean isPlayable = Boolean.parseBoolean(StringUtils.ifEmpty(getAttributeByName(filterNode, "playable"), "FALSE"));
             String fieldFrom = StringUtils.ifEmpty(getAttributeByName(filterNode, "fieldFrom"), "");
             String fieldTo = StringUtils.ifEmpty(getAttributeByName(filterNode, "fieldTo"), "");
+            String initialStart = StringUtils.ifEmpty(getAttributeByName(filterNode, "initialStart"), null);
+            String initialEnd = StringUtils.ifEmpty(getAttributeByName(filterNode, "initialEnd"), null);
             final Node labelNode = getNodeByName(filterNode, "label");
             String label = getNodeValue(labelNode);
 
             FilterByDateRangeSettings filterByDateRangeSettings =
                     new FilterByDateRangeSettings.DateRangeSettingsBuilder(filterColumn, filterFieldName, filterFieldLabel).
                             setDateStart(startYear).setDateEnd(endYear).setFieldFrom(fieldFrom).setFieldTo(fieldTo)
-                            .setPlayable(isPlayable).setTextLabel(label).build();
+                            .setPlayable(isPlayable).setTextLabel(label).setInitialStart(initialStart).setInitialEnd(initialEnd).build();
 
             filterConfig.addDateRangeFilter(filterByDateRangeSettings);
         }

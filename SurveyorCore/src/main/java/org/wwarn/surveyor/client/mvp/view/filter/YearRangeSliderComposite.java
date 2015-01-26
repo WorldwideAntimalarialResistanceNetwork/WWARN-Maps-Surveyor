@@ -79,6 +79,7 @@ public class YearRangeSliderComposite extends Composite{
     private final FilterConfig filterConfig;
     private ClientFactory clientFactory = SimpleClientFactory.getInstance();
     private Integer endYear = 2025;
+    private int initialStart, initialEnd;
 
     private final FilterByDateRangeSettings filterByDateRangeSettings;
 
@@ -132,7 +133,15 @@ public class YearRangeSliderComposite extends Composite{
         this.startYear = Integer.valueOf(filterByDateRangeSettings.getDateStart());
         this.endYear = calculateEndYear(filterByDateRangeSettings);
         yearRangeLabel.setText(filterByDateRangeSettings.getTextLabel());
+        getInitialSliderPosition();
         updateRangeLabels(startYear, endYear);
+    }
+
+    private void getInitialSliderPosition(){
+        String initialStartStr = filterByDateRangeSettings.getInitialStart();
+        String initialEndStr = filterByDateRangeSettings.getInitialEnd();
+        this.initialStart = initialStartStr != null  && !initialStartStr.isEmpty() ? Integer.valueOf(initialStartStr): startYear;
+        this.initialEnd = initialEndStr != null  && !initialEndStr.isEmpty() ? Integer.valueOf(initialEndStr): endYear;
     }
 
     private int calculateEndYear(FilterByDateRangeSettings filterByDateRangeSettings1) {
@@ -167,7 +176,7 @@ public class YearRangeSliderComposite extends Composite{
 
     private YuiDualSliderGwtWidget setupYearRangeWidget() {
         YuiDualSliderGwtWidget dateSliderYuiWidgetImpl = new YuiDualSliderGwtWidgetImplWithLabelMarkers(456, 48, startYear, Integer.valueOf(endYear), 5, 1);
-        dateSliderYuiWidgetImpl.setRange(startYear, endYear);
+        dateSliderYuiWidgetImpl.setRange(initialStart, initialEnd);
         ValueChangeHandler<Range<Integer>> valueChangeHandler = new ValueChangeHandler<Range<Integer>>() {
 
             public void onValueChange(ValueChangeEvent<Range<Integer>> yearRangeValueChangeEvent) {

@@ -44,6 +44,8 @@ public class FilterByDateRangeSettings extends FilterSetting{
 
     String fieldFrom, fieldTo;
 
+    String initialStart, initialEnd;
+
     boolean isPlayable;
 
     String textLabel;
@@ -60,6 +62,8 @@ public class FilterByDateRangeSettings extends FilterSetting{
         this.fieldTo = builder.fieldTo;
         this.isPlayable = builder.isPlayable;
         this.textLabel = builder.textLabel;
+        this.initialStart = builder.initialStart;
+        this.initialEnd = builder.initialEnd;
     }
 
     @Deprecated
@@ -107,6 +111,14 @@ public class FilterByDateRangeSettings extends FilterSetting{
         return textLabel;
     }
 
+    public String getInitialStart() {
+        return initialStart;
+    }
+
+    public String getInitialEnd() {
+        return initialEnd;
+    }
+
     public static class DateRangeSettingsBuilder{
 
         String filterFieldName, filterTitle, filterFieldLabel;
@@ -114,6 +126,8 @@ public class FilterByDateRangeSettings extends FilterSetting{
         private String dateStart, dateEnd;
 
         private String fieldFrom, fieldTo;
+
+        private String initialStart, initialEnd;
 
         private boolean isPlayable;
 
@@ -157,6 +171,16 @@ public class FilterByDateRangeSettings extends FilterSetting{
 
         public DateRangeSettingsBuilder setTextLabel(String textLabel) {
             this.textLabel = textLabel;
+            return this;
+        }
+
+        public DateRangeSettingsBuilder setInitialStart(String initialStart) {
+            this.initialStart = initialStart;
+            return this;
+        }
+
+        public DateRangeSettingsBuilder setInitialEnd(String initialEnd) {
+            this.initialEnd = initialEnd;
             return this;
         }
     }
