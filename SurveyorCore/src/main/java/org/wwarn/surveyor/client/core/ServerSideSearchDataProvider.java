@@ -38,6 +38,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 
+import java.util.List;
+
 /**
  * Created by nigelthomas on 27/05/2014.
  */
@@ -105,5 +107,9 @@ public class ServerSideSearchDataProvider implements DataProvider {
     @Override
     public void query(FilterQuery filterQuery, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
         searchServiceAsync.query(filterQuery, this.facetFieldList, queryResultCallBack);
+    }
+
+    public void queryUniqueRecords(FilterQuery filterQuery, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
+        searchServiceAsync.queryUniqueRecords(filterQuery, this.facetFieldList, queryResultCallBack);
     }
 }

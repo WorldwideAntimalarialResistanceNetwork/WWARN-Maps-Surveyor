@@ -526,6 +526,19 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         return pageRecords;
     }
 
+    public QueryResult queryUniqueRecords(FilterQuery filterQuery, String[] facetFields) throws SearchException {
+        try{
+            QueryResult queryResultAux = this.query(filterQuery, facetFields);
+            List<RecordList.Record>  searchedRecords = queryResultAux.getRecordList().getRecords();
+            List<RecordList.Record> uniqueRecords = subsetUniqueRecords(filterQuery,searchedRecords);
+            RecordListBuilder recordListBuilder = new RecordListBuilder(RecordListBuilder.CompressionMode.CANONICAL, dataSchema);
+            recordListBuilder.addAllRecords(uniqueRecords);
+            QueryResult queryResult = new QueryResult(recordListBuilder.createRecordList(), null);
+            return queryResult;
+        }catch(Exception e){
+            throw new SearchException("Unable to query unique records",e);
+        }
+    }
 
     /**
      * Consider moving this to use TopDocsCollector later for paging

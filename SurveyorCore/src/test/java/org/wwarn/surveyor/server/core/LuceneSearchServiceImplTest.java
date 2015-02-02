@@ -189,4 +189,19 @@ public class LuceneSearchServiceImplTest {
     }
 
 
+    @Test
+    public void queryUniqueRecords() throws Exception{
+        FilterQuery filterQuery = new FilterQuery();
+
+        //Add table fields
+        Set<String> selectedFields = new HashSet<String>(Arrays.asList("PUB"));
+        filterQuery.setFields(selectedFields);
+
+        QueryResult queryResult = luceneSearchService.queryUniqueRecords(filterQuery, testUtility.getSelectorList());
+        assertNotNull(queryResult);
+        assertEquals(queryResult.getRecordList().size(), 13);
+
+    }
+
+
 }

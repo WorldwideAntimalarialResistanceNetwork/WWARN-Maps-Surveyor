@@ -80,6 +80,13 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
     }
 
     @Override
+    public QueryResult queryUniqueRecords(FilterQuery filterQuery,String[] facetFields) throws SearchException {
+        final QueryResult queryResult = searchServiceLayer.queryUniqueRecords(filterQuery, facetFields);
+        return queryResult;
+    }
+
+
+    @Override
     public QueryResult preFetchData(DataSchema schema, GenericDataSource dataSource, String[] facetFields,FilterQuery filterQuery) throws SearchException {
         Objects.requireNonNull(schema);
         Objects.requireNonNull(dataSource);

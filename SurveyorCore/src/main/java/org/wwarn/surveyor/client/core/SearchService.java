@@ -70,4 +70,5 @@ public interface SearchService extends RemoteService {
 
     public List<RecordList.Record> queryTable(FilterQuery filterQuery, String[] facetFields ,int start, int length, TableViewConfig tableViewConfig) throws SearchException;
 
+    public QueryResult queryUniqueRecords(FilterQuery filterQuery, String[] facetFields) throws SearchException;
 }

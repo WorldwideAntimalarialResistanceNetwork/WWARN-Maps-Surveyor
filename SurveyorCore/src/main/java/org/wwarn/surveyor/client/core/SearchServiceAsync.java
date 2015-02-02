@@ -48,4 +48,6 @@ public interface SearchServiceAsync {
 
     void preFetchData(DataSchema schema, GenericDataSource dataSource, String[] facetList,FilterQuery filterQuery, AsyncCallback<QueryResult> async) throws SearchException;
 
+    void queryUniqueRecords(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> async);
+
 }
