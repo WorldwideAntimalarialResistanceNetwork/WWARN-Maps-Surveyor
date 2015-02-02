@@ -84,6 +84,10 @@ public class RecordList implements IsSerializable, Serializable{
         this.records.add(record);
     }
 
+    public void addAll(List<Record> records){
+        this.records = records;
+    }
+
     public void addRecord(String... fields){
         Record record = new Record(fields, schema);
         this.add(record);

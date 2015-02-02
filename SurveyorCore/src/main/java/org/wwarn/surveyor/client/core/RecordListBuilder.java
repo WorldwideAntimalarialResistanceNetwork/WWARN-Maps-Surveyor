@@ -35,6 +35,8 @@ package org.wwarn.surveyor.client.core;
 
 import com.google.gwt.core.client.GWT;
 
+import java.util.List;
+
 /**
 * Created by nigelthomas on 05/07/2014.
 */
@@ -73,6 +75,11 @@ public class RecordListBuilder {
 
     public RecordListBuilder addRecord(String... fields){
         recordList.addRecord(fields);
+        return this;
+    }
+
+    public RecordListBuilder addAllRecords(List<RecordList.Record> records){
+        recordList.addAll(records);
         return this;
     }
 
