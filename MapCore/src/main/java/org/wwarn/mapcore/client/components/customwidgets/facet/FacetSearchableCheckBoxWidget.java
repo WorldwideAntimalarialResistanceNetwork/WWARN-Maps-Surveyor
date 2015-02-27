@@ -33,10 +33,13 @@ package org.wwarn.mapcore.client.components.customwidgets.facet;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
@@ -55,6 +58,12 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     public static final String STYLE_CHECKBOXLIST_ITEM_DISABLED = "searchCheckBoxListItemDisabled";
     public static final String STYLE_SEARCH_BOX = "searchBox";
     public static final int DEFAULT_VISIBLE_ITEM_COUNT = 5;
+//    public static final boolean isShown = true;
+
+    interface FacetSearchableCheckBoxWidgetsUiBinder extends UiBinder<VerticalPanel, FacetSearchableCheckBoxWidget> {
+
+    }
+    private static FacetSearchableCheckBoxWidgetsUiBinder ourUiBinder = GWT.create(FacetSearchableCheckBoxWidgetsUiBinder.class);
 
     private String facetField = null;
     String facetTitle = null;
@@ -85,6 +94,8 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
 
     public FacetSearchableCheckBoxWidget(FacetBuilder builder){
+        panel = ourUiBinder.createAndBindUi(this);
+
         this.facetWidgetItems = builder.getListItems();
         this.facetField = StringUtils.ifEmpty(builder.getFacetName(), builder.getFacetTitle());
         this.facetTitle = builder.getFacetTitle();
@@ -101,7 +112,6 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
     public FacetWidget buildDisplay(){
 
-        panel = new VerticalPanel();
         setupListPanel(facetWidgetItems);
         setupScrollPanel();
         panel.add(buildHTMLHeader());
@@ -193,7 +203,21 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         String headingStyleName = "subHeading";
         heading.setStyleName(headingStyleName);
         heading.add(clearSelectionControl);
+        panel.getElement().setId(createID(facetTitle));
         return heading;
+    }
+
+    /**
+     * ID and NAME tokens must begin with a letter ([A-Za-z]) and may be followed by any number of letters, digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods (".").
+     * @param facetTitleNormalised
+     * @return
+     */
+    private String createID(String facetTitleNormalised) {
+        facetTitleNormalised = facetTitleNormalised.replaceAll("\\W","_"); //replace non word characters ie [a-zA-Z_0-9]
+        facetTitleNormalised = facetTitleNormalised.replaceAll("\\-","_"); //replace non word characters ie [a-zA-Z_0-9]
+        facetTitleNormalised = facetTitleNormalised.replaceAll("\\s","_"); //replace non word characters ie [a-zA-Z_0-9]
+        facetTitleNormalised = facetTitleNormalised.toLowerCase(); //replace non word characters ie [a-zA-Z_0-9]
+        return "facetID"+ facetTitleNormalised;
     }
 
     public void onKeyUp(KeyUpEvent keyUpEvent) {
@@ -343,11 +367,4 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         listPanel.remove(checkBox);
         listPanel.add(checkBox);
     }
-
-
-
-
-
-
-
 }

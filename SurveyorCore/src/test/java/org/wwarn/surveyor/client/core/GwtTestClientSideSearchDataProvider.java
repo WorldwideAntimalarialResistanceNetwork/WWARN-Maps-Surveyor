@@ -85,4 +85,8 @@ public class GwtTestClientSideSearchDataProvider extends GwtTestServerSideSearch
     }
 
 
+    @Override
+    public void testQueryWithRangeDate() throws Exception {
+        //todo implement this test
+    }
 }
