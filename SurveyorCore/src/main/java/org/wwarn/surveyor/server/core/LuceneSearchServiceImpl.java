@@ -55,6 +55,7 @@ import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.TableViewConfig;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -92,7 +93,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     }
 
     private void setupIndexMonitor(final DataSchema dataSchema, final GenericDataSource dataSource) throws SearchException {
-        if(dataSource.getDataSourceProvider() != DataSourceProvider.ServerSideLuceneDataProvider){
+        if(GoogleAppEngineUtil.isGaeEnv()){
             return; // only use for pure lucene tomcat implementation, doesn't work on GAE.
         }
         FileChangeMonitor fileChangeMonitor;
@@ -142,8 +143,9 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
 
     public static JSONArray parseJSON(File f) throws SearchException {
         JSONArray arrayObjects;
+//        Reader reader = Files.newBufferedReader(f.toPath(),StandardCharsets.UTF_8);
         try (
-            Reader reader = new InputStreamReader(new FileInputStream(f));
+            Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8.name()));
         ) {
             Object fileObjects = org.json.simple.JSONValue.parse(reader);
             arrayObjects = (JSONArray) fileObjects;

@@ -38,6 +38,10 @@ import com.google.gwt.maps.client.MapTypeId;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import org.wwarn.mapcore.client.components.customwidgets.map.GenericMapWidget;
+import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
+import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3MapWidget;
+import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
 import org.wwarn.mapcore.client.utils.AbstractMapsGWTTestHelper;
 
 /**
@@ -61,8 +65,8 @@ public class GwtTestGenericMapWidget extends AbstractMapsGWTTestHelper {
         asyncLibTest(new Runnable() {
             @Override
             public void run() {
-                GenericMapWidget.Builder builder = new GenericMapWidget.Builder();
-                GenericMapWidget mapWidget = builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).createMapWidget();
+                MapBuilder builder = new MapBuilder();
+                GoogleV3MapWidget mapWidget = (GoogleV3MapWidget) builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).createMapWidget();
                 assertNotNull(mapWidget);
                 assertNotNull(mapWidget.getInternalGoogleMapWidget());
 
@@ -75,14 +79,14 @@ public class GwtTestGenericMapWidget extends AbstractMapsGWTTestHelper {
 
 
                 // test map legend
-                mapWidget.setMapLegend(new Image(""), -323);
+                mapWidget.setMapLegend(GenericMapWidget.LegendOptions.createLegendOptions(new Image(""), 323, GenericMapWidget.LegendPosition.BOTTOM_LEFT, false));
 
                 finishTest();
             }
         });
     }
 
-    private void addMarkersAndTest(GenericMapWidget mapWidget) {
+    private void addMarkersAndTest(GoogleV3MapWidget mapWidget) {
         GenericMarker.Builder builder = new GenericMarker.Builder();
         builder.setMarkerLon(47.8);
         builder.setMarkerLat(-121.4);

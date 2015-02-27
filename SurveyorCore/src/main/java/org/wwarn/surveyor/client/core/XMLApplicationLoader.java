@@ -302,6 +302,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             String latFieldName = "";
             String imageLegendRelativePath = "";
             Integer imageLegendPositionFromTopInPixels = null;
+            String imageLegendPosition = null;
             NodeList childNodes = mapNode.getChildNodes();
             TemplateViewNodesConfig templateViewNodesConfig = null;
             for (int i = 0; i < childNodes.getLength(); i++) {
@@ -310,7 +311,8 @@ public class XMLApplicationLoader implements ApplicationContext {
                     if (mapChildNode.getNodeName().equals("legend")) {
                         Node mapLegendNode = mapChildNode;
                         imageLegendRelativePath = getAttributeByName(mapLegendNode, "relativeImagePath");
-                        imageLegendPositionFromTopInPixels = Integer.valueOf(getAttributeByName(mapLegendNode, "positionFromTopInPixels"));
+                        imageLegendPositionFromTopInPixels = Integer.valueOf(StringUtils.ifEmpty(getAttributeByName(mapLegendNode, "positionFromTopInPixels"),"0"));
+                        imageLegendPosition = (StringUtils.ifEmpty(getAttributeByName(mapLegendNode, "imageLegendPosition"),"BOTTOM_LEFT"));
                     }
                     if (mapChildNode.getNodeName().equals("marker")) {
                         Node markerNode = mapChildNode;
@@ -341,7 +343,7 @@ public class XMLApplicationLoader implements ApplicationContext {
                 }
             }
 
-            final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig);
+            final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPosition, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig);
             String mapType = StringUtils.ifEmpty(getAttributeByName(mapNode, "mapType"), "TERRAIN");
             mapViewConfig.setMapType(resolveMapType(mapType));
             configs.put(MapViewConfig.class.getName(), mapViewConfig);

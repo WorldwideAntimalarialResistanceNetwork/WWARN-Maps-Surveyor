@@ -1,10 +1,10 @@
-package org.wwarn.mapcore.client.components.customwidgets;
+package org.wwarn.surveyor.server.core;
 
 /*
  * #%L
- * MapCore
+ * SurveyorCore
  * %%
- * Copyright (C) 2013 - 2014 University of Oxford
+ * Copyright (C) 2013 - 2015 University of Oxford
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,46 +33,20 @@ package org.wwarn.mapcore.client.components.customwidgets;
  * #L%
  */
 
-import com.google.gwt.maps.client.LoadApi;
-import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
-import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3MapWidget;
-import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
-import org.wwarn.mapcore.client.utils.AbstractMapsGWTTestHelper;
+import java.nio.file.Paths;
 
 /**
- *
+ * Holds Google App engine helper functions
  */
-public class GwtTestGenericMarker extends AbstractMapsGWTTestHelper{
+public class GoogleAppEngineUtil {
 
-    public void testMarkerSetup() throws Exception {
-        asyncLibTest(new Runnable() {
-            @Override
-            public void run() {
-                GenericMarker.Builder builder = new GenericMarker.Builder();
-                builder.setMarkerLon(47.8);
-                builder.setMarkerLat(-121.4);
-                builder.setTitle("marker title");
-                GenericMarker marker = builder.createMarker(new String(), getMap());
-                assertNotNull(marker);
-                //must call
-                finishTest();
-            }
-        });
-    }
-
-    private GoogleV3MapWidget getMap() {
-        MapBuilder builder = new MapBuilder();
-        GoogleV3MapWidget mapWidget = (GoogleV3MapWidget) builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).createMapWidget();
-        return mapWidget;
-    }
-
-    @Override
-    public LoadApi.LoadLibrary[] getLibraries() {
-        return null;
-    }
-
-    @Override
-    public String getModuleName() {
-        return "org.wwarn.mapcore.Map";
+    public static boolean isGaeEnv() {
+        boolean isGae = false;
+        try{
+            Paths.get("");
+        } catch (NoClassDefFoundError e) { /*Paths not defined in GAE, expect error use this to capture environment*/
+            isGae = true;
+        }
+        return isGae;
     }
 }

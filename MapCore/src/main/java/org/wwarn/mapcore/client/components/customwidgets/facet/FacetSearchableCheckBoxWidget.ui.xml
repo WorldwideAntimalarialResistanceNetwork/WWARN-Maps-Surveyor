@@ -52,9 +52,8 @@
         }
 
         .facetCheckBox input[readonly], .facetCheckBox .disabledCheckBox,
-        .searchCheckBoxList .searchCheckBoxListItemDisabled label{
-            color: #aaa;
-            display: none!important;
+        .searchCheckBoxListItemDisabled label{
+            color: #aaa!important;
         }
     </ui:style>
     <g:VerticalPanel addStyleNames="{style.facetCheckBox}">

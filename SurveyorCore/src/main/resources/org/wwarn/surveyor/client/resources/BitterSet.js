@@ -52,7 +52,6 @@
  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-    //com_github.sample
 var some_externally_sourced_code = {};
 (function() {
     var ADDR_BITS, BitterSet, HAMMING_TABLE, WORD_BITS, bits, bstring, weight;

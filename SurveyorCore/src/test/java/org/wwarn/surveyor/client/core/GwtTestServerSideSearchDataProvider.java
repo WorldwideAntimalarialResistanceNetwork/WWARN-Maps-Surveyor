@@ -246,26 +246,6 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
         });
     }
 
-    @Override
-    public void testQueryWithGreaterThan() throws Exception {
-        super.testQueryWithGreaterThan();
-    }
-
-    @Override
-    public void testQueryWithSelectors() throws Exception {
-        super.testQueryWithSelectors();
-    }
-
-    @Override
-    public void testQueryWithRangeDateYearOnly() throws Exception {
-        super.testQueryWithRangeDateYearOnly();
-    }
-
-    @Override
-    public void testQueryWithRangeDate() throws Exception {
-        super.testQueryWithRangeDate();
-    }
-
     private void assertDateFormatIsISO(String publicationYear, String format) {
         DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat(format);
         final Date date = dateTimeFormat.parse(publicationYear);

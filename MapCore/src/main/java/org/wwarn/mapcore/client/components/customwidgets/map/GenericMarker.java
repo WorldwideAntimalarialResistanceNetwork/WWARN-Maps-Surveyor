@@ -1,4 +1,4 @@
-package org.wwarn.mapcore.client.components.customwidgets;
+package org.wwarn.mapcore.client.components.customwidgets.map;
 
 /*
  * #%L
@@ -116,7 +116,7 @@ public class GenericMarker<T>{
         });
     }
 
-    public final void setMap(GenericMapWidget map) {
+    public final void setMap(GoogleV3MapWidget map) {
         if(map == null || map.getInternalGoogleMapWidget() == null){
             throw new IllegalArgumentException("map instance cannot be null");
         }
@@ -202,7 +202,7 @@ public class GenericMarker<T>{
      * * calculating label position,
      * * hover event handlers mapping to show and hide of a label
      * @param markerHoverLabelBuilder see docs for GenericMarker.MarkerHoverLabelBuilder
-     * @see org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerHoverLabelBuilder
+     * @see GenericMarker.MarkerHoverLabelBuilder
      */
     public void setupMarkerHoverLabel(final MarkerHoverLabelBuilder markerHoverLabelBuilder){
         if(markerHoverLabelBuilder == null){
@@ -294,7 +294,7 @@ public class GenericMarker<T>{
 
     /**
      *  An alternative to MarkerClickInfoWindowBuilder with async methods
-     * @see org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerClickInfoWindowBuilder
+     * @see GenericMarker.MarkerClickInfoWindowBuilder
      * @param <T>
      */
     public interface MarkerClickInfoWindowBuilderAsync<T> extends MarkerClickInfoWindowBuilder<T>{
@@ -344,7 +344,7 @@ public class GenericMarker<T>{
          * an alternative implementation is available from google which explicitly implements the <a href="">Mercator projection algorithm</a>
          * @deprecated Fails to calculate x coordinate correctly after map panned/zoomed
          */
-        private Point calculatePixelPositionFrom(LatLng position, GenericMapWidget mapWidget) {
+        private Point calculatePixelPositionFrom(LatLng position, GoogleV3MapWidget mapWidget) {
             Point defaultPoint = null;
             MapWidget map = mapWidget.getInternalGoogleMapWidget();
             Projection projection = map.getProjection();
@@ -365,7 +365,7 @@ public class GenericMarker<T>{
          * @param mapWidget
          * @return
          */
-        private Point calculatePixelPositionCentreFrom(LatLng position, GenericMapWidget mapWidget) {
+        private Point calculatePixelPositionCentreFrom(LatLng position, GoogleV3MapWidget mapWidget) {
             Point defaultPoint = null;
             MapWidget map = mapWidget.getInternalGoogleMapWidget();
             Projection projection = map.getProjection();
@@ -383,16 +383,20 @@ public class GenericMarker<T>{
         /**
          * The recommended alternative for calculating pixel position from map canvas
          * @param position
-         * @param map
+         * @param mapWidget
          * @return
          */
-        private Point calculatePixelPositionCentreFromMapCanvasPosition(LatLng position, GenericMapWidget map) {
-            Point defaultPoint = null;
-            final MapCanvasProjection mapCanvasProjection = map.getMapCanvasProjection();
-            Point point = mapCanvasProjection.fromLatLngToContainerPixel(position);
-            double x = point.getX() + map.getAbsoluteLeft();
-            double y = point.getY() + map.getAbsoluteTop();
-            return Point.newInstance(x, y);
+        private Point calculatePixelPositionCentreFromMapCanvasPosition(LatLng position, GenericMapWidget mapWidget) {
+            if(mapWidget instanceof GoogleV3MapWidget) {
+                GoogleV3MapWidget map = (GoogleV3MapWidget) mapWidget;
+                Point defaultPoint = null;
+                final MapCanvasProjection mapCanvasProjection = map.getMapCanvasProjection();
+                Point point = mapCanvasProjection.fromLatLngToContainerPixel(position);
+                double x = point.getX() + map.getAbsoluteLeft();
+                double y = point.getY() + map.getAbsoluteTop();
+                return Point.newInstance(x, y);
+            }
+            throw new UnsupportedOperationException();
         }
 
     }
@@ -594,7 +598,7 @@ public class GenericMarker<T>{
     /**
      * An alternative to MarkerIconPathBuilder with async methods
      * @param <T> the backing record for the marker
-     * @see org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerIconPathBuilder
+     * @see GenericMarker.MarkerIconPathBuilder
      */
     public interface MarkerIconPathBuilderAsync<T> extends MarkerIconPathBuilder<T>{
         void getMarkerIconPath(T context, AsyncCallback<String> result);
@@ -674,7 +678,10 @@ public class GenericMarker<T>{
                 options.setDraggable(true);
             }
 
-            options.setMap(map.getInternalGoogleMapWidget());
+            if(map instanceof GoogleV3MapWidget){
+                options.setMap(((GoogleV3MapWidget)map).getInternalGoogleMapWidget());
+            }
+
             if (!StringUtils.isEmpty(this.title)) {
                 options.setTitle(this.title);
             }

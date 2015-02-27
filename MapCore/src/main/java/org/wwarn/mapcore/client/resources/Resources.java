@@ -1,8 +1,8 @@
-package org.wwarn.mapcore.client.components.customwidgets;
+package org.wwarn.mapcore.client.resources;
 
 /*
  * #%L
- * MapCore
+ * SurveyorCore
  * %%
  * Copyright (C) 2013 - 2014 University of Oxford
  * %%
@@ -33,46 +33,20 @@ package org.wwarn.mapcore.client.components.customwidgets;
  * #L%
  */
 
-import com.google.gwt.maps.client.LoadApi;
-import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
-import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3MapWidget;
-import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
-import org.wwarn.mapcore.client.utils.AbstractMapsGWTTestHelper;
+import com.google.gwt.core.shared.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ExternalTextResource;
+import com.google.gwt.resources.client.TextResource;
 
 /**
  *
+ * User: nigel
+ * Date: 30/07/13
+ * Time: 16:00
  */
-public class GwtTestGenericMarker extends AbstractMapsGWTTestHelper{
+public interface Resources extends ClientBundle {
+    Resources IMPL = (Resources) GWT.create(Resources.class);
 
-    public void testMarkerSetup() throws Exception {
-        asyncLibTest(new Runnable() {
-            @Override
-            public void run() {
-                GenericMarker.Builder builder = new GenericMarker.Builder();
-                builder.setMarkerLon(47.8);
-                builder.setMarkerLat(-121.4);
-                builder.setTitle("marker title");
-                GenericMarker marker = builder.createMarker(new String(), getMap());
-                assertNotNull(marker);
-                //must call
-                finishTest();
-            }
-        });
-    }
-
-    private GoogleV3MapWidget getMap() {
-        MapBuilder builder = new MapBuilder();
-        GoogleV3MapWidget mapWidget = (GoogleV3MapWidget) builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).createMapWidget();
-        return mapWidget;
-    }
-
-    @Override
-    public LoadApi.LoadLibrary[] getLibraries() {
-        return null;
-    }
-
-    @Override
-    public String getModuleName() {
-        return "org.wwarn.mapcore.Map";
-    }
+    @Source("OpenLayers.js")
+    TextResource openLayersScript();
 }

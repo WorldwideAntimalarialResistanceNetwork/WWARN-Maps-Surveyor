@@ -1,4 +1,4 @@
-package org.wwarn.mapcore.client.components.customwidgets;
+package org.wwarn.mapcore.client.components.customwidgets.map;
 
 /*
  * #%L
@@ -33,46 +33,27 @@ package org.wwarn.mapcore.client.components.customwidgets;
  * #L%
  */
 
-import com.google.gwt.maps.client.LoadApi;
-import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
-import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3MapWidget;
-import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
-import org.wwarn.mapcore.client.utils.AbstractMapsGWTTestHelper;
-
 /**
- *
- */
-public class GwtTestGenericMarker extends AbstractMapsGWTTestHelper{
+* Created by nigelthomas on 09/12/2014.
+*/
+class CoordinatesLatLon {
+    private final double mapCenterLat;
+    private final double mapCentreLon;
 
-    public void testMarkerSetup() throws Exception {
-        asyncLibTest(new Runnable() {
-            @Override
-            public void run() {
-                GenericMarker.Builder builder = new GenericMarker.Builder();
-                builder.setMarkerLon(47.8);
-                builder.setMarkerLat(-121.4);
-                builder.setTitle("marker title");
-                GenericMarker marker = builder.createMarker(new String(), getMap());
-                assertNotNull(marker);
-                //must call
-                finishTest();
-            }
-        });
+    public CoordinatesLatLon(double mapCentreLat, double mapCentreLon) {
+        this.mapCenterLat = mapCentreLat;
+        this.mapCentreLon = mapCentreLon;
     }
 
-    private GoogleV3MapWidget getMap() {
-        MapBuilder builder = new MapBuilder();
-        GoogleV3MapWidget mapWidget = (GoogleV3MapWidget) builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).createMapWidget();
-        return mapWidget;
+    public static CoordinatesLatLon newInstance(double mapCentreLat, double mapCentreLon) {
+        return new CoordinatesLatLon(mapCentreLat, mapCentreLon);
     }
 
-    @Override
-    public LoadApi.LoadLibrary[] getLibraries() {
-        return null;
+    public double getMapCenterLat() {
+        return mapCenterLat;
     }
 
-    @Override
-    public String getModuleName() {
-        return "org.wwarn.mapcore.Map";
+    public double getMapCentreLon() {
+        return mapCentreLon;
     }
 }

@@ -56,8 +56,8 @@
     <!-- Specify the paths for translatable code                    -->
     <source path='client' />
     <source path='shared' />
-    <script src="lib/BitterSet.js"/>
-
+    <!--<script src="lib/BitterSet.js"/>-->
+    <!--<script src="lib/openlayers/ol.js"/>-->
 
     <!-- Configuration for the app -->
 
@@ -65,16 +65,16 @@
     	<when-type-is class="org.wwarn.surveyor.client.mvp.ClientFactory"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerHoverLabelBuilder">
-    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerHoverLabelBuilder"/>
+    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerHoverLabelBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.DefaultMarkerClickInfoWindowBuilder">
-    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerClickInfoWindowBuilder"/>
+    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerClickInfoWindowBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.DefaultTableRecordsFilter">
     	<when-type-is class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.TableRecordsFilter"/>
     </replace-with>
-    <replace-with class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.DefaultMarkerIconPathBuilder">
-    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.GenericMarker.MarkerIconPathBuilder"/>
+    <replace-with class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.DefaultMarkerIconPathBuilder">
+    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerIconPathBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerDisplayFilter">
     	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerDisplayFilter"/>
@@ -90,6 +90,9 @@
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.DefaultInitialFields">
         <when-type-is class="org.wwarn.surveyor.client.mvp.InitialFields"/>
+    </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultLegendBuilder">
+        <when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerLegendLoader"/>
     </replace-with>
     <servlet path="/SearchService" class="org.wwarn.surveyor.server.core.SearchServiceServlet"/>
 </module>

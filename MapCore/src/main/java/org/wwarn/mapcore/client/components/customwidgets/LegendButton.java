@@ -38,6 +38,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.wwarn.mapcore.client.i18nstatic.MapTextConstants;
 
@@ -55,14 +56,15 @@ public class LegendButton extends Composite {
 
     boolean isLegendDisplayed;
 
-    HorizontalPanel panel = new HorizontalPanel();
+    AbsolutePanel panel = new AbsolutePanel();
 
     int legendWidth;
 
     String legendWord;
 
     public LegendButton(String relativeImagePath ){
-
+        panel.setHeight("250px");
+        panel.setWidth("250px");
         legendImg = new Image(GWT.getModuleBaseForStaticFiles() + relativeImagePath);
         setLegendButtonText();
         legendButton.addClickHandler(legendClickHandler);
@@ -94,7 +96,6 @@ public class LegendButton extends Composite {
                         resizeAnimation = new ResizeWidthAnimation(legendWidth);
                         resizeAnimation.run(500);
                         legendButton.setText(legendWord+minimizeString);
-
                     }
                 }
             };

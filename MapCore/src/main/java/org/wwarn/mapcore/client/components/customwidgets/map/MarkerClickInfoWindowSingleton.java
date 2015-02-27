@@ -1,4 +1,4 @@
-package org.wwarn.mapcore.client.components.customwidgets;
+package org.wwarn.mapcore.client.components.customwidgets.map;
 
 /*
  * #%L
@@ -40,6 +40,7 @@ import com.google.gwt.maps.client.mvc.MVCObject;
 import com.google.gwt.maps.client.overlays.InfoWindow;
 import com.google.gwt.maps.client.overlays.InfoWindowOptions;
 import com.google.gwt.user.client.ui.Widget;
+import org.wwarn.mapcore.client.components.customwidgets.MapInfoWindowOpenCloseHandler;
 
 import java.util.ArrayList;
 import java.util.List;

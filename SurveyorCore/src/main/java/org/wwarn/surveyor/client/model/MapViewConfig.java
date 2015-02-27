@@ -53,10 +53,11 @@ public class MapViewConfig implements ViewConfig {
     String mapImageRelativePath = "";
     private String viewLabel;
     private MapTypeId mapType;
+    private String imageLegendPosition = "";
 
     private MapViewConfig(){};
 
-    public MapViewConfig(String viewName, int initialZoomLevel, double initialLat, double initialLon, String markerLongitudeField, String markerLatitudeField, String mapImageRelativePath, Integer imageLegendPositionFromTopInPixels, String mapTabLabel, TemplateViewNodesConfig templateViewNodesConfig) {
+    public MapViewConfig(String viewName, int initialZoomLevel, double initialLat, double initialLon, String markerLongitudeField, String markerLatitudeField, String mapImageRelativePath, String imageLegendPosition, Integer imageLegendPositionFromTopInPixels, String mapTabLabel, TemplateViewNodesConfig templateViewNodesConfig) {
         this.viewName = viewName;
         this.markerLongitudeField = markerLongitudeField;
         this.markerLatitudeField = markerLatitudeField;
@@ -66,6 +67,7 @@ public class MapViewConfig implements ViewConfig {
         this.initialZoomLevel = initialZoomLevel;
         this.initialLat = initialLat;
         this.initialLon = initialLon;
+        this.imageLegendPosition = imageLegendPosition;
         if(templateViewNodesConfig !=null) {
             this.templateViewNodesConfig = templateViewNodesConfig;
         }
@@ -119,5 +121,9 @@ public class MapViewConfig implements ViewConfig {
 
     public void setMapType(MapTypeId mapType) {
         this.mapType = mapType;
+    }
+
+    public String getImageLegendPosition() {
+        return imageLegendPosition;
     }
 }
