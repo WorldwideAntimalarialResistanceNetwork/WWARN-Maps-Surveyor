@@ -59,11 +59,13 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
     public static final String DEFAULT_DATA_PUBLICATIONS_JSON = "/data/publications.json";
     private SearchServiceLayer searchServiceLayer;
     private static Map<String, String> filePathCache = new ConcurrentHashMap<>();
+    private boolean isGAE = false;
 
     @Override
     public void init() throws ServletException {
         super.init();
         searchServiceLayer = LuceneSearchServiceImpl.getInstance();
+        isGAE = GoogleAppEngineUtil.isGaeEnv();
         // add filePath to publications.json
     }
 
@@ -102,12 +104,23 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         }
 
         final String publicationsPathDefault = getDefaultPublicationPath(relativeFilePath);
-        if(!StringUtils.isEmpty(publicationsPathDefault)){ return publicationsPathDefault;}
+        validateFilePath(publicationsPathDefault);
+        if(isGAE) {
+            return publicationsPathDefault;
+        }else {
 
+            final String[] publicationsPath = searchForFileBasedOnRelativePathFragment(relativeFilePath);
+            validateFilePath(publicationsPath[0]);
+            return publicationsPath[0];
+        }
+    }
 
-        final String realPath = getServletContextFilePath();
-        final Path fileToFind = Paths.get(relativeFilePath);
+    private String[] searchForFileBasedOnRelativePathFragment(final String relativeFilePath) {
         final String[] publicationsPath = new String[]{""};
+        if(isGAE){ return publicationsPath;}
+
+        final Path fileToFind = Paths.get(relativeFilePath);
+        final String realPath = getServletContextFilePath();
         try {
             Files.walkFileTree(Paths.get(realPath), new SimpleFileVisitor<Path>() {
                 @Override
@@ -123,7 +136,16 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-        return publicationsPath[0];
+        return publicationsPath;
+    }
+
+    private void validateFilePath(String relativeFilePath) {
+        if(isGAE){ return;}
+        Path fileToFind = null;
+        fileToFind = Paths.get(relativeFilePath);
+        if (!Files.exists(fileToFind)) {
+            throw new IllegalArgumentException("File Path not found : " + fileToFind.toAbsolutePath());
+        }
     }
 
     private String getDefaultPublicationPath(String relativeFilePath) {

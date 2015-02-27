@@ -35,5 +35,4 @@
 <module rename-to='surveyorTest'>
   <!-- Inherit our applications main module.                      -->
     <inherits name='org.wwarn.surveyor.SurveyorCore' />
-
 </module>

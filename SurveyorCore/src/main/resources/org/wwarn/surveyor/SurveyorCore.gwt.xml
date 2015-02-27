@@ -91,5 +91,8 @@
     <replace-with class="org.wwarn.surveyor.client.mvp.presenter.FilterPresenter.DefaultInitialFields">
         <when-type-is class="org.wwarn.surveyor.client.mvp.InitialFields"/>
     </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultLegendBuilder">
+        <when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerLegendLoader"/>
+    </replace-with>
     <servlet path="/SearchService" class="org.wwarn.surveyor.server.core.SearchServiceServlet"/>
 </module>

@@ -82,9 +82,12 @@ public class FileChangeMonitor extends Observable {
      * @throws IOException
      */
     protected void init(Path monitoredFile, CountDownLatch start, CountDownLatch stop) throws IOException {
-
-        if(!Files.isRegularFile(monitoredFile)) {
-            throw new IllegalArgumentException("Input of type File expected");
+        try {
+            if (!Files.isRegularFile(monitoredFile)) {
+                throw new IllegalArgumentException("Input of type File expected");
+            }
+        }catch(NoClassDefFoundError e){
+            return; //app engine specific horror, checks if this error is thrown and prevents this code from running
         }
 //        start.countDown(); // start countdown
         final FileSystem fileSystem = FileSystems.getDefault();
