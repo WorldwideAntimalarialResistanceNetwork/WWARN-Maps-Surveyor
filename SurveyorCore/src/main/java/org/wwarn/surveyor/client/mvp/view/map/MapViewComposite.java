@@ -37,6 +37,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -80,6 +81,7 @@ public class MapViewComposite extends Composite {
     private Scheduler scheduler = Scheduler.get();
     private GenericMarker.MarkerHoverLabelBuilder markerHoverLabelBuilder;
     private GenericMarker.MarkerClickInfoWindowBuilder markerClickInfoWindow;
+    private MarkerLegendLoader markerLegendLoader;
 
     // UI Binder boiler plate
     interface MapViewUIUiBinder extends UiBinder<FlowPanel, MapViewComposite> {}
@@ -119,22 +121,24 @@ public class MapViewComposite extends Composite {
             @Override
             public void execute() {
                 MapBuilder builder = new MapBuilder();
-                mapWidget = builder.configureMapDimension(400, 500).setCenter(viewConfig.getInitialLat(), viewConfig.getInitialLon()).setZoomLevel(viewConfig.getInitialZoomLevel()).createMapWidget(MapBuilder.MapType.OPEN_LAYERS_OS_OFFLINE);
-                final String relativeImagePath = viewConfig.getMapImageRelativePath();
-                if (!StringUtils.isEmpty(relativeImagePath)) {
-                    Integer imageLegendPositionFromTopInPixels = viewConfig.getImageLegendPositionFromTopInPixels();
-                    final int legendPixelsFromTop = (imageLegendPositionFromTopInPixels == null) ? 250 : imageLegendPositionFromTopInPixels;
-                    LegendButton legendButton = new LegendButton(relativeImagePath);
-                    mapWidget.setMapLegend(legendButton, legendPixelsFromTop);
-                }
+                //todo move type of map into config
+                mapWidget = builder.configureMapDimension(400, 500).setCenter(viewConfig.getInitialLat(), viewConfig.getInitialLon()).setZoomLevel(viewConfig.getInitialZoomLevel()).createMapWidget(MapBuilder.MapType.GOOGLE_V3);
                 setMarkers(clientFactory.getLastQueryResult());
                 panel.add(mapWidget);
                 mapWidget.justResizeMapWidget();
                 mapWidget.resizeMapWidget();
+                loadMapLegend();
                 onLoadComplete();
             }
         });
 
+    }
+
+    private void loadMapLegend() {
+        GenericMapWidget.LegendOptions legendOptions = getMarkerLegendBuilder().createLegend();
+        if (legendOptions!=null) {
+            mapWidget.setMapLegend(legendOptions);
+        }
     }
 
     /**
@@ -259,6 +263,45 @@ public class MapViewComposite extends Composite {
     public void onResultChanged(ResultChangedEvent resultChangedEvent){
         setMarkers(resultChangedEvent.getQueryResult());
     }
+
+    private MarkerLegendLoader getMarkerLegendBuilder() {
+        if(markerLegendLoader!=null){ return markerLegendLoader; }
+        try {
+            markerLegendLoader = GWT.create(MarkerLegendLoader.class);
+        }catch (RuntimeException e){
+            if(!e.getMessage().startsWith("Deferred binding")) throw e;
+            //by pass deferred binding error and use default value
+            markerLegendLoader = new DefaultLegendBuilder();
+        }
+        return markerLegendLoader;
+    }
+
+
+    /**
+     *
+     */
+    public interface MarkerLegendLoader{
+        public GenericMapWidget.LegendOptions createLegend();
+    }
+
+    public static class DefaultLegendBuilder implements MarkerLegendLoader{
+
+        @Override
+        public GenericMapWidget.LegendOptions createLegend() {
+            final String relativeImagePath = viewConfig.getMapImageRelativePath();
+            GenericMapWidget.LegendOptions legendOptions = null;
+            if (!StringUtils.isEmpty(relativeImagePath)) {
+                Integer imageLegendPositionFromTopInPixels = viewConfig.getImageLegendPositionFromTopInPixels();
+                final int legendPixelsFromTop = (imageLegendPositionFromTopInPixels == null) ? 250 : imageLegendPositionFromTopInPixels;
+                final String imageLegendPosition = StringUtils.ifEmpty(viewConfig.getImageLegendPosition(), "BOTTOM_LEFT");
+                GenericMapWidget.LegendPosition position = GenericMapWidget.LegendPosition.valueOf(imageLegendPosition);
+                final LegendButton legendWidget = new LegendButton(relativeImagePath);
+                legendOptions = GenericMapWidget.LegendOptions.createLegendOptions(legendWidget, legendPixelsFromTop, position, true);
+            }
+            return  legendOptions;
+        }
+    }
+
 
     /**
      * Logic to decide if a marker should be displayed is encapsulated here,

@@ -33,12 +33,11 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * #L%
  */
 
-import com.google.gwt.event.logical.shared.HasAttachHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by nigelthomas on 09/12/2014.
@@ -73,7 +72,30 @@ public abstract class GenericMapWidget extends Composite {
 
     public abstract void resizeMapWidget();
 
-    public abstract void setMapLegend(Widget legendImage, int legendPixelsFromBottom);
+    public abstract void setMapLegend(LegendOptions legendOptions);
 
     public abstract void setMapFiltersDisplay(Widget filtersWidget);
+
+    public static class LegendOptions {
+        int legendPixelsFromBottom;
+        boolean isOpenedByDefault = false;
+        LegendPosition screenPosition;
+        Widget legendWidget = null;
+
+        private LegendOptions(Widget legendWidget, int legendPixelsFromBottom, LegendPosition screenPosition, boolean openedByDefault) {
+            this.legendPixelsFromBottom = legendPixelsFromBottom;
+            this.screenPosition = screenPosition;
+            this.isOpenedByDefault = openedByDefault;
+            this.legendWidget = legendWidget;
+        }
+
+        public static LegendOptions createLegendOptions(Widget legendWidget, int legendPixelsFromBottom, LegendPosition screenPosition, boolean isOpenedByDefault) {
+            Objects.requireNonNull(screenPosition, "Screen position must be set");
+            return new LegendOptions(legendWidget, legendPixelsFromBottom, screenPosition, isOpenedByDefault);
+        }
+    }
+
+    public static enum LegendPosition{
+        TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT
+    }
 }

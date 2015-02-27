@@ -37,6 +37,7 @@ import com.google.gwt.maps.client.LoadApi;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import org.wwarn.mapcore.client.components.customwidgets.map.GenericMapWidget;
 import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
 import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3MapWidget;
 import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
@@ -77,7 +78,7 @@ public class GwtTestGenericMapWidget extends AbstractMapsGWTTestHelper {
 
 
                 // test map legend
-                mapWidget.setMapLegend(new Image(""), -323);
+                mapWidget.setMapLegend(GenericMapWidget.LegendOptions.createLegendOptions(new Image(""), 323, GenericMapWidget.LegendPosition.BOTTOM_LEFT, false));
 
                 finishTest();
             }

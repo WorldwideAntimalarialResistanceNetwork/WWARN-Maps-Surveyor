@@ -33,6 +33,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.maps.client.MapOptions;
 import com.google.gwt.maps.client.MapTypeId;
@@ -51,6 +52,7 @@ import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewMethods;
 import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewOnAddHandler;
 import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewOnDrawHandler;
 import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewOnRemoveHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
@@ -72,7 +74,6 @@ public class GoogleV3MapWidget extends GenericMapWidget {
 
     private final String mapWidgetStyleName = "mapWidget";
     private final MapWidget mapWidget;
-    private int legendPixelsFromBottom;
     final private SimplePanel legendWidgetPlaceHolder = new SimplePanel();
     final private SimplePanel filtersDisplayWidgetPlaceHolder = new SimplePanel();
     private List<GenericMarker> markers;
@@ -258,12 +259,56 @@ public class GoogleV3MapWidget extends GenericMapWidget {
     }
 
     @Override
-    public void setMapLegend(Widget legendImage, int legendPixelsFromBottom) {
+    public void setMapLegend(LegendOptions legendOptions) {
+
+        int xPosition = 0;
+        int yPostion = 0;
+        LegendPosition screenPosition = legendOptions.screenPosition;
+        if(screenPosition ==null) screenPosition = LegendPosition.BOTTOM_LEFT;
+        final Widget legendWidget = legendOptions.legendWidget;
+        switch (screenPosition) {
+            case TOP_LEFT: // top left
+                xPosition = 3;
+                yPostion = 3;
+                break;
+            case TOP_RIGHT: // top right
+                xPosition = getXPositionWhenRight(legendWidget);
+                yPostion =  3;
+                break;
+            case BOTTOM_RIGHT: // bottom right
+                xPosition = getXPositionWhenRight(legendWidget);
+                yPostion = getYPostionWhenBottom(legendOptions);
+                break;
+            case BOTTOM_LEFT: // bottom left
+                xPosition = LEGEND_X_INDENT;
+                yPostion = getYPostionWhenBottom(legendOptions);
+                break;
+        }
         //setup map legend position
-        absoluteMapContentOverlayPanel.add(legendWidgetPlaceHolder, LEGEND_X_INDENT, calcLegendPanelYPos(legendPixelsFromBottom));
+
+        absoluteMapContentOverlayPanel.add(legendWidgetPlaceHolder, xPosition, yPostion);
         legendWidgetPlaceHolder.clear();
-        absoluteMapContentOverlayPanel.setWidgetPosition(legendWidgetPlaceHolder, LEGEND_X_INDENT, calcLegendPanelYPos(legendPixelsFromBottom));
-        legendWidgetPlaceHolder.setWidget(legendImage);
+        absoluteMapContentOverlayPanel.setWidgetPosition(legendWidgetPlaceHolder, xPosition, yPostion);
+        legendWidgetPlaceHolder.setWidget(legendWidget);
+
+        final int finalXPosition = xPosition;
+        final int finalYPostion = yPostion;
+        mapWidget.addIdleHandler(new IdleMapHandler() {
+            @Override
+            public void onEvent(IdleMapEvent idleMapEvent) {
+                absoluteMapContentOverlayPanel.setWidgetPosition(legendWidgetPlaceHolder, finalXPosition, finalYPostion);
+
+
+            }
+        });
+    }
+
+    private int getXPositionWhenRight(Widget legendWidget) {
+        return Window.getClientWidth() - (410 + legendWidget.getOffsetWidth());
+    }
+
+    private int getYPostionWhenBottom(LegendOptions legendOptions) {
+        return mapWidget.getOffsetHeight() + (legendOptions.legendPixelsFromBottom) - 150;
     }
 
     @Override
@@ -275,9 +320,6 @@ public class GoogleV3MapWidget extends GenericMapWidget {
         filtersDisplayWidgetPlaceHolder.setWidget(filtersWidget);
     }
 
-    private int calcLegendPanelYPos(int legendPixelsFromBottom) {
-        return mapWidget.getOffsetHeight() - legendPixelsFromBottom;
-    }
 
     private int calcFiltersPanelXPos() {
         return mapWidget.getAbsoluteLeft() + mapWidget.getOffsetWidth() - 413;
