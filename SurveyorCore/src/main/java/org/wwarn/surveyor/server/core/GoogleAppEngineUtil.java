@@ -1,10 +1,10 @@
-package org.wwarn.surveyor.client.resources;
+package org.wwarn.surveyor.server.core;
 
 /*
  * #%L
  * SurveyorCore
  * %%
- * Copyright (C) 2013 - 2014 University of Oxford
+ * Copyright (C) 2013 - 2015 University of Oxford
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,22 +33,20 @@ package org.wwarn.surveyor.client.resources;
  * #L%
  */
 
-import com.google.gwt.core.shared.GWT;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ExternalTextResource;
-import com.google.gwt.resources.client.TextResource;
+import java.nio.file.Paths;
 
 /**
- *
- * User: nigel
- * Date: 30/07/13
- * Time: 16:00
+ * Holds Google App engine helper functions
  */
-public interface Resources extends ClientBundle {
-    Resources IMPL = (Resources) GWT.create(Resources.class);
-    @Source("config.xml")
-    TextResource config();
+public class GoogleAppEngineUtil {
 
-    @Source("BitterSet.js")
-    TextResource bitSetScript();
+    public static boolean isGaeEnv() {
+        boolean isGae = false;
+        try{
+            Paths.get("");
+        } catch (NoClassDefFoundError e) { /*Paths not defined in GAE, expect error use this to capture environment*/
+            isGae = true;
+        }
+        return isGae;
+    }
 }

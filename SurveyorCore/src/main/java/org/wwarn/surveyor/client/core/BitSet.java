@@ -33,8 +33,15 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
+import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ResourceCallback;
+import com.google.gwt.resources.client.ResourceException;
+import com.google.gwt.resources.client.TextResource;
+import org.wwarn.surveyor.client.resources.Resources;
 
 import java.util.Set;
 
@@ -42,10 +49,14 @@ import java.util.Set;
  * Wrapper for the following https://github.com/atonparker/bitterset impl
  */
 public class BitSet  {
+
+
     private JavaScriptObject bitset;
 
     public BitSet() {
-        // create a new array
+        String text;
+        text = Resources.IMPL.bitSetScript().getText();
+        ScriptInjector.fromString(text).setWindow(ScriptInjector.TOP_WINDOW).inject();
         initialise();
     }
 

@@ -48,7 +48,7 @@ class FieldInvertedIndex implements IsSerializable {
     public FieldInvertedIndex(DataSchema schema) {
         this.schema = schema;
         for (String field : schema.getColumns()) {
-            final HashMap<String, Set<Integer>> e = new HashMap<String, Set<Integer>>();
+            final Map<String, Set<Integer>> e = new TreeMap<String, Set<Integer>>(); // using tree map is important for range queries
             fields.add(e);
         }
     }
@@ -72,8 +72,12 @@ class FieldInvertedIndex implements IsSerializable {
     //add fields on index
     public void addDocument(String... fields){
         for (int i = 0; i < fields.length; i++) {
+            final DataType type = schema.getType(i);
             String field = fields[i];
             final Map<String, Set<Integer>> stringSetMap = this.fields.get(i);
+            if(type == DataType.DateYear){ // reformat field value for date year
+                 field = field.split("-")[0];
+            }
             Set<Integer> integers = stringSetMap.get(field);
             if(integers == null){
                 integers = new TreeSet<>();

@@ -35,13 +35,13 @@ package org.wwarn.surveyor.client.core;
 
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
 
 import java.util.*;
 
 /**
- *
+ * A client search implementation using BitSets
+ * When I wrote this, only God and I understood what I was doing. Now, God only knows. - Karl Weierstrass
  */
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
     private List<Map<String, BitSet>> fieldInvertedIndex;
@@ -58,6 +58,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     @Override
     public void onLoad(final Runnable callOnLoad) {
         try {
+            //todo something with initialFilterQuery
             InitialFilterQuery initialFilterQuery = getInitialFilterQuery();
             final FilterQuery filterQuery = new MatchAllQuery(); // fetch everything
             clientFactory.setLastFilterQuery(filterQuery);
@@ -91,23 +92,37 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         // setup initial BitSet
         final List<Map<String, Set<Integer>>> fields = index.getFields();
         final List<Map<String, BitSet>> fieldsBitSet = new ArrayList<>();
+        int fieldIndex = 0;
         //for each field
         for (Map<String, Set<Integer>> field : fields) {
+            final DataType type = schema.getType(fieldIndex);
             //for each field value
-            Map<String, BitSet> fieldValueBitSetMap = new HashMap<>();
+            Map<String, BitSet> fieldValueBitSetMap = new TreeMap<>();
             for (String fieldValue : field.keySet()) {
                 //get postings list
                 BitSet bitSet = fieldValueBitSetMap.get(fieldValue);
-                if(bitSet == null){bitSet = new BitSet();}
+                if (bitSet == null) {
+                    bitSet = new BitSet();
+                }
                 final Set<Integer> positions = field.get(fieldValue);
                 for (Integer pos : positions) {
                     bitSet.set(pos);
                 }
+                fieldValue = typeBasedStringFormatting(type, fieldValue);
                 fieldValueBitSetMap.put(fieldValue, bitSet);
             }
             fieldsBitSet.add(fieldValueBitSetMap);
+            fieldIndex++;
         }
         return fieldsBitSet;
+    }
+
+    private String typeBasedStringFormatting(DataType type, String fieldValue) {
+        if(type == DataType.Integer || type == DataType.DateYear){
+            /* added to handle natural numbers properly*/
+            fieldValue = leftPaddedInteger(Integer.parseInt(fieldValue));
+        }
+        return fieldValue;
     }
 
     @Override
@@ -156,33 +171,18 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     case Integer:
                         // if range query
                         if(filterQueryElement instanceof FilterQuery.FilterFieldRange){
-                            String minValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue();
-                            String maxValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue();
 
-                            //todo query.add(filterField, TermRangeQuery.newStringRange(filterField, minValue, maxValue, true, true));
+                            queryBitSet = processRangeQueryDefaultTypes(queryBitSet, map, filterQueryElement, type);
+
                         }else if(filterQueryElement instanceof FilterQuery.FilterFieldGreaterThanInteger){
-                            int minValue = ((FilterQuery.FilterFieldGreaterThanInteger) filterQueryElement).getFieldValue();
-                            //todo query.add(filterField, NumericRangeFilter.newIntRange(filterField, minValue, Integer.MAX_VALUE, true, true));
-
+                            queryBitSet = processIntegerGreaterThanDefaultTypes(queryBitSet, map, filterQueryElement, type);
                         }else{
-                            final Set<String> fieldValues = getFieldValues(filterQueryElement);
-                            BitSet multiValueSet = new BitSet();
-                            for(String fieldValue : fieldValues){
-                                final BitSet bitSet = map.get(fieldValue);
-                                multiValueSet.or(bitSet);
-                            }
-                            if(multiValueSet.length()>0) {
-//                                System.out.println(queryBitSet.toBinaryString());
-//                                System.out.println(multiValueSet.toBinaryString());
-                                if(queryBitSet.length() > 1){
-                                    queryBitSet.and(multiValueSet);
-                                }else { // if query bitset empty, just assign current multiset values to it
-                                    queryBitSet = multiValueSet;
-                                }
-                            }
+                            // does most of the commons multi value types
+                            queryBitSet = processMultiValueQueryDefaultTypes(queryBitSet, map, filterQueryElement, type);
                         }
                         break;
                     case Date:
+
                         if(filterQueryElement instanceof FilterQuery.FilterFieldRangeDate){
                             Date minValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMinValue();
                             Date maxValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMaxValue();
@@ -198,19 +198,64 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     case DateYear:
                         // if range query
                         if(filterQueryElement instanceof FilterQuery.FilterFieldRange){
-                            String minValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue();
-                            String maxValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue();
-                            //todo query.add(filterField, NumericRangeQuery.newIntRange(filterField, Integer.parseInt(minValue), Integer.parseInt(maxValue), true, true));
+                            queryBitSet = processRangeQueryDateYearType(queryBitSet, map, filterQueryElement, type);
                         }else{
-                            for(String fieldValue : getFieldValues(filterQueryElement)){
-                                //todo query.add(filterField, String.valueOf(Integer.parseInt(fieldValue)));
-                            }
+                            queryBitSet = processRangeQueryMultiValueQueryDateYear(queryBitSet, map, filterQueryElement, type);
                         }
                         break;
                 }
             }
         }
 
+        return queryBitSet;
+    }
+
+
+    private BitSet processRangeQueryDefaultTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
+        String minValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue();
+        String maxValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue();
+        //sorted set assumes all keys are of same type and sorted..
+        final TreeMap treeMap = (TreeMap) map;
+        final NavigableMap navigableMap = treeMap.subMap(minValue, true, maxValue, true);
+        return processMultiValueQueryAllTypes(queryBitSet, map, navigableMap.keySet(), type);
+    }
+
+    private BitSet processRangeQueryMultiValueQueryDateYear(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
+        Set<String> dateYearSet = new HashSet<>(getFieldValues(filterQueryElement));
+        return processMultiValueQueryAllTypes(queryBitSet, map, dateYearSet, type);
+    }
+
+    private BitSet processRangeQueryDateYearType(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
+        return processRangeQueryDefaultTypes(queryBitSet, map, filterQueryElement, type);
+    }
+
+    private BitSet processIntegerGreaterThanDefaultTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
+        int minValue = ((FilterQuery.FilterFieldGreaterThanInteger) filterQueryElement).getFieldValue();
+        final TreeMap treeMap = (TreeMap) map;
+
+        final NavigableMap navigableMap = treeMap.tailMap(typeBasedStringFormatting(type, String.valueOf(minValue)), false);
+
+        return processMultiValueQueryAllTypes(queryBitSet, map, navigableMap.keySet(), type);
+    }
+
+    private BitSet processMultiValueQueryDefaultTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
+        final Set<String> fieldValues = getFieldValues(filterQueryElement);
+        return processMultiValueQueryAllTypes(queryBitSet, map, fieldValues, type);
+    }
+
+    private BitSet processMultiValueQueryAllTypes(BitSet queryBitSet, Map<String, BitSet> map, Set<String> fieldValues, DataType type) {
+        BitSet multiValueSet = new BitSet();
+        for(String fieldValue : fieldValues){
+            final BitSet bitSet = map.get(typeBasedStringFormatting(type,fieldValue));
+            multiValueSet.or(bitSet);
+        }
+        if(multiValueSet.length()>0) {
+            if(queryBitSet.length() > 1){
+                queryBitSet.and(multiValueSet);
+            }else { // if query bitset empty, just assign current multiset values to it
+                queryBitSet = multiValueSet;
+            }
+        }
         return queryBitSet;
     }
 
@@ -225,5 +270,22 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     private DateTimeFormat getDateFormatFrom(final String pattern) {
         return DataType.ParseUtil.getDateFormatFrom(pattern);
+    }
+
+    static String leftPaddedInteger(int i) {
+        if(i < 0){
+            throw new IllegalArgumentException("Natural numbers only, does not support negative integers");
+        }
+        //max int length is  (2^31)-1
+        final int maxSize = Integer.toString(Integer.MAX_VALUE).length()+1;
+        final int length = maxSize - Integer.toString(i).length();
+        char[] padArray = new char[length];
+        Arrays.fill(padArray, '0');
+        final String paddedInteger = (new String(padArray)) + Integer.toString(i);
+        return paddedInteger;
+    }
+
+    static class QueryResponse {
+
     }
 }

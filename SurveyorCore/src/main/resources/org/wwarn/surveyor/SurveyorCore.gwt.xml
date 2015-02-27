@@ -56,9 +56,8 @@
     <!-- Specify the paths for translatable code                    -->
     <source path='client' />
     <source path='shared' />
-    <script src="lib/BitterSet.js"/>
-    <script src="lib/openlayers/ol.js"/>
-
+    <!--<script src="lib/BitterSet.js"/>-->
+    <!--<script src="lib/openlayers/ol.js"/>-->
 
     <!-- Configuration for the app -->
 
