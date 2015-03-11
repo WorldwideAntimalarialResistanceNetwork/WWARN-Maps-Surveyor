@@ -182,7 +182,7 @@ public class TableViewConfig implements ViewConfig, IsSerializable {
         }
     }
 
-    public enum TableType{
+    public enum TableType implements IsSerializable{
         //it will create a TableViewComposite
         CLIENT_TABLE,
 
