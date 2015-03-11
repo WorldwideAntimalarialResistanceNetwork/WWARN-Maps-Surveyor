@@ -108,11 +108,13 @@ public class GwtTestGenericMapWidget extends AbstractMapsGWTTestHelper {
         asyncLibTest(new Runnable() {
             @Override
             public void run() {
-                GenericMapWidget.Builder builder = new GenericMapWidget.Builder();
+                MapBuilder builder = new MapBuilder();
                 GenericMapWidget mapWidget = builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).setMapTypeId(MapTypeId.HYBRID).createMapWidget();
                 assertEquals(MapTypeId.HYBRID, builder.mapTypeId);
                 assertNotNull(mapWidget);
-                assertNotNull(mapWidget.getInternalGoogleMapWidget());
+                assertTrue(mapWidget instanceof GoogleV3MapWidget);
+                GoogleV3MapWidget googleV3MapWidget = (GoogleV3MapWidget) mapWidget;
+                assertNotNull(googleV3MapWidget.getInternalGoogleMapWidget());
                 finishTest();
             }
         });

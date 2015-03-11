@@ -16,7 +16,7 @@
 
     <properties>
         <!-- GWT -->
-        <gwt.version>2.6.1</gwt.version>
+        <gwt.version>2.7.0</gwt.version>
         <gwt.style>OBF</gwt.style>
 
         <!-- App Engine -->
@@ -29,8 +29,40 @@
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <gae.version>1.9.6</gae.version>
         <gae.home>${settings.localRepository}/com/google/appengine/appengine-java-sdk/${gae.version}/appengine-java-sdk-${gae.version}</gae.home>
-        <surveyor.core.version>1.0.2-SNAPSHOT</surveyor.core.version>
+        <surveyor.core.version>${parent.version}</surveyor.core.version>
     </properties>
+
+    <dependencies>
+        <!-- needed despite definition in parent pom -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- needed for gwt integration tests-->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwt.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Surveyor dependency -->
+        <dependency>
+            <groupId>org.wwarn.mapssurveyor</groupId>
+            <artifactId>SurveyorCore</artifactId>
+            <version>${surveyor.core.version}</version>
+        </dependency>
+
+
+    </dependencies>
 
     <build>
         <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
@@ -47,8 +79,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.0</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -113,32 +145,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
                 <version>${gwt.version}</version>
-                <configuration>
-                    <strict>true</strict>
-
-                    <testTimeOut>180</testTimeOut>
-                    <mode>htmlunit</mode>
-                    <!-- Switch to a suite to run tests faster -->
-                    <!-- <includes>**/*GwtTestSuite.java</includes> -->
-                    <!-- <excludes>**/*GwtTest.java</excludes> -->
-                    <includes>**/*GwtTest.java</includes>
-
-                    <extraJvmArgs>-Xss1024K -Xmx1024M -XX:MaxPermSize=256M</extraJvmArgs>
-                    <logLevel>INFO</logLevel>
-                    <style>${gwt.style}</style>
-
-                    <copyWebapp>true</copyWebapp>
-                    <hostedWebapp>${webappDirectory}</hostedWebapp>
-
-                    <server>com.google.appengine.tools.development.gwt.AppEngineLauncher</server>
-                    <appEngineVersion>${gae.version}</appEngineVersion>
-                    <appEngineHome>${gae.home}</appEngineHome>
-
-                    <runTarget>Project.html</runTarget>
-                    <modules>
-                        <module>com.example.Project</module>
-                    </modules>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -147,52 +153,15 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>net.kindleit</groupId>
-                <artifactId>maven-gae-plugin</artifactId>
-                <version>0.9.6</version>
-
                 <configuration>
-                    <sdkDir>${gae.home}</sdkDir>
-                    <appDir>${webappDirectory}</appDir>
-                    <unpackVersion>${gae.version}</unpackVersion>
-
-                    <!-- Add credentials to ~/.m2/settings.xml <id>appengine-credentials</id> -->
-                    <serverId>appengine-credentials</serverId>
-                    <splitJars>true</splitJars>
+                    <runTarget>index.html</runTarget>
+                    <hostedWebapp>${webappDirectory}</hostedWebapp>
+                    <mode>htmlunit</mode>
+                    <includes>**/Gwt*Suite.java</includes>
+                    <compileReport>true</compileReport>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>deploy</id>
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-                <dependencies>
-                    <!-- Google App Engine API -->
-                    <dependency>
-                        <groupId>com.google.appengine</groupId>
-                        <artifactId>appengine-api-1.0-sdk</artifactId>
-                        <version>${gae.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>net.kindleit</groupId>
-                        <artifactId>gae-runtime</artifactId>
-                        <version>1.8.8</version>
-                        <type>pom</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.google.appengine</groupId>
-                        <artifactId>appengine-java-sdk</artifactId>
-                        <version>${gae.version}</version>
-                    </dependency>
-
-                </dependencies>
             </plugin>
+
 
             <!-- skip deployment -->
             <plugin>
@@ -205,101 +174,60 @@
             </plugin>
         </plugins>
 
-        <pluginManagement>
-            <plugins>
-                <!-- For Eclipse IDEA ignores this section -->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <artifactId>maven-war-plugin</artifactId>
-                                        <versionRange>2.1.1</versionRange>
-                                        <goals>
-                                            <goal>exploded</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>net.kindleit</groupId>
-                                        <artifactId>maven-gae-plugin</artifactId>
-                                        <versionRange>[0.9.0,)</versionRange>
-                                        <goals>
-                                            <goal>unpack</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
 
-    <dependencies>
-        <!-- GWT -->
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-codeserver</artifactId>
-            <version>${gwt.version}</version>
-        </dependency>
 
-        <!-- Google App Engine -->
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>appengine-api-1.0-sdk</artifactId>
-            <version>${gae.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>appengine-api-labs</artifactId>
-            <version>${gae.version}</version>
-        </dependency>
+    <profiles>
+        <profile>
+            <id>gae</id>
+            <activation><activeByDefault>false</activeByDefault></activation>
+            <build>
+                <plugins>
 
-        <!-- Testing -->
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>appengine-api-stubs</artifactId>
-            <version>${gae.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>appengine-testing</artifactId>
-            <version>${gae.version}</version>
-            <scope>test</scope>
-        </dependency>
+                    <plugin>
+                        <groupId>com.google.appengine</groupId>
+                        <artifactId>appengine-maven-plugin</artifactId>
+                        <version>${gae.version}</version>
+                        <configuration>
+                            <enableJarClasses>false</enableJarClasses>
+                            <!-- Comment in the below snippet to bind to all IPs instead of just localhost -->
+                            <!-- address>0.0.0.0</address>
+                            <port>8080</port -->
+                            <!-- Comment in the below snippet to enable local debugging with a remove debugger
+                                 like those included with Eclipse or IntelliJ -->
+                            <!-- jvmFlags>
+                              <jvmFlag>-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n</jvmFlag>
+                            </jvmFlags -->
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <!-- Compile/runtime dependencies -->
+                <dependency>
+                    <groupId>com.google.appengine</groupId>
+                    <artifactId>appengine-api-1.0-sdk</artifactId>
+                    <version>${gae.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.google.appengine</groupId>
+                    <artifactId>appengine-endpoints</artifactId>
+                    <version>${gae.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                    <version>2.5</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>javax.inject</groupId>
+                    <artifactId>javax.inject</artifactId>
+                    <version>1</version>
+                </dependency>
+            </dependencies>
+        </profile>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Surveyor dependency -->
-        <dependency>
-            <groupId>org.wwarn.mapssurveyor</groupId>
-            <artifactId>SurveyorCore</artifactId>
-            <version>${surveyor.core.version}</version>
-        </dependency>
-    </dependencies>
+    </profiles>
+
 </project>

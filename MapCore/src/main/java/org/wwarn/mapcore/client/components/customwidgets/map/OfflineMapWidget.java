@@ -226,9 +226,10 @@ public class OfflineMapWidget extends GenericMapWidget {
     }
 
     @Override
-    public void setMapLegend(Widget legendImage, int legendPixelsFromBottom) {
-
+    public void setMapLegend(LegendOptions legendOptions) {
+        throw new UnsupportedOperationException("Not yet implemented..");
     }
+
 
     @Override
     public void setMapFiltersDisplay(Widget filtersWidget) {

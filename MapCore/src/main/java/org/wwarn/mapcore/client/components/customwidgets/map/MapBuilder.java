@@ -34,6 +34,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  */
 
 
+import com.google.gwt.maps.client.MapTypeId;
 
 /**
 * Created by nigelthomas on 09/12/2014.
@@ -45,11 +46,12 @@ public class MapBuilder {
     private String noStudiesFoundMsg = STOCK_NO_STUDIES_MSG;
     private static final int DEFAULT_ZOOM_LEVEL = 2;
 
+    public MapTypeId mapTypeId;
+
     int mapHeight = 0;
     int mapWidth = 0;
     int zoomLevel = DEFAULT_ZOOM_LEVEL;
     CoordinatesLatLon coordinatesLatLon;
-
     /**
      * set max zoom out level
      * @param minZoomLevel
@@ -57,6 +59,11 @@ public class MapBuilder {
      */
     public MapBuilder setMinZoomLevel(int minZoomLevel) {
         this.minZoomLevel = minZoomLevel;
+        return this;
+    }
+
+    public MapBuilder setMapTypeId(MapTypeId mapTypeId) {
+        this.mapTypeId = mapTypeId;
         return this;
     }
 
