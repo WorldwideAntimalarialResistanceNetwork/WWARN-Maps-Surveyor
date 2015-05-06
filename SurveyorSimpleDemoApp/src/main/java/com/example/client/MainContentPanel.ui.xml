@@ -33,69 +33,66 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:filter="urn:import:org.wwarn.surveyor.client.mvp.view.filter">
     <ui:style>
-        .mainAppWidget {
-
+        .filterContainerPanel {
+            /*float: none;*/
+            width: 215px;
+            /*margin-left: -5px;*/
         }
 
-        .rows {
-            width: 100%;
-        }
-
-        .columnSet {
-            width: 100%;
-        }
-
-        .horizontalPanelAlignment {
-            float: left;
-        }
-
-        .yearRangeSliderComposite {
-            min-width: 500px;
-            width: 50%;
-        }
-
-        .rightColumn {
-            padding-left: 8px;
-            width: 100%;
-            font-size: 1.1em !important;
-        }
-
-        .logoPanel {
-            float: right;
-        }
-
-        .countryTable {
-            margin-top: 1.5em;
-            margin-bottom: 1.5em;
-        }
     </ui:style>
+    <g:FlowPanel>
+        <g:HTMLPanel addStyleNames="row">
+            <g:HTMLPanel addStyleNames="col-sm-12">
+                <a class="wwarnFilterContainerToggle btn btn-primary" href="#"><span class="buttonLabel">Show filters</span> <span class="glyphicon glyphicon-filter"/></a>
+            </g:HTMLPanel>
+        </g:HTMLPanel>
+        <g:HTMLPanel addStyleNames="row row-offcanvas row-offcanvas-left">
+            <!--sidebar -->
+            <g:FlowPanel  ui:field="filterContainerPanel" addStyleNames="{style.filterContainerPanel} wwarnFilterContainer col-xs-3 col-sm-2 sidebar-offcanvas"/>
+            <!--main area -->
+            <g:FlowPanel addStyleNames="col-xs-11 col-sm-11 col-md-9">
+                <g:FlowPanel addStyleNames="row">
+                    <g:FlowPanel ui:field="resultsContainerPanel" addStyleNames="col-sm-12"/>
+                </g:FlowPanel>
+                <g:FlowPanel addStyleNames="row">
+                    <filter:YearRangeSliderComposite width="500px" height="100px" addStyleNames="col-xs-11 col-sm-11 col-md-5" fieldName="PY" dateFormat="yyyy"/>
+                    <g:HTMLPanel addStyleNames="col-xs-11 col-sm-11 col-md-5">
+                        <p>
+                            Demonstrator application loaded with a subset of anti malarial quality data
+                        </p>
+                    </g:HTMLPanel>
+                </g:FlowPanel>
+            </g:FlowPanel><!--/col-xs-12 -->
+            <div class="clearfix visible-xs-block"></div>
 
-    <g:VerticalPanel ui:field="mainAppWidget" addStyleNames="{style.mainAppWidget}" >
-        <g:VerticalPanel ui:field="mainContent">
-            <g:VerticalPanel ui:field="rows">
-                <g:HorizontalPanel ui:field="columnSet">
-                    <g:VerticalPanel ui:field="leftColumn">
-                        <g:HTMLPanel ui:field="selectorPanel">
-                            <g:FlowPanel ui:field="filterContainerPanel"/>
-                        </g:HTMLPanel>
-                    </g:VerticalPanel>
-                    <g:VerticalPanel ui:field="rightColumn" addStyleNames="{style.rightColumn}">
-                        <g:FlowPanel ui:field="resultsContainerPanel"/>
-                        <g:FlowPanel>
-                            <filter:YearRangeSliderComposite addStyleNames="{style.horizontalPanelAlignment} {style.yearRangeSliderComposite}" width="50%" fieldName="PY" dateFormat="yyyy"/>
-                            <g:FlowPanel addStyleNames="{style.horizontalPanelAlignment}" width="40%" height="100%">
-                                <g:HTMLPanel>
-                                    <p>
-                                        Demonstrator application loaded with a subset of anti malarial quality data
-                                    </p>
-                                </g:HTMLPanel>
-                            </g:FlowPanel>
-                        </g:FlowPanel>
-                    </g:VerticalPanel>
-                </g:HorizontalPanel>
-            </g:VerticalPanel>
-        </g:VerticalPanel>
-    </g:VerticalPanel>
+        </g:HTMLPanel>
+    </g:FlowPanel>
+    <!--<g:VerticalPanel ui:field="mainAppWidget" addStyleNames="{style.mainAppWidget}" >-->
+        <!--<g:VerticalPanel ui:field="mainContent">-->
+            <!--<g:VerticalPanel ui:field="rows">-->
+                <!--<g:HorizontalPanel ui:field="columnSet">-->
+                    <!--<g:VerticalPanel ui:field="leftColumn">-->
+                        <!--<g:HTMLPanel ui:field="selectorPanel">-->
+                            <!--<g:FlowPanel ui:field="filterContainerPanel"/>-->
+                        <!--</g:HTMLPanel>-->
+                    <!--</g:VerticalPanel>-->
+                    <!--<g:VerticalPanel ui:field="rightColumn" addStyleNames="{style.rightColumn}">-->
+                        <!--<g:FlowPanel ui:field="resultsContainerPanel"/>-->
+                        <!--<g:FlowPanel>-->
+                            <!--<filter:YearRangeSliderComposite addStyleNames="{style.horizontalPanelAlignment} {style.yearRangeSliderComposite}" width="50%" fieldName="PY" dateFormat="yyyy"/>-->
+                            <!--<g:FlowPanel addStyleNames="{style.horizontalPanelAlignment}" width="40%" height="100%">-->
+                                <!--<g:HTMLPanel>-->
+                                    <!--<p>-->
+                                        <!--Demonstrator application loaded with a subset of anti malarial quality data-->
+                                    <!--</p>-->
+                                <!--</g:HTMLPanel>-->
+                            <!--</g:FlowPanel>-->
+                        <!--</g:FlowPanel>-->
+                    <!--</g:VerticalPanel>-->
+                <!--</g:HorizontalPanel>-->
+            <!--</g:VerticalPanel>-->
+        <!--</g:VerticalPanel>-->
+    <!--</g:VerticalPanel>-->
 
 
 </ui:UiBinder>

@@ -59,8 +59,27 @@ public class MainContentPanel extends Composite implements MainPanelView {
 
     public MainContentPanel() {
         initWidget(uiBinder.createAndBindUi(this));
+        filterContainerPanel.getElement().setId("sidebar");
         RootPanel.get("mainContent").add(this);
+        setupSideBarInteraction();
     }
+
+    public static native void setupSideBarInteraction() /*-{
+        var $ = $wnd.$;
+
+        $($wnd.document).ready(function() {
+            $('a.wwarnFilterContainerToggle').click(function(e) {
+                $wnd.console.log(e);
+                e.preventDefault()
+                if ($.trim($(".buttonLabel", this).text()) === 'Hide filters') {
+                    $(".buttonLabel", this).text('Show filters');
+                } else {
+                    $(".buttonLabel", this).text('Hide filters');
+                }
+                $('.row-offcanvas').toggleClass('active');
+            });
+        });
+    }-*/;
 
     /**
      * Get filter panel this is used in controller to setup filters

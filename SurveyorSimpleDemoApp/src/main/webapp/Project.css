@@ -30,3 +30,29 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
+
+/*CSS to make filter area responsive...*/
+
+/* collapsed sidebar styles */
+@media screen and (min-width: 970px) {
+    a.wwarnFilterContainerToggle.btn.btn-primary{
+        display: none !important;
+    }
+}
+@media screen and (max-width: 970px) {
+
+    a.wwarnFilterContainerToggle.btn.btn-primary {
+        display: block !important;
+    }
+
+    .row-offcanvas #sidebar {
+        padding-top: 0;
+        display: none;
+    }
+
+    .row-offcanvas.active #sidebar {
+        padding-top: 0;
+        display: block;
+    }
+}

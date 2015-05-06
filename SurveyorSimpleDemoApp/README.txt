@@ -19,10 +19,10 @@ Maven overview with appengine:
 https://developers.google.com/appengine/docs/java/tools/maven
 
 Deploy local dev server:
-mvn clean appengine:devserver
+mvn clean -P gae appengine:devserver
 
 Deploy to live with app engine:
-mvn clean appengine:update
+mvn clean -P gae appengine:update
 
 Compile report:
 mvn clean verify gwt:compile-report
