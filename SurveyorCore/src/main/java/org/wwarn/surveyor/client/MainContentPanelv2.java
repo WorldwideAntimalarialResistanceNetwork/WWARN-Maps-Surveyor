@@ -53,13 +53,13 @@ public class MainContentPanelv2 implements MainPanelView {
     private static MainContentPanelv2UiBinder ourUiBinder = GWT.create(MainContentPanelv2UiBinder.class);
 
     @UiField(provided = true)
-    VerticalPanel filterContainerPanel = new VerticalPanel();
+    FlowPanel filterContainerPanel = new FlowPanel();
 
     @UiField(provided = true)
-    VerticalPanel resultsContainerPanel = new VerticalPanel();
+    FlowPanel resultsContainerPanel = new FlowPanel();
 
     @UiField(provided = true)
-    VerticalPanel rightColumnBottomContainerPanel = new VerticalPanel();
+    FlowPanel rightColumnBottomContainerPanel = new FlowPanel();
 
 
     public MainContentPanelv2() {
@@ -74,15 +74,15 @@ public class MainContentPanelv2 implements MainPanelView {
      * Get filter panel this is used in controller to setup filters
      * @return
      */
-    public VerticalPanel getFilterContainerPanel() {
+    public FlowPanel getFilterContainerPanel() {
         return filterContainerPanel;
     }
 
-    public VerticalPanel getResultsContainerPanel() {
+    public FlowPanel getResultsContainerPanel() {
         return resultsContainerPanel;
     }
 
-    public VerticalPanel getRightColumnBottomContainerPanel() {
+    public FlowPanel getRightColumnBottomContainerPanel() {
         return rightColumnBottomContainerPanel;
     }
 

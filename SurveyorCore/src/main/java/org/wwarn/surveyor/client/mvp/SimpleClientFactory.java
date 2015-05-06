@@ -57,7 +57,7 @@ public class SimpleClientFactory implements ClientFactory {
     private ApplicationContext applicationContext;
     private DataProvider dataProvider;
     private QueryResult lastQueryResult;
-    private FilterQuery lastFilterQuery;
+    private FilterQuery lastFilterQuery = new FilterQuery();
 
     //TODO replace this singleton with GIN and @Singleton
     private static SimpleClientFactory ourInstance = new SimpleClientFactory();
@@ -110,7 +110,6 @@ public class SimpleClientFactory implements ClientFactory {
                 case ClientSideSearchDataProvider:
                     dataSource.setDataSourceProvider(DataSourceProvider.ClientSideSearchDataProvider);
                     this.dataProvider = new ClientSideSearchDataProvider(dataSource, schema, facetFieldList);
-
                 break;
                 case ServerSideLuceneDataProvider:
                     dataSource.setDataSourceProvider(DataSourceProvider.ServerSideLuceneDataProvider);

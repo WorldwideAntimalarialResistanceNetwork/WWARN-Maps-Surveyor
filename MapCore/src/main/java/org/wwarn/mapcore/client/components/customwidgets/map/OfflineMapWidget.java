@@ -147,7 +147,7 @@ public class OfflineMapWidget extends GenericMapWidget {
     }
 
     private String generateUID() {
-        return "highMapsContainer" + GUID++;
+        return "ol3MapsContainer" + GUID++;
     }
 
 

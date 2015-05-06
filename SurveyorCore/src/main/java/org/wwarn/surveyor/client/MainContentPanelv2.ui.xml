@@ -55,12 +55,12 @@
     <g:center>
         <g:ScrollPanel>
             <g:FlowPanel>
-                <g:VerticalPanel ui:field="resultsContainerPanel"/>
+                <g:FlowPanel ui:field="resultsContainerPanel"/>
                 <g:SplitLayoutPanel>
                     <g:west size="50">
-                        <g:VerticalPanel ui:field="rightColumnBottomContainerPanel">
+                        <g:FlowPanel ui:field="rightColumnBottomContainerPanel">
 
-                        </g:VerticalPanel>
+                        </g:FlowPanel>
                     </g:west>
                     <g:center>
                         <g:HTMLPanel>
@@ -78,7 +78,7 @@
         <g:ScrollPanel>
             <g:HTMLPanel ui:field="selectorPanel">
                 <div class="sectionPanelHeading" ui:field="sectionPanelHeading">Select filter</div>
-                <g:VerticalPanel ui:field="filterContainerPanel"/>
+                <g:FlowPanel ui:field="filterContainerPanel"/>
             </g:HTMLPanel>
         </g:ScrollPanel>
     </g:west>

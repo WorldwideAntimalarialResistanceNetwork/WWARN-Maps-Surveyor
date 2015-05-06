@@ -48,6 +48,7 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.HasRows;
 import com.google.gwt.view.client.ListDataProvider;
@@ -91,15 +92,20 @@ public class CellTableServer extends Composite {
 
     }
 
-    private VerticalPanel setupPanel(){
+    private FlowPanel setupPanel(){
+        FlowPanel flowPanel = new FlowPanel();
+        flowPanel.addStyleName("table-responsive");
+        flowPanel.addStyleName("table-condensed");
         VerticalPanel panel = new VerticalPanel();
+        panel.addStyleName("table");
+        flowPanel.add(panel);
         cellTable = new CellTable<RecordList.Record>();
         cellTable.setPageSize(tableViewConfig.getPageSize());
         pager = new SimplePager();
         pager.setDisplay(cellTable);
         panel.add(cellTable);
         panel.add(pager);
-        return panel;
+        return flowPanel;
     }
 
 

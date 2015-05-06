@@ -43,7 +43,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import org.wwarn.surveyor.client.event.InterfaceLoadCompleteEvent;
 import org.wwarn.surveyor.client.event.RegisterNewTabEvent;
 import org.wwarn.surveyor.client.model.*;
 import org.wwarn.mapcore.client.utils.StringUtils;
@@ -67,10 +66,10 @@ public class ResultViewUI extends Composite implements ResultView {
     private static final PopupPanel toolTipPopup = new PopupPanel(true);
 
     @UiField(provided = true)
-    final DecoratedTabBar vTabBar = new DecoratedTabBar();
+    protected final DecoratedTabBar vTabBar = new DecoratedTabBar();
 
     @UiField(provided = true)
-    final SimplePanel tabContentHolder = new SimplePanel();
+    final FlowPanel tabContentHolder = new FlowPanel();
     private Widget[] loadedDisplays;
     private PopupPanel loadingPopup = new PopupPanel(false);
     private Map<Integer, RegisterNewTabEvent> registeredTabs = new HashMap<>();
@@ -127,7 +126,7 @@ public class ResultViewUI extends Composite implements ResultView {
         tabContentHolder.getElement().setId("surveyorTabContentHolder");
     }
 
-    private HTMLPanel getTabMarkup(String tabName) {
+    protected HTMLPanel getTabMarkup(String tabName) {
         final HTMLPanel htmlPanel = new HTMLPanel("<FONT SIZE = 2>" + tabName + "</FONT>");
         htmlPanel.setWidth("150px");
         return htmlPanel;
@@ -147,6 +146,10 @@ public class ResultViewUI extends Composite implements ResultView {
         //setup header
         final String tabName = registerNewTabEvent.getTabName();
 
+        addTabWithMarkup(tabName);
+    }
+
+    protected void addTabWithMarkup(String tabName) {
         vTabBar.addTab(getTabMarkup(tabName));
     }
 
@@ -181,7 +184,7 @@ public class ResultViewUI extends Composite implements ResultView {
         final RegisterNewTabEvent.AsyncDisplayWidget widgetBuilder = registerNewTabEvent.getWidgetBuilder();
         final SimplePanel simplePanel = new SimplePanel();
         widgetBuilder.draw(simplePanel);
-        tabContentHolder.setWidget(simplePanel);
+        setTabContent(simplePanel);
     }
 
     private void setupWidget(final ViewConfig viewConfig, final Integer tabSelected) {
@@ -208,7 +211,7 @@ public class ResultViewUI extends Composite implements ResultView {
                         }
                         loadedDisplays[tabSelected] = table;
                     }
-                    tabContentHolder.setWidget(table);
+                    setTabContent(table);
                 }
             });
         }
@@ -226,7 +229,7 @@ public class ResultViewUI extends Composite implements ResultView {
                         mapViewComposite = new MapViewComposite((MapViewConfig) viewConfig);
                         loadedDisplays[tabSelected] = mapViewComposite;
                     }
-                    tabContentHolder.setWidget(mapViewComposite);
+                    setTabContent(mapViewComposite);
                 }
             });
         }else if (viewConfig instanceof TemplateViewConfig){
@@ -243,7 +246,7 @@ public class ResultViewUI extends Composite implements ResultView {
                         templateViewComposite = new TemplateViewComposite((TemplateViewConfig) viewConfig);
                         loadedDisplays[tabSelected] = templateViewComposite;
                     }
-                    tabContentHolder.setWidget(templateViewComposite);
+                    setTabContent(templateViewComposite);
                 }
             });
         } else if (viewConfig instanceof PanelViewConfig){
@@ -260,13 +263,16 @@ public class ResultViewUI extends Composite implements ResultView {
                         panelViewComposite = new PanelViewComposite((PanelViewConfig) viewConfig);
                         loadedDisplays[tabSelected] = panelViewComposite;
                     }
-                    tabContentHolder.setWidget(panelViewComposite);
+                    setTabContent(panelViewComposite);
                 }
             });
         }
-
-
         widget[0].setWidth("100%");
+    }
+
+    protected void setTabContent(Widget table) {
+        tabContentHolder.clear();
+        tabContentHolder.add(table);
     }
 
     public void selectTab(Integer tabSelection){
@@ -280,8 +286,8 @@ public class ResultViewUI extends Composite implements ResultView {
     public void onLoadingStatusChange(LoadStatusListener.LoadStatusObserver.LoadingStatus loadingStatus) {
         if(loadingStatus== LoadStatusListener.LoadStatusObserver.LoadingStatus.LOADING){
             loadingPopup.setWidget(new HTML("Loading data... please wait"));
-            final int leftPosition = (verticalPanel.getAbsoluteLeft() + verticalPanel.getOffsetWidth()) / 2;
-            final int absoluteTop = verticalPanel.getAbsoluteTop();
+            final int leftPosition = (flowPanel.getAbsoluteLeft() + flowPanel.getOffsetWidth()) / 2;
+            final int absoluteTop = flowPanel.getAbsoluteTop();
             loadingPopup.setPopupPosition(leftPosition, absoluteTop);
             loadingPopup.show();
         }
@@ -290,9 +296,9 @@ public class ResultViewUI extends Composite implements ResultView {
         }
     }
 
-    interface ResultsViewUIUiBinder extends UiBinder<VerticalPanel, ResultViewUI> {}
+    interface ResultsViewUIUiBinder extends UiBinder<FlowPanel, ResultViewUI> {}
 
-    VerticalPanel verticalPanel = new VerticalPanel();
+    FlowPanel flowPanel = new FlowPanel();
 
     private static ResultsViewUIUiBinder ourUiBinder = GWT.create(ResultsViewUIUiBinder.class);
     protected ClientFactory clientFactory = SimpleClientFactory.getInstance();
@@ -303,8 +309,8 @@ public class ResultViewUI extends Composite implements ResultView {
 
 
     public ResultViewUI() {
-        verticalPanel = ourUiBinder.createAndBindUi(this);
-        initWidget(verticalPanel);
+        flowPanel = ourUiBinder.createAndBindUi(this);
+        initWidget(flowPanel);
         eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
 
     }

@@ -43,6 +43,6 @@
             padding: 0px !important;
         }
     </ui:style>
-    <g:FlowPanel addStyleNames="{style.tableContainer}">
-    </g:FlowPanel>
+    <g:VerticalPanel addStyleNames="{style.tableContainer} table-responsive">
+    </g:VerticalPanel>
 </ui:UiBinder>

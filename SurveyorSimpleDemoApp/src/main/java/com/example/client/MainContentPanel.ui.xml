@@ -76,11 +76,11 @@
                 <g:HorizontalPanel ui:field="columnSet">
                     <g:VerticalPanel ui:field="leftColumn">
                         <g:HTMLPanel ui:field="selectorPanel">
-                            <g:VerticalPanel ui:field="filterContainerPanel"/>
+                            <g:FlowPanel ui:field="filterContainerPanel"/>
                         </g:HTMLPanel>
                     </g:VerticalPanel>
                     <g:VerticalPanel ui:field="rightColumn" addStyleNames="{style.rightColumn}">
-                        <g:VerticalPanel ui:field="resultsContainerPanel"/>
+                        <g:FlowPanel ui:field="resultsContainerPanel"/>
                         <g:FlowPanel>
                             <filter:YearRangeSliderComposite addStyleNames="{style.horizontalPanelAlignment} {style.yearRangeSliderComposite}" width="50%" fieldName="PY" dateFormat="yyyy"/>
                             <g:FlowPanel addStyleNames="{style.horizontalPanelAlignment}" width="40%" height="100%">

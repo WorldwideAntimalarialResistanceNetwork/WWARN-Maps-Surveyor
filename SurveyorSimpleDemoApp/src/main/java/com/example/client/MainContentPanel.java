@@ -36,10 +36,7 @@ package com.example.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.wwarn.surveyor.client.mvp.view.MainPanelView;
 
 /**
@@ -53,10 +50,10 @@ public class MainContentPanel extends Composite implements MainPanelView {
     }
 
     @UiField(provided = true)
-    VerticalPanel filterContainerPanel = new VerticalPanel();
+    FlowPanel filterContainerPanel = new FlowPanel();
 
     @UiField(provided = true)
-    VerticalPanel resultsContainerPanel = new VerticalPanel();
+    FlowPanel resultsContainerPanel = new FlowPanel();
 
     private static MainPanelUiBinder uiBinder = GWT.create(MainPanelUiBinder.class);
 
@@ -69,11 +66,11 @@ public class MainContentPanel extends Composite implements MainPanelView {
      * Get filter panel this is used in controller to setup filters
      * @return
      */
-    public VerticalPanel getFilterContainerPanel() {
+    public FlowPanel getFilterContainerPanel() {
         return filterContainerPanel;
     }
 
-    public VerticalPanel getResultsContainerPanel() {
+    public FlowPanel getResultsContainerPanel() {
         return resultsContainerPanel;
     }
 

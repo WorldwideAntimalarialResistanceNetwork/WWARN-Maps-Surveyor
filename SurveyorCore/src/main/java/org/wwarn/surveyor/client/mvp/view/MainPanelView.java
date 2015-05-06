@@ -33,7 +33,7 @@ package org.wwarn.surveyor.client.mvp.view;
  * #L%
  */
 
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  *
@@ -42,7 +42,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * Time: 11:46
  */
 public interface MainPanelView {
-    VerticalPanel getFilterContainerPanel();
-    VerticalPanel getResultsContainerPanel();
+    FlowPanel getFilterContainerPanel();
+    FlowPanel getResultsContainerPanel();
 
 }
