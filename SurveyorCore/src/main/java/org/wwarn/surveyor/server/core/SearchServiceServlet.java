@@ -81,8 +81,7 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
 
     @Override
     public QueryResult queryUniqueRecords(FilterQuery filterQuery,String[] facetFields) throws SearchException {
-        final QueryResult queryResult = searchServiceLayer.queryUniqueRecords(filterQuery, facetFields);
-        return queryResult;
+        return searchServiceLayer.queryUniqueRecords(filterQuery, facetFields);
     }
 
 
@@ -91,8 +90,8 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         Objects.requireNonNull(schema);
         Objects.requireNonNull(dataSource);
         //relative path to absolute path
-        final String fileInServletContext = (dataSource.getLocation() == null) ? null : findFileInServletContext(dataSource.getLocation());
-        final GenericDataSource source = new GenericDataSource(fileInServletContext, dataSource.getResource(), dataSource.getDataSourceType(), dataSource.getDataSourceProvider());
+        final String filePathInServletContext = (dataSource.getLocation() == null) ? null : findFileInServletContext(dataSource.getLocation());
+        final GenericDataSource source = new GenericDataSource(filePathInServletContext, dataSource.getResource(), dataSource.getDataSourceType(), dataSource.getDataSourceProvider());
         searchServiceLayer.init(schema, source);
         QueryResult queryResult = null;
         if(dataSource.getDataSourceProvider() == DataSourceProvider.ClientSideSearchDataProvider){

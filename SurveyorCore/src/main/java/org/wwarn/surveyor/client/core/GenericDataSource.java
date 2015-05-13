@@ -34,6 +34,7 @@ package org.wwarn.surveyor.client.core;
  */
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import org.jetbrains.annotations.NotNull;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.mvp.DataSource;
 
@@ -70,7 +71,7 @@ public class GenericDataSource implements IsSerializable, DataSource {
         this(location, resource, type, DataSourceProvider.LocalClientSideDataProvider);
     }
 
-    public GenericDataSource(String location, String resource, DataSourceType type, DataSourceProvider dataSourceProvider) {
+    public GenericDataSource(@NotNull String location, String resource, DataSourceType type, DataSourceProvider dataSourceProvider) {
         this.location = location;
         this.dataSourceType = type;
         this.resource = resource;

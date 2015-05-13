@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
@@ -75,6 +76,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
                 }
             });
         } catch (SearchException e) {
+            Log.error("Unable to initalise the index", e);
             throw new IllegalStateException(e);
         }
     }
@@ -101,15 +103,30 @@ public class ServerSideSearchDataProvider implements DataProvider {
 
     @Override
     public void query(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
-        searchServiceAsync.query(filterQuery, facetFields,  queryResultCallBack);
+        try {
+            searchServiceAsync.query(filterQuery, facetFields,  queryResultCallBack);
+        } catch (SearchException e) {
+            Log.error("Query failed with error", e);
+            throw e;
+        }
     }
 
     @Override
     public void query(FilterQuery filterQuery, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
-        searchServiceAsync.query(filterQuery, this.facetFieldList, queryResultCallBack);
+        try {
+            searchServiceAsync.query(filterQuery, this.facetFieldList, queryResultCallBack);
+        } catch (SearchException e) {
+            Log.error("Error completing query", e);
+            throw (e);
+        }
     }
 
     public void queryUniqueRecords(FilterQuery filterQuery, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
-        searchServiceAsync.queryUniqueRecords(filterQuery, this.facetFieldList, queryResultCallBack);
+        try {
+            searchServiceAsync.queryUniqueRecords(filterQuery, this.facetFieldList, queryResultCallBack);
+        } catch (Exception e) {
+            Log.error("query unique record failed", e);
+            throw new SearchException("query unique record failed", e);
+        }
     }
 }

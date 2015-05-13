@@ -33,6 +33,8 @@ package org.wwarn.surveyor.server.core;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
+import com.google.appengine.repackaged.com.google.common.io.Files;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.googlecode.luceneappengine.GaeDirectory;
 import com.googlecode.luceneappengine.GaeLuceneUtil;
@@ -55,6 +57,7 @@ import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.TableViewConfig;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -82,46 +85,62 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     }
 
     public void init(final DataSchema dataSchema, final GenericDataSource dataSource) throws SearchException {
-        if(this.hasInitialised.get() && dataSource != null && dataSource.getLocation() == location){return;}
-        Objects.requireNonNull(dataSchema); this.dataSchema = dataSchema;
-        location = dataSource.getLocation();
-        //setup index
-        JSONArray jsonContent = getJsonArrayFrom(dataSource);
-        setupIndex(dataSource, dataSchema, jsonContent);
-        this.hasInitialised.getAndSet(true);
-        setupIndexMonitor(dataSchema, dataSource);
+        try {
+            if(this.hasInitialised.get() && dataSource != null && dataSource.getLocation() == location){return;}
+            Objects.requireNonNull(dataSchema);
+            this.dataSchema = dataSchema;
+            location = dataSource.getLocation();
+            //setup index
+            JSONArray jsonContent = getJsonArrayFrom(dataSource);
+            setupIndex(dataSource, dataSchema, jsonContent);
+            this.hasInitialised.getAndSet(true);
+            setupIndexMonitor(dataSchema, dataSource);
+        } catch (Exception
+                e) {
+            Log.error("Failed to initialise index", e);
+            throw e;
+        }
     }
 
-    private void setupIndexMonitor(final DataSchema dataSchema, final GenericDataSource dataSource) throws SearchException {
-        if(GoogleAppEngineUtil.isGaeEnv()){
-            return; // only use for pure lucene tomcat implementation, doesn't work on GAE.
-        }
-        FileChangeMonitor fileChangeMonitor;
-        if( dataSource.getDataSourceType()== GenericDataSource.DataSourceType.ServletRelativeDataSource && dataSource.getLocation()!=null) {
-            assertFilePathExists(dataSource.getLocation(), "jsonPath invalid:");
-            File json = new File(dataSource.getLocation());
-            try {
-                fileChangeMonitor = FileChangeMonitor.getInstance();
-                fileChangeMonitor.init(json.toPath());
-            } catch (IOException e) {
-                throw new SearchException("unable to initialize file change monitor",e);
+    /**
+     * setup a monitor to watch for changes in datasource
+     * @param dataSchema
+     * @param dataSource
+     */
+    private void setupIndexMonitor(final DataSchema dataSchema, final GenericDataSource dataSource) {
+        try {
+            if(GoogleAppEngineUtil.isGaeEnv()){
+                return; // only use for pure lucene tomcat implementation, doesn't work on GAE.
             }
-        }else{
-            // only able to monitor servlet relative datasources
-            return;
-        }
-        fileChangeMonitor.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                JSONArray jsonContent;
+            FileChangeMonitor fileChangeMonitor;
+            if( dataSource.getDataSourceType()== GenericDataSource.DataSourceType.ServletRelativeDataSource && dataSource.getLocation()!=null) {
+                assertFilePathExists(dataSource.getLocation(), "jsonPath invalid:");
+                File json = new File(dataSource.getLocation());
                 try {
-                    jsonContent = getJsonArrayFrom(dataSource);
-                } catch (SearchException e) {
-                    throw new IllegalStateException(e);
+                    fileChangeMonitor = FileChangeMonitor.getInstance();
+                    fileChangeMonitor.init(json.toPath());
+                } catch (IOException e) {
+                    throw new SearchException("Unable to initialize file change monitor",e);
                 }
-                setupIndex(dataSource, dataSchema, jsonContent);
+            }else{
+                // only able to monitor servlet relative datasources
+                return;
             }
-        });
+            fileChangeMonitor.addObserver(new Observer() {
+                @Override
+                public void update(Observable o, Object arg) {
+                    JSONArray jsonContent;
+                    try {
+                        jsonContent = getJsonArrayFrom(dataSource);
+                    } catch (SearchException e) {
+                        throw new IllegalStateException(e);
+                    }
+                    setupIndex(dataSource, dataSchema, jsonContent);
+                }
+            });
+        } catch (Exception e) {
+            Log.warn("Failed to setup monitor for indexed file changes", e);
+        }
     }
 
     private JSONArray getJsonArrayFrom(GenericDataSource dataSource) throws SearchException {
@@ -144,6 +163,14 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     public static JSONArray parseJSON(File f) throws SearchException {
         JSONArray arrayObjects;
 //        Reader reader = Files.newBufferedReader(f.toPath(),StandardCharsets.UTF_8);
+        if(Log.isDebugEnabled()){
+            try {
+                Log.debug(Files.toString(f, Charset.defaultCharset()));
+            } catch (IOException e) {
+                Log.warn("Unable to read file : "+f.getAbsolutePath(), e);
+            }
+        }
+
         try (
             Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8.name()));
         ) {
@@ -173,6 +200,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             indexWriter.commit();
 
         } catch (IOException e) {
+            Log.error("Failed to setup search index",e);
             throw new IllegalStateException(e);
         }
     }
@@ -448,6 +476,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             List<RecordList.Record> uniqueRecords = subsetUniqueRecords(filterQuery,orderRecords);
             return getPageRecords(uniqueRecords, start,length);
         }catch(Exception e){
+            Log.error("Unable to query the table",e);
             throw new SearchException("Unable to query the table",e);
         }
     }
