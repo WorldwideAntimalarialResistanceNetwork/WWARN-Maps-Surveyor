@@ -76,14 +76,9 @@ public class SurveyorAppController implements ValueChangeHandler<String> {
     public SurveyorAppController(MainPanelView layout) {
         eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
         this.layout = layout;
-        clientFactory.getDataProvider().onLoad(new Runnable() {
-            @Override
-            public void run() {
-                init();
-            }
-        });
         // bind to event
         bind();
+        init();
     }
 
     @EventHandler

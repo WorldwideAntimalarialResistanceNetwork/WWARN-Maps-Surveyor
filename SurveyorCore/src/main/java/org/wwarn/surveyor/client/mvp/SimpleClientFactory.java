@@ -91,6 +91,10 @@ public class SimpleClientFactory implements ClientFactory {
         return applicationContext;
     }
 
+    /**
+     * Lazy initialise Dataprovider
+     * @return DataProvider
+     */
     public DataProvider getDataProvider(){
         if(this.dataProvider == null){
 //            EventLogger.logEvent("org.wwarn.surveyor.client.mvp.SimpleClientFactory", "getDataProvider", "begin");

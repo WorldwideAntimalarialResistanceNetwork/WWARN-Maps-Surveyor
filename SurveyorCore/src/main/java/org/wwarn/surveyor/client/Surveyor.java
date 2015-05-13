@@ -36,12 +36,11 @@ package org.wwarn.surveyor.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.Table;
-import org.wwarn.mapcore.client.utils.EventLogger;
 import org.wwarn.mapcore.client.utils.MapLoadUtil;
+import org.wwarn.surveyor.client.mvp.ClientFactory;
+import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.mvp.SurveyorAppController;
 import org.wwarn.surveyor.client.mvp.view.MainPanelView;
 
@@ -49,6 +48,7 @@ import org.wwarn.surveyor.client.mvp.view.MainPanelView;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Surveyor implements EntryPoint {
+    protected ClientFactory clientFactory = SimpleClientFactory.getInstance();
 
     /**
      * This is the entry point method.
@@ -76,15 +76,17 @@ public class Surveyor implements EntryPoint {
         VisualizationUtils.loadVisualizationApi(new Runnable() {
             public void run() {
 //                EventLogger.logEvent("org.wwarn.surveyor.client.Surveyor", "onModuleLoad", "begin");
-                // setup controller with reference to main panel
-                new SurveyorAppController(createLayout());
+                // ensure that data provider onload is called as early as possible, to ensure all subsequent calls complete properly
+                clientFactory.getDataProvider().onLoad(new Runnable() {
+                    @Override
+                    public void run() {
+                        // setup controller with reference to main panel
+                        new SurveyorAppController(new MainContentPanel());
+                    }
+                });
 //                EventLogger.logEvent("org.wwarn.surveyor.client.Surveyor", "onModuleLoad", "end");
             }
         }, Table.PACKAGE);
     }
 
-    private MainPanelView createLayout() {
-        MainPanelView panel = new MainContentPanel();
-        return panel;
-    }
 }
