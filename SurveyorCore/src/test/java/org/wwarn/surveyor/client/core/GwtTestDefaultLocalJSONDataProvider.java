@@ -39,6 +39,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.visualization.client.visualizations.Table;
 import org.wwarn.mapcore.client.utils.StringUtils;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.*;
 
@@ -111,7 +112,17 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             @Override
             public void run() {
                 try {
-                    dataProvider.query(new MatchAllQuery(), new AsyncCallback<QueryResult>() {
+                    dataProvider.query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
+
                         @Override
                         public void onFailure(Throwable throwable) {
                             throw new IllegalStateException(throwable);
@@ -179,7 +190,16 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             FilterQuery filterQuery = new FilterQuery();
             filterQuery.addFilter("PUB", "Nigerian Tribune");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             throw new IllegalStateException(throwable);
@@ -198,7 +218,16 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 filterQuery = new FilterQuery();
             filterQuery.addFilter("QI", "Substandard");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             throw new IllegalStateException(throwable);
@@ -228,7 +257,16 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 //"{\"PID\":187,\"DOI\":\"\",\"TTL\":\"NAFDAC´s unfinished business in Kaduna\",\"FA\":\"Nigerian Tribune\",\"PY\":2011,\"PUB\":\"Nigerian Tribune\",\"PTI\":4,\"PTN\":\"Lay press\",\"URL\":\"\",\"DID\":29,\"DSN\":\"AL\",\"DN\":\"Artemether-Lumefantrine\",\"CID\":30,\"CN\":\"Nigeria\",\"CLAT\":9.17583,\"CLON\":7.167,\"LID\":100,\"LN\":\"Kaduna\",\"LLAT\":10.51667,\"LLON\":7.433333,\"SDI\":516,\"OTI\":2,\"OTN\":\"Private pharmacy\",\"STI\":6,\"STN\":\"MRA seizure\",\"DQI\":0,\"QI\":\"Falsified\",\"FR\":100,\"SD\":\"15/02/2010\",\"ED\":\"15/02/2010\",\"ICR\":\"-1\",\"DCN\":\"ACT\",\"NST\":-1}," +
 
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             throw new IllegalStateException(throwable);
@@ -274,7 +312,16 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 filterQuery.addFilter("CLAT", "9.17583");
                 filterQuery.addFilter("CLON", "7.167");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             System.out.println();
@@ -301,7 +348,16 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 filterQuery.addFilter("PID", "128");
                 filterQuery.addFilter("PY", "2010");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             throw new IllegalStateException(throwable);
@@ -332,7 +388,16 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             @Override
             public void run() {
                 try {
-                    dataProvider.query(new MatchAllQuery(), new AsyncCallback<QueryResult>() {
+                    dataProvider.query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             throw new IllegalStateException(throwable);
@@ -367,7 +432,16 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             FilterQuery filterQuery = new FilterQuery();
             filterQuery.addRangeFilter("PY", "2001", "2002");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             throw new IllegalStateException(throwable);
@@ -403,7 +477,16 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 FilterQuery filterQuery = new FilterQuery();
                 filterQuery.addRangeFilter("SD", parseYearOnly("2001"), parseYearOnly("2002"));
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             throw new IllegalStateException(throwable);
@@ -438,7 +521,17 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 FilterQuery filterQuery = new FilterQuery();
                 filterQuery.addFilterGreater("PID", 200);
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
+
                         @Override
                         public void onFailure(Throwable throwable) {
                             throw new IllegalStateException(throwable);

@@ -51,6 +51,7 @@ import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.mvp.DataSource;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.resources.Resources;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.Date;
 import java.util.Set;
@@ -270,7 +271,7 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
 
 
     @Override
-    public void query(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> queryResultCallBack) {
+    public void query(FilterQuery filterQuery, String[] facetFields, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) {
 //        EventLogger.logEvent("org.wwarn.surveyor.client.core.DefaultLocalJSONDataProvider", "query(org.wwarn.surveyor.client.core.FilterQuery, java.lang.String[])", "begin");
 
         validateFacetFields(facetFields);
@@ -282,12 +283,12 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
 
 //        EventLogger.logEvent("org.wwarn.surveyor.client.core.DefaultLocalJSONDataProvider", "query(org.wwarn.surveyor.client.core.FilterQuery, java.lang.String[])", "end");
         final QueryResult queryResult = new QueryResult(filteredResults.getRecordList(), facetList);
-        queryResultCallBack.onSuccess(queryResult);
+        queryResultCallBack.onNonTimedOutSuccess(queryResult);
     }
 
 
     @Override
-    public void query(FilterQuery filterQuery, AsyncCallback<QueryResult> queryResultCallBack) {
+    public void query(FilterQuery filterQuery, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) {
         query(filterQuery, this.facetFieldList, queryResultCallBack);
     }
 

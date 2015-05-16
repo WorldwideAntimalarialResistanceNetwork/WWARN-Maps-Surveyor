@@ -36,6 +36,7 @@ package org.wwarn.surveyor.client.mvp.presenter;
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
+import org.wwarn.surveyor.client.event.ExceptionEvent;
 import org.wwarn.surveyor.client.event.FilterChangedEvent;
 import org.wwarn.surveyor.client.event.ResultChangedEvent;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
@@ -61,7 +62,7 @@ public class LoadStatusListener {
         return ourInstance;
     }
 
-    LoadStatusListener() {
+    private LoadStatusListener() {
         LoadEventBinder eventBinder = GWT.create(LoadEventBinder.class);
         eventBinder.bindEventHandlers(this, SimpleClientFactory.getInstance().getEventBus());
     }
@@ -83,6 +84,12 @@ public class LoadStatusListener {
 
     public void removeObserver(LoadStatusObserver loadStatusObserver){
         this.loadStatusObservers.remove(loadStatusObserver);
+    }
+
+    @EventHandler
+    public void onExceptionEvent(ExceptionEvent exceptionEvent){
+        this.loadingStatus = LoadStatusObserver.LoadingStatus.UNDETERMINED;
+        notifyObservers();
     }
 
     @EventHandler

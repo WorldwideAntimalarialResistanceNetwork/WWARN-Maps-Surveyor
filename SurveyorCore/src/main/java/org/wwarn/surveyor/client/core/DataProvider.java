@@ -35,6 +35,7 @@ package org.wwarn.surveyor.client.core;
 
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 import org.wwarn.surveyor.server.core.SearchServiceLayer;
 
 /**
@@ -63,7 +64,7 @@ public interface DataProvider {
      * @see FilterQuery
      * @see QueryResult
      */
-    void query(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException;
+    void query(FilterQuery filterQuery, String[] facetFields, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) throws SearchException;
 
     /**
      * A basic façade for a data source
@@ -72,5 +73,5 @@ public interface DataProvider {
      * @see FilterQuery
      * @see QueryResult
      */
-    void query(FilterQuery filterQuery, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException;
+    void query(FilterQuery filterQuery, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) throws SearchException;
 }

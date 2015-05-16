@@ -40,6 +40,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.*;
 import org.wwarn.mapcore.client.utils.XMLUtils;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -167,15 +168,15 @@ public class SimpleClientFactory implements ClientFactory {
         if(lastQueryResult == null){
             // run default search and store result as LastQueryResult
             try {
-                this.getDataProvider().query(new MatchAllQuery(), new AsyncCallback<QueryResult>() {
+                this.getDataProvider().query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>() {
                     @Override
-                    public void onFailure(Throwable throwable) {
-                        throw new IllegalStateException(throwable);
+                    public void onTimeOutOrOtherFailure(Throwable caught) {
+                        throw new IllegalStateException(caught);
                     }
 
                     @Override
-                    public void onSuccess(QueryResult queryResult) {
-                        lastQueryResult = queryResult;
+                    public void onNonTimedOutSuccess(QueryResult result) {
+                        lastQueryResult = result;
                     }
                 });
             } catch (SearchException e) {

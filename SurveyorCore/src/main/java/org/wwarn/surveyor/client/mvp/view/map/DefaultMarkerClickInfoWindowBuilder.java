@@ -45,6 +45,7 @@ import org.wwarn.surveyor.client.model.TemplateViewNodesConfig;
 import org.wwarn.surveyor.client.model.MapViewConfig;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.mvp.view.template.TemplateBasedViewBuilder;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.Set;
 
@@ -82,14 +83,14 @@ public class DefaultMarkerClickInfoWindowBuilder implements GenericMarker.Marker
         //fetch data from server async...
         // pass recordlist to Template based view builder get widget and return
         try {
-            getRelatedRecords(markerContext, new AsyncCallback<QueryResult>() {
+            getRelatedRecords(markerContext, new AsyncCallbackWithTimeout<QueryResult>() {
                 @Override
-                public void onFailure(Throwable throwable) {
-                    result.onFailure(throwable);
+                public void onTimeOutOrOtherFailure(Throwable caught) {
+                    result.onFailure(caught);
                 }
 
                 @Override
-                public void onSuccess(QueryResult queryResult) {
+                public void onNonTimedOutSuccess(QueryResult queryResult) {
                     Panel panel;
 
                     final RecordList recordList = queryResult.getRecordList();
@@ -112,7 +113,7 @@ public class DefaultMarkerClickInfoWindowBuilder implements GenericMarker.Marker
         }
     }
 
-    private void getRelatedRecords(RecordList.Record context, final AsyncCallback<QueryResult> queryResultAsyncCallback) throws SearchException {
+    private void getRelatedRecords(RecordList.Record context, final AsyncCallbackWithTimeout<QueryResult> queryResultAsyncCallback) throws SearchException {
         final TemplateViewNodesConfig templateViewNodesConfig = getConfig();
         final String dataSource = templateViewNodesConfig.getDataSource();
         final String[] fieldsToMatchCurrentContext = dataSource.split(",");

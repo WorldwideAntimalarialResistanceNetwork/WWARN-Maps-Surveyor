@@ -163,14 +163,6 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     public static JSONArray parseJSON(File f) throws SearchException {
         JSONArray arrayObjects;
 //        Reader reader = Files.newBufferedReader(f.toPath(),StandardCharsets.UTF_8);
-        if(Log.isDebugEnabled()){
-            try {
-                Log.debug(Files.toString(f, Charset.defaultCharset()));
-            } catch (IOException e) {
-                Log.warn("Unable to read file : "+f.getAbsolutePath(), e);
-            }
-        }
-
         try (
             Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8.name()));
         ) {
@@ -252,9 +244,12 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                         break;
                 }
             }
+            if(indexDocument.getFields().size() < 1){ /*Failed to parse all columns*/
+                throw new IllegalArgumentException("Failed to parse documents from supplied json, check json matches supplied schema");
+            }
+
             documents.add(indexDocument);
         }
-
         return documents;
     }
 

@@ -36,6 +36,7 @@ package org.wwarn.surveyor.client.core;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.*;
 
@@ -64,14 +65,14 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
             clientFactory.setLastFilterQuery(filterQuery);
 
 
-            searchServiceAsync.preFetchData(schema, this.dataSource, this.facetFieldList, filterQuery, new AsyncCallback<QueryResult>() {
+            searchServiceAsync.preFetchData(schema, this.dataSource, this.facetFieldList, filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
                 @Override
-                public void onFailure(Throwable throwable) {
+                public void onTimeOutOrOtherFailure(Throwable throwable) {
                     throw new IllegalStateException(throwable);
                 }
 
                 @Override
-                public void onSuccess(QueryResult queryResult) {
+                public void onNonTimedOutSuccess(QueryResult queryResult) {
                     clientFactory.setLastQueryResult(queryResult);
                     final RecordList recordList = queryResult.getRecordList();
                     if(!(recordList instanceof RecordListCompressedWithInvertedIndexImpl)){ throw new IllegalArgumentException("Expected compressed index with inverted list");}
@@ -126,24 +127,24 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     @Override
-    public void query(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
+    public void query(FilterQuery filterQuery, String[] facetFields, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) throws SearchException {
         Objects.requireNonNull(fieldInvertedIndex, "Search not ready : onLoad method must be called first");
         queryIndex(filterQuery, facetFields, queryResultCallBack);
     }
 
     @Override
-    public void query(FilterQuery filterQuery, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
+    public void query(FilterQuery filterQuery, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) throws SearchException {
         query(filterQuery, new String[]{}, queryResultCallBack);
     }
 
-    private void queryIndex(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> queryResultCallBack) {
+    private void queryIndex(FilterQuery filterQuery, String[] facetFields, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) {
         if(filterQuery instanceof MatchAllQuery){
-            queryResultCallBack.onSuccess(new QueryResult(recordListCompressedWithInvertedIndex, new FacetList()));
+            queryResultCallBack.onNonTimedOutSuccess(new QueryResult(recordListCompressedWithInvertedIndex, new FacetList()));
             return;
         }
         final BitSet bitSet = parseQuery(filterQuery, schema);
         RecordList recordList = restrictRecordList(bitSet);
-        queryResultCallBack.onSuccess(new QueryResult(recordList, new FacetList()));
+        queryResultCallBack.onNonTimedOutSuccess(new QueryResult(recordList, new FacetList()));
     }
 
     private RecordList restrictRecordList(BitSet bitSet) {

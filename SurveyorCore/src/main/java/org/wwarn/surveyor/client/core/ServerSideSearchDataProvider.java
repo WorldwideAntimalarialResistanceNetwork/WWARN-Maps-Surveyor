@@ -35,9 +35,9 @@ package org.wwarn.surveyor.client.core;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.List;
 
@@ -63,14 +63,14 @@ public class ServerSideSearchDataProvider implements DataProvider {
             InitialFilterQuery initialFilterQuery = getInitialFilterQuery();
             clientFactory.setLastFilterQuery(initialFilterQuery.getInitialFilterQuery());
 
-            searchServiceAsync.preFetchData(schema, this.dataSource, this.facetFieldList, initialFilterQuery.getInitialFilterQuery(), new AsyncCallback<QueryResult>() {
+            searchServiceAsync.preFetchData(schema, this.dataSource, this.facetFieldList, initialFilterQuery.getInitialFilterQuery(), new AsyncCallbackWithTimeout<QueryResult>() {
                 @Override
-                public void onFailure(Throwable throwable) {
+                public void onTimeOutOrOtherFailure(Throwable throwable) {
                     throw new IllegalStateException(throwable);
                 }
 
                 @Override
-                public void onSuccess(QueryResult queryResult) {
+                public void onNonTimedOutSuccess(QueryResult queryResult) {
                     clientFactory.setLastQueryResult(queryResult);
                     callOnLoad.run();
                 }
@@ -102,7 +102,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
     }
 
     @Override
-    public void query(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
+    public void query(FilterQuery filterQuery, String[] facetFields, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) throws SearchException {
         try {
             searchServiceAsync.query(filterQuery, facetFields,  queryResultCallBack);
         } catch (SearchException e) {
@@ -112,7 +112,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
     }
 
     @Override
-    public void query(FilterQuery filterQuery, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
+    public void query(FilterQuery filterQuery, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) throws SearchException {
         try {
             searchServiceAsync.query(filterQuery, this.facetFieldList, queryResultCallBack);
         } catch (SearchException e) {
@@ -121,7 +121,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
         }
     }
 
-    public void queryUniqueRecords(FilterQuery filterQuery, AsyncCallback<QueryResult> queryResultCallBack) throws SearchException {
+    public void queryUniqueRecords(FilterQuery filterQuery, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) throws SearchException {
         try {
             searchServiceAsync.queryUniqueRecords(filterQuery, this.facetFieldList, queryResultCallBack);
         } catch (Exception e) {

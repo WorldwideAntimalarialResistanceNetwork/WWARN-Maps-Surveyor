@@ -47,6 +47,7 @@ import org.wwarn.surveyor.client.mvp.InitialFields;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.mvp.view.filter.FilterView;
 import org.wwarn.surveyor.client.mvp.view.MainPanelView;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.*;
 
@@ -246,14 +247,14 @@ public class FilterPresenter implements Presenter {
             filterQuery.setFetchAllDistinctFieldValues(false);
             clientFactory.setLastFilterQuery(filterQuery);
             try {
-                dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
                     @Override
-                    public void onFailure(Throwable throwable) {
-                        throw new IllegalStateException(throwable);
+                    public void onTimeOutOrOtherFailure(Throwable caught) {
+                        throw new IllegalStateException(caught);
                     }
 
                     @Override
-                    public void onSuccess(QueryResult queryResult) {
+                    public void onNonTimedOutSuccess(QueryResult queryResult) {
                         clientFactory.getEventBus().fireEvent(new ResultChangedEvent(queryResult));
                     }
                 });

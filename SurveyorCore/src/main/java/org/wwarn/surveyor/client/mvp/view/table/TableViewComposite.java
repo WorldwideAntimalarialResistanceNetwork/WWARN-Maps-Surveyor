@@ -54,6 +54,7 @@ import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.event.ResultChangedEvent;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.*;
 
@@ -101,14 +102,14 @@ public class TableViewComposite extends Composite {
                 filterQuery = new FilterQuery();
             }
 
-            clientFactory.getDataProvider().query(filterQuery, new AsyncCallback<QueryResult>() {
+            clientFactory.getDataProvider().query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
                 @Override
-                public void onFailure(Throwable throwable) {
+                public void onTimeOutOrOtherFailure(Throwable throwable) {
                     throw new IllegalStateException(throwable);
                 }
 
                 @Override
-                public void onSuccess(QueryResult queryResult) {
+                public void onNonTimedOutSuccess(QueryResult queryResult) {
                     setupDisplay(queryResult);
                 }
             });

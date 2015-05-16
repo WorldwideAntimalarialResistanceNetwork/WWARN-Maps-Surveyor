@@ -37,6 +37,7 @@ import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.junit.Test;
 import org.wwarn.surveyor.client.event.FilterChangedEvent;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.*;
 
@@ -90,7 +91,16 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
     public void testQuery() throws Exception {
 
         delayTestFinish(10*1000);
-        final AsyncCallback<QueryResult> callback = new AsyncCallback<QueryResult>() {
+        final AsyncCallbackWithTimeout<QueryResult> callback = new AsyncCallbackWithTimeout<QueryResult>() {
+            @Override
+            public void onTimeOutOrOtherFailure(Throwable caught) {
+                this.onFailure(caught);
+            }
+
+            @Override
+            public void onNonTimedOutSuccess(QueryResult result) {
+                this.onSuccess(result);
+            }
             @Override
             public void onFailure(Throwable throwable) {
                 fail();
@@ -123,7 +133,16 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                 filterQuery.addMultipleValuesFilter("PID", values);
 
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             fail();
@@ -160,7 +179,16 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                 filterQuery.addMultipleValuesFilter("PID", values);
 
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             fail();
@@ -219,7 +247,16 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                 filterQuery.addMultipleValuesFilter("PID", values);
 
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallback<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
                         @Override
                         public void onFailure(Throwable throwable) {
                             System.out.println("error");

@@ -53,6 +53,9 @@
     <inherits name='com.google.web.bindery.event.EventBinder'/>
     <!--<inherits name='com.github.gwtd3.D3' />-->
 
+    <!-- Logging -->
+    <inherits name="com.allen_sauer.gwt.log.gwt-log-OFF" />
+
     <!-- Specify the paths for translatable code                    -->
     <source path='client' />
     <source path='shared' />
