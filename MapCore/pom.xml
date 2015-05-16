@@ -28,8 +28,8 @@
     </licenses>
 
     <properties>
-        <gwtVersion>2.6.1</gwtVersion>
-        <gwtPluginVersion>2.6.1</gwtPluginVersion>
+        <gwtVersion>2.7.0</gwtVersion>
+        <gwt.maven.plugin.version>2.7.0</gwt.maven.plugin.version>
     </properties>
 
     <repositories>
@@ -121,7 +121,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwtPluginVersion}</version>
+                <version>${gwt.maven.plugin.version}</version>
                 <configuration>
                     <!--
                      See http://code.google.com/support/bin/answer.py?hl=en&answer=71442
