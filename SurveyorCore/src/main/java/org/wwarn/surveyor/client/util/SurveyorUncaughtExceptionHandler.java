@@ -39,9 +39,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * Created by nigelthomas on 16/05/2015.
  */
-public class UncaughtExceptionHandler implements GWT.UncaughtExceptionHandler
+public class SurveyorUncaughtExceptionHandler implements GWT.UncaughtExceptionHandler
 {
     private static final String newline = " ";//System.getProperty("line.separator").toCharArray()[0];//"&lt;br /&gt;"
 

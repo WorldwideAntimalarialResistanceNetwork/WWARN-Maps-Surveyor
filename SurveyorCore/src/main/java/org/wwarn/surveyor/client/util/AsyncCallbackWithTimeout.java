@@ -72,7 +72,7 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
         timeSend = new Timestamp(new Date().getTime());
         latestServerCallTimeStamps = timeSend;
         //reset
-        UncaughtExceptionHandler.alertMsg = true;
+        SurveyorUncaughtExceptionHandler.alertMsg = true;
         GWT.log("Registering latest server request with time stamp ..." + timeSend.toString());
 
         GWT.log("AsyncCallbackWithTimeout constructor, timeoutMillis: " + timeoutMillis);
@@ -96,7 +96,7 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
         if (latestServerCallTimeStamps!=null && timeSend.before(latestServerCallTimeStamps)) {
 
             GWT.log("----------------- switch off alert msg ");
-            UncaughtExceptionHandler.alertMsg = false;
+            SurveyorUncaughtExceptionHandler.alertMsg = false;
             SimpleClientFactory.getInstance().getEventBus().fireEvent(new ExceptionEvent(timeOutException));
         }
         hasTimedOut = true;
