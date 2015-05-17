@@ -497,7 +497,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                             assertNotNull(query);
                             assertNotNull(query.getRecordList());
                             assertNotNull(query.getFacetFields());
-                            assertEquals(1, query.getRecordList().size());
+                            assertEquals(3, query.getRecordList().size());
                             for (FacetList.FacetField facetField : query.getFacetFields()) {
                                 assertNotNull(facetField);
                                 assertNotNull(facetField.getDistinctFacetValues());
