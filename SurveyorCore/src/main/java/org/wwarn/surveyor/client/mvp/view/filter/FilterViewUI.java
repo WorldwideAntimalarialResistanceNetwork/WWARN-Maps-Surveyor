@@ -272,6 +272,11 @@ public class FilterViewUI extends Composite implements  FilterView {
         return resetAnchor;
     }
 
+    protected void resetAllFilters() {
+        linkedFilterSelectionState.clear();
+        resetFilters(filterList);
+    }
+
     protected void resetFilters(List<FacetWidget> facetWidgetList) {
         for (FacetWidget facetWidget : facetWidgetList) {
             facetWidget.unSelectAndReset();
