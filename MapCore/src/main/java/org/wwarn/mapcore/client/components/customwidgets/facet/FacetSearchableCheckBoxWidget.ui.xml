@@ -38,25 +38,36 @@
 
         .checkBoxes {
             border: 1px solid #ccc;
-            width: 240px!important;
+            width: 240px !important;
         }
 
         .facetCheckBox a, .facetCheckBox a.clearLink, a.clearLink {
-            float: right!important;
-            font-size: 1em!important;
-            font-weight: bold!important;
+            float: right !important;
+            font-size: 1em !important;
+            font-weight: bold !important;
         }
 
-        .facetCheckBoxPanel{
-            display: none!important;
+        .facetCheckBoxPanel {
+            display: none !important;
         }
 
         .facetCheckBox input[readonly], .facetCheckBox .disabledCheckBox,
-        .searchCheckBoxListItemDisabled label{
-            color: #aaa!important;
+        .searchCheckBoxListItemDisabled label {
+            color: #aaa !important;
         }
-    </ui:style>
-    <g:VerticalPanel addStyleNames="{style.facetCheckBox}">
 
+        .facetCheckBox{
+            /*display: ;*/
+        }
+
+        .subHeading{
+            width: 100%;
+        }</ui:style>
+    <g:VerticalPanel addStyleNames="{style.facetCheckBox}">
+        <g:HTMLPanel ui:field="heading" addStyleNames="{style.subHeading}"><br/><span ui:field="headingValue">Default header</span> <small><g:Anchor visible="false" ui:field="toggleFilter" href="#">Show</g:Anchor></small></g:HTMLPanel>
+        <g:FlowPanel ui:field="filterMainBody">
+            <g:TextBox ui:field="searchBox"/>
+            <g:ScrollPanel ui:field="scrollpanel"/>
+        </g:FlowPanel>
     </g:VerticalPanel>
 </ui:UiBinder>

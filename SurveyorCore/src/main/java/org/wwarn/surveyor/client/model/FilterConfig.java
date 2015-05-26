@@ -41,9 +41,6 @@ import java.util.*;
 
 /**
  * Filter config pojo
- * User: nigel
- * Date: 25/07/13
- * Time: 16:25
  */
 public class FilterConfig implements Config {
     List<FilterSetting> filters = new ArrayList<FilterSetting>();
@@ -76,8 +73,6 @@ public class FilterConfig implements Config {
         }
         this.filterLabel = filterLabel;
     }
-
-
 
     public List<FilterSetting> getFilters(){
         return (this.filters);
