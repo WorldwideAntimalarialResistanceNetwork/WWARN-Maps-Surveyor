@@ -1,5 +1,5 @@
 SURVEYOR OVERVIEW
-==================
+------------------
 
 The use of the SURVEYOR goes beyond geo visualisation of research data. The platform
 can, for instance, facilitate functions such as decision support, statistical reporting,
