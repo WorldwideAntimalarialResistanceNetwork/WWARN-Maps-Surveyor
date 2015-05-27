@@ -97,7 +97,14 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
     @UiField
     Anchor clearSelectionControl ;
-
+    @UiField
+    TextBox searchBox;
+    @UiField
+    ScrollPanel scrollpanel;
+    @UiField
+    FlowPanel filterMainBody;
+    @UiField
+    SpanElement toggleFilterField;
 
     public FacetSearchableCheckBoxWidget(FacetBuilder builder){
         panel = ourUiBinder.createAndBindUi(this);
@@ -298,14 +305,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         ValueChangeEvent.fire(checkBoxList.iterator().next(), true);
     }
 
-    @UiField
-    TextBox searchBox;
-    @UiField
-    ScrollPanel scrollpanel;
-    @UiField
-    FlowPanel filterMainBody;
-    @UiField
-    SpanElement toggleFilterField;
+
 
     @UiHandler("toggleFilter")
     public void handleClick(ClickEvent event) {
