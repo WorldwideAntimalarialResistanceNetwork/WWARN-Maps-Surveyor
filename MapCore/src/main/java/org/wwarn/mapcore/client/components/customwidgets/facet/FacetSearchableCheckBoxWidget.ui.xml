@@ -72,8 +72,16 @@
 
         }</ui:style>
     <g:VerticalPanel addStyleNames="{style.facetCheckBox}">
-        <g:HTMLPanel ui:field="heading" addStyleNames="{style.subHeading}"><br/>
-            <g:Anchor visible="false" addStyleNames="{style.toggleFilterHref}" ui:field="toggleFilter" href="#"><span ui:field="toggleFilterField" class="glyphicon glyphicon-plus"></span></g:Anchor> <span ui:field="headingValue">Default header</span><g:Anchor visible="false" ui:field="clearSelectionControl" addStyleNames="{style.searchableCheckBoxClearAnchor} searchableCheckBoxClearAnchor" href="#">clear</g:Anchor></g:HTMLPanel>
+        <g:HTMLPanel ui:field="heading" addStyleNames="{style.subHeading}">
+            <br/>
+            <g:Anchor visible="false" addStyleNames="{style.toggleFilterHref}" ui:field="toggleFilter" href="#">
+                <span ui:field="toggleFilterField" class="glyphicon glyphicon-plus"></span>
+            </g:Anchor>
+            <span ui:field="headingValue">Default header</span>
+            <g:Anchor visible="false" ui:field="clearSelectionControl"
+                      addStyleNames="{style.searchableCheckBoxClearAnchor} searchableCheckBoxClearAnchor" href="#">clear
+            </g:Anchor>
+        </g:HTMLPanel>
         <g:FlowPanel ui:field="filterMainBody">
             <g:TextBox ui:field="searchBox"/>
             <g:ScrollPanel ui:field="scrollpanel"/>
