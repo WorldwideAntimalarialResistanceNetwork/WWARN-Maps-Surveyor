@@ -58,6 +58,15 @@ public class FacetBuilder {
 
     private int visibleItemCount;
 
+    private boolean isShowHideToggleEnabled = false;
+
+    private boolean defaultShowHideToggleStateIsVisible = false;
+
+    public FacetBuilder useShowHideToggle(boolean useShowHideToggle) {
+        this.isShowHideToggleEnabled = useShowHideToggle;
+        return this;
+    }
+
     //All, Available, None
     private FilterConfigVisualization filterConfigVisualization;
 
@@ -154,6 +163,24 @@ public class FacetBuilder {
 
     public FacetType getFacetType() {
         return facetType;
+    }
+
+    public boolean isDefaultShowHideToggleStateIsVisible() {
+        return defaultShowHideToggleStateIsVisible;
+    }
+
+    public FacetBuilder setDefaultShowHideToggleStateIsVisible(boolean defaultShowHideToggleStateIsVisible) {
+        this.defaultShowHideToggleStateIsVisible = defaultShowHideToggleStateIsVisible;
+        return this;
+    }
+
+    public boolean isShowHideToggleEnabled() {
+        return isShowHideToggleEnabled;
+    }
+
+    public FacetBuilder setIsShowHideToggleEnabled(boolean isShowHideToggleEnabled) {
+        this.isShowHideToggleEnabled = isShowHideToggleEnabled;
+        return this;
     }
 
 }

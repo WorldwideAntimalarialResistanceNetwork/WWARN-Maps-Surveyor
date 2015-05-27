@@ -38,25 +38,45 @@
 
         .checkBoxes {
             border: 1px solid #ccc;
-            width: 240px!important;
+            width: 240px !important;
         }
 
-        .facetCheckBox a, .facetCheckBox a.clearLink, a.clearLink {
-            float: right!important;
-            font-size: 1em!important;
-            font-weight: bold!important;
+        .facetCheckBox a.searchableCheckBoxClearAnchor, .facetCheckBox a.clearLink, a.clearLink {
+            float: right !important;
+            font-size: 1em !important;
+            font-weight: bold !important;
         }
 
-        .facetCheckBoxPanel{
-            display: none!important;
+        .facetCheckBoxPanel {
+            display: none !important;
         }
 
         .facetCheckBox input[readonly], .facetCheckBox .disabledCheckBox,
-        .searchCheckBoxListItemDisabled label{
-            color: #aaa!important;
+        .searchCheckBoxListItemDisabled label {
+            color: #aaa !important;
         }
-    </ui:style>
-    <g:VerticalPanel addStyleNames="{style.facetCheckBox}">
 
+        .facetCheckBox {
+            /*display: ;*/
+        }
+
+        .subHeading {
+            width: 100%;
+        }
+
+        .toggleFilterHref {
+            /*float: left !important;*/
+        }
+
+        .searchableCheckBoxClearAnchor {
+
+        }</ui:style>
+    <g:VerticalPanel addStyleNames="{style.facetCheckBox}">
+        <g:HTMLPanel ui:field="heading" addStyleNames="{style.subHeading}"><br/>
+            <g:Anchor visible="false" addStyleNames="{style.toggleFilterHref}" ui:field="toggleFilter" href="#"><span ui:field="toggleFilterField" class="glyphicon glyphicon-plus"></span></g:Anchor> <span ui:field="headingValue">Default header</span><g:Anchor visible="false" ui:field="clearSelectionControl" addStyleNames="{style.searchableCheckBoxClearAnchor} searchableCheckBoxClearAnchor" href="#">clear</g:Anchor></g:HTMLPanel>
+        <g:FlowPanel ui:field="filterMainBody">
+            <g:TextBox ui:field="searchBox"/>
+            <g:ScrollPanel ui:field="scrollpanel"/>
+        </g:FlowPanel>
     </g:VerticalPanel>
 </ui:UiBinder>

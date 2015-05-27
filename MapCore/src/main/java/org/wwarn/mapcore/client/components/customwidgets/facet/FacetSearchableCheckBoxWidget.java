@@ -34,15 +34,20 @@ package org.wwarn.mapcore.client.components.customwidgets.facet;
  */
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.common.types.FilterConfigVisualization;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
@@ -57,11 +62,12 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     public static final String STYLE_CHECKBOXLIST_ITEM_CHECKED = "searchCheckBoxListItemChecked";
     public static final String STYLE_CHECKBOXLIST_ITEM_DISABLED = "searchCheckBoxListItemDisabled";
     public static final String STYLE_INITIAL_SEARCHBOX_TEXT = "initialSearchBoxText";
-    public static final String STYLE_SELECTION_CLEAR_ANCHOR = "searchableCheckBoxClearAnchor";
     public static final String STYLE_SEARCH_BOX = "searchBox";
     public static final int DEFAULT_VISIBLE_ITEM_COUNT = 5;
     public static final String DEFAULT_SEARCH_TEXT = "Search...";
-//    public static final boolean isShown = true;
+    private boolean showHideToggleEnabled;
+    private boolean defaultShowHideToggleStateIsVisible;
+    //    public static final boolean isShown = true;
 
     interface FacetSearchableCheckBoxWidgetsUiBinder extends UiBinder<VerticalPanel, FacetSearchableCheckBoxWidget> {
 
@@ -81,20 +87,24 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
     VerticalPanel listPanel = new VerticalPanel();
 
-    ScrollPanel scrollpanel = new ScrollPanel();
-
     VerticalPanel panel;
 
     List<CheckBox> checkBoxList = new ArrayList<CheckBox>();
-
-    TextBox searchBox = new TextBox();
 
     MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
     ValueChangeHandler valueChangeHandler;
 
-    private Anchor clearSelectionControl = getClearSelectionAnchor();
-
+    @UiField
+    Anchor clearSelectionControl ;
+    @UiField
+    TextBox searchBox;
+    @UiField
+    ScrollPanel scrollpanel;
+    @UiField
+    FlowPanel filterMainBody;
+    @UiField
+    SpanElement toggleFilterField;
 
     public FacetSearchableCheckBoxWidget(FacetBuilder builder){
         panel = ourUiBinder.createAndBindUi(this);
@@ -105,7 +115,8 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         this.facetLabel = builder.getFacetLabel();
         this.filterConfigVisualization = builder.getFilterConfigVisualization();
         this.visibleItemCount = (builder.getVisibleItemCount() < 1)?DEFAULT_VISIBLE_ITEM_COUNT:builder.getVisibleItemCount();
-
+        this.showHideToggleEnabled = builder.isShowHideToggleEnabled();
+        this.defaultShowHideToggleStateIsVisible = builder.isDefaultShowHideToggleStateIsVisible();
         buildDisplay();
         //unSelectAndReset();
         setOracle();
@@ -118,7 +129,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         setupListPanel(facetWidgetItems);
         setupScrollPanel();
         setupSearchBox();
-        setupPanel();
+        buildHTMLHeader();
         return this;
     }
 
@@ -181,28 +192,6 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         });
     }
 
-    private void setupPanel(){
-        panel.add(buildHTMLHeader());
-        panel.add(searchBox);
-        panel.add(scrollpanel);
-    }
-
-    private Anchor getClearSelectionAnchor() {
-        final Anchor clear = new Anchor("clear");
-        clear.setVisible(false);
-        clear.setStyleName(STYLE_SELECTION_CLEAR_ANCHOR);
-        clear.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent clickEvent) {
-                unSelectAndReset();
-                //TODO: resolve this hack
-                // fire value change event inform client that reset was completed
-                ValueChangeEvent.fire(checkBoxList.iterator().next(), true);
-            }
-        });
-        return clear;
-    }
-
     private void check(CheckBox checkBox){
         if(checkBox.getValue()){
             selectedListItems.add(checkBox.getText());
@@ -220,12 +209,26 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     }
 
     public Widget buildHTMLHeader() {
-        HTMLPanel heading = new HTMLPanel("<br/><strong>"+ facetTitle +"</strong>");
-        String headingStyleName = "subHeading";
-        heading.setStyleName(headingStyleName);
-        heading.add(clearSelectionControl);
+//        HTMLPanel heading = new HTMLPanel("<br/><strong>"+ facetTitle +"</strong>");
+        headingValue.setNodeValue(facetTitle);
+        updateSpanNode(headingValue, facetTitle);
         panel.getElement().setId(createID(facetTitle));
+        setupFilterToggle();
         return heading;
+    }
+
+    private void setupFilterToggle() {
+        GWT.log("showHideToggleEnabled" + String.valueOf(showHideToggleEnabled));
+        toggleFilter.setVisible(showHideToggleEnabled);
+        if(showHideToggleEnabled) {
+            filterMainBody.setVisible(defaultShowHideToggleStateIsVisible);
+            updateToggleFilterView();
+        }
+
+    }
+
+    private void updateSpanNode(SpanElement spanElement, String value) {
+        spanElement.getFirstChild().setNodeValue(value);
     }
 
     /**
@@ -284,7 +287,49 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
             updatePanelList(suggestedList);
         }
     };
+    @UiField
+    HTMLPanel heading;
 
+    @UiField
+    SpanElement headingValue;
+
+    @UiField
+    Anchor toggleFilter;
+
+    @UiHandler("clearSelectionControl")
+    public void clearSelectionHandleClick(ClickEvent event) {
+        event.preventDefault();
+        unSelectAndReset();
+        //TODO: resolve this hack
+        // fire value change event inform client that reset was completed
+        ValueChangeEvent.fire(checkBoxList.iterator().next(), true);
+    }
+
+
+
+    @UiHandler("toggleFilter")
+    public void handleClick(ClickEvent event) {
+        event.preventDefault();
+        filterMainBody.setVisible(!filterMainBody.isVisible());
+        updateToggleFilterView();
+    }
+
+    @NotNull
+    private String getToggleFilterValue() {
+        return (filterMainBody.isVisible())?"Hide":"Show";
+    }
+    private void updateToggleFilterView() {
+//        toggleFilter.setHTML(getToggleFilterValue());
+        toggleFilter.setTitle(getToggleFilterValue());
+        toggleFilterField.setTitle(getToggleFilterValue());
+        if(filterMainBody.isVisible()) {
+            toggleFilterField.removeClassName("glyphicon-plus");
+            toggleFilterField.addClassName("glyphicon-minus");
+        }else{
+            toggleFilterField.removeClassName("glyphicon-minus");
+            toggleFilterField.addClassName("glyphicon-plus");
+        }
+    }
     /**
      * Initially set the oracle with all the item in the listBox
      * We will use the oracle to get suggestions from a text input

@@ -139,7 +139,9 @@ public class FilterViewUI extends Composite implements  FilterView {
         final FacetWidget facetWidget = new FacetBuilder().setFacetTitle(facetTitle).
                 setFacetLabel(facetLabel).setFacetName(facetField.getFacetField()).
                 setItemsList(itemAndItemLabelMap).setVisibleItemCount(visibleItemCount).
-                setFilterConfigVisualization(filterSetting.filterShowItemsOptions).setFacetType(facetType).build();
+                setFilterConfigVisualization(filterSetting.filterShowItemsOptions).setFacetType(facetType).
+                setDefaultShowHideToggleStateIsVisible(filterSetting.defaultShowHideToggleStateIsVisible).
+                setIsShowHideToggleEnabled(filterSetting.isShowHideToggleEnabled).build();
 
         facetWidget.addChangeHandler(new ChangeHandler() {
             public void onChange(ChangeEvent changeEvent) {

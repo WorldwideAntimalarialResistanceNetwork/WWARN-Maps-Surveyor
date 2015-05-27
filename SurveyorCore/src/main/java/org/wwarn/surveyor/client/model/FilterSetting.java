@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by suay on 15/04/14.
+ * This class is a component of FilterConfig and holds settings for individual filters
  */
 public class FilterSetting {
 
@@ -53,6 +53,12 @@ public class FilterSetting {
 
     //Number of items to show inside the listbox
     public int visibleItemCount;
+
+    // Allow user to show or hide filter
+    public boolean isShowHideToggleEnabled = false;
+
+    // Set default state of show hide toggle
+    public boolean defaultShowHideToggleStateIsVisible = true;
 
     public FacetType facetType;
 
@@ -78,6 +84,8 @@ public class FilterSetting {
         this.visibleItemCount=builder.visibleItemCount;
         this.filterShowItemsOptions = builder.filterShowItemsOptions;
         this.facetType = builder.facetType;
+        this.isShowHideToggleEnabled = builder.isShowHideToggleEnabled;
+        this.defaultShowHideToggleStateIsVisible = builder.defaultShowHideToggleStateIsVisible;
     }
 
     public String getValueLabel(String filterFieldValue) {
@@ -104,6 +112,20 @@ public class FilterSetting {
         private int visibleItemCount;
 
         private FacetType facetType;
+
+        public FilterSettingsBuilder setIsShowHideToggleEnabled(boolean isShowHideToggleEnabled) {
+            this.isShowHideToggleEnabled = isShowHideToggleEnabled;
+            return this;
+        }
+
+        public FilterSettingsBuilder setDefaultShowHideToggleStateIsVisible(boolean defaultShowHideToggleStateIsVisible) {
+            this.defaultShowHideToggleStateIsVisible = defaultShowHideToggleStateIsVisible;
+            return this;
+        }
+
+        public boolean isShowHideToggleEnabled = false;
+
+        public boolean defaultShowHideToggleStateIsVisible = true;
 
         //Required parameters
         public FilterSettingsBuilder(String filterFieldName, String filterTitle, String filterFieldLabel) {
@@ -136,9 +158,6 @@ public class FilterSetting {
         public FilterSetting build(){
             return new FilterSetting(this);
         }
-
-
-
 
     }
 
