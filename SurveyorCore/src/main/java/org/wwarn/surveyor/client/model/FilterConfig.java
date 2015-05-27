@@ -51,18 +51,25 @@ public class FilterConfig implements Config {
 
     private String filterLabel;
 
+    public void addFilterSetting(FilterSetting filterSetting){
+        filters.add(filterSetting);
+    }
+
+    @Deprecated
     public void addFilter(String filterColumn, String filterFieldName, String filterFieldLabel, HashMap<String, String> filterFieldValueToLabelMap) {
-        filters.add(new FilterSetting.FilterSettingsBuilder(filterColumn, filterFieldName, filterFieldLabel).setFilterFieldValueToLabelMap(filterFieldValueToLabelMap).build());
+        addFilterSetting(new FilterSetting.FilterSettingsBuilder(filterColumn, filterFieldName, filterFieldLabel).setFilterFieldValueToLabelMap(filterFieldValueToLabelMap).build());
     }
 
+    @Deprecated
     public void addFilter(String[] filterColumns, String filterFieldName, String filterFieldLabel, HashMap<String, String> filterFieldValueToLabelMap) {
-        filters.add(new FilterMultipleFields(filterColumns, filterFieldName, filterFieldLabel, filterFieldValueToLabelMap));
+        addFilterSetting(new FilterMultipleFields(filterColumns, filterFieldName, filterFieldLabel, filterFieldValueToLabelMap));
     }
 
+    @Deprecated
     public void addFilter(String filterColumn, String filterFieldName, String filterFieldLabel,
                           HashMap<String, String> filterFieldValueToLabelMap, int visibleItemCount,
                           FilterConfigVisualization filterConfigVisualization, FacetType type) {
-        filters.add(new FilterSetting.FilterSettingsBuilder(filterColumn, filterFieldName, filterFieldLabel).
+        addFilterSetting(new FilterSetting.FilterSettingsBuilder(filterColumn, filterFieldName, filterFieldLabel).
                 setFilterFieldValueToLabelMap(filterFieldValueToLabelMap).setVisibleItemCount(visibleItemCount).
                 setFilterShowItemsOptions(filterConfigVisualization).setFacetType(type).build());
     }
@@ -112,10 +119,10 @@ public class FilterConfig implements Config {
 
 
     public void addDateRangeFilter(FilterByDateRangeSettings filterByDateRangeSettings) {
-        filters.add(filterByDateRangeSettings);
+        addFilterSetting(filterByDateRangeSettings);
     }
 
-    public class FilterMultipleFields extends FilterSetting{
+    public static class FilterMultipleFields extends FilterSetting{
 
         private final String[] filterColumns;
 
@@ -170,6 +177,6 @@ public class FilterConfig implements Config {
 
     public void addSampleSizeFilter(String filterColumn, String filterFieldName, String filterFieldLabel, int start,
                                    int end, int initialValue) {
-        filters.add(new FilterBySampleSizeSettings(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue));
+        addFilterSetting(new FilterBySampleSizeSettings(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue));
     }
 }

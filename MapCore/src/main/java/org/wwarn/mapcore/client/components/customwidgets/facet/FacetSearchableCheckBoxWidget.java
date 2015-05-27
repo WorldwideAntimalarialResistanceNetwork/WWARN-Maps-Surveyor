@@ -62,7 +62,6 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     public static final String STYLE_CHECKBOXLIST_ITEM_CHECKED = "searchCheckBoxListItemChecked";
     public static final String STYLE_CHECKBOXLIST_ITEM_DISABLED = "searchCheckBoxListItemDisabled";
     public static final String STYLE_INITIAL_SEARCHBOX_TEXT = "initialSearchBoxText";
-    public static final String STYLE_SELECTION_CLEAR_ANCHOR = "searchableCheckBoxClearAnchor";
     public static final String STYLE_SEARCH_BOX = "searchBox";
     public static final int DEFAULT_VISIBLE_ITEM_COUNT = 5;
     public static final String DEFAULT_SEARCH_TEXT = "Search...";
@@ -96,7 +95,8 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
     ValueChangeHandler valueChangeHandler;
 
-    private Anchor clearSelectionControl = getClearSelectionAnchor();
+    @UiField
+    Anchor clearSelectionControl ;
 
 
     public FacetSearchableCheckBoxWidget(FacetBuilder builder){
@@ -185,22 +185,6 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         });
     }
 
-    private Anchor getClearSelectionAnchor() {
-        final Anchor clear = new Anchor("clear");
-        clear.setVisible(false);
-        clear.setStyleName(STYLE_SELECTION_CLEAR_ANCHOR);
-        clear.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent clickEvent) {
-                unSelectAndReset();
-                //TODO: resolve this hack
-                // fire value change event inform client that reset was completed
-                ValueChangeEvent.fire(checkBoxList.iterator().next(), true);
-            }
-        });
-        return clear;
-    }
-
     private void check(CheckBox checkBox){
         if(checkBox.getValue()){
             selectedListItems.add(checkBox.getText());
@@ -221,7 +205,6 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 //        HTMLPanel heading = new HTMLPanel("<br/><strong>"+ facetTitle +"</strong>");
         headingValue.setNodeValue(facetTitle);
         updateSpanNode(headingValue, facetTitle);
-        heading.add(clearSelectionControl);
         panel.getElement().setId(createID(facetTitle));
         setupFilterToggle();
         return heading;
@@ -232,7 +215,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         toggleFilter.setVisible(showHideToggleEnabled);
         if(showHideToggleEnabled) {
             filterMainBody.setVisible(defaultShowHideToggleStateIsVisible);
-            toggleFilter.setHTML(getToggleFilterValue());
+            updateToggleFilterView();
         }
 
     }
@@ -305,24 +288,48 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
     @UiField
     Anchor toggleFilter;
+
+    @UiHandler("clearSelectionControl")
+    public void clearSelectionHandleClick(ClickEvent event) {
+        event.preventDefault();
+        unSelectAndReset();
+        //TODO: resolve this hack
+        // fire value change event inform client that reset was completed
+        ValueChangeEvent.fire(checkBoxList.iterator().next(), true);
+    }
+
     @UiField
     TextBox searchBox;
     @UiField
     ScrollPanel scrollpanel;
     @UiField
     FlowPanel filterMainBody;
+    @UiField
+    SpanElement toggleFilterField;
 
     @UiHandler("toggleFilter")
     public void handleClick(ClickEvent event) {
+        event.preventDefault();
         filterMainBody.setVisible(!filterMainBody.isVisible());
-        toggleFilter.setHTML(getToggleFilterValue());
+        updateToggleFilterView();
     }
 
     @NotNull
     private String getToggleFilterValue() {
         return (filterMainBody.isVisible())?"Hide":"Show";
     }
-
+    private void updateToggleFilterView() {
+//        toggleFilter.setHTML(getToggleFilterValue());
+        toggleFilter.setTitle(getToggleFilterValue());
+        toggleFilterField.setTitle(getToggleFilterValue());
+        if(filterMainBody.isVisible()) {
+            toggleFilterField.removeClassName("glyphicon-plus");
+            toggleFilterField.addClassName("glyphicon-minus");
+        }else{
+            toggleFilterField.removeClassName("glyphicon-minus");
+            toggleFilterField.addClassName("glyphicon-plus");
+        }
+    }
     /**
      * Initially set the oracle with all the item in the listBox
      * We will use the oracle to get suggestions from a text input

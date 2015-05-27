@@ -328,7 +328,6 @@ public class XMLApplicationLoader implements ApplicationContext {
                                 Node nodeLatField = markerChildNode;
                                 latFieldName = getAttributeByName(nodeLatField, "fieldName");
                             }
-                            System.out.println(markerChildNode.getNodeName());
                             if (markerChildNode.getNodeName().equals("InfoWindowTemplate")) {
                                 Node infoWindowTemplate = markerChildNode;
                                 templateViewNodesConfig = parseInfoWindowTemplate(infoWindowTemplate);
@@ -483,8 +482,10 @@ public class XMLApplicationLoader implements ApplicationContext {
 
         public static final String DEFAULT_START_DATE = "1975";
         public static final String DEFAULT_CURRENT_YEAR = "currentYear";
+        public static final String SHOW_HIDE_FEATURE_DISABLED = "showHideFeatureDisabled";
 
         String filterColumn, filterFieldName,  filterFieldLabel;
+        Boolean showHideFeatureEnabled = false, showHideIsVisible = false;
 
         public void parse(Node item) throws XMLUtils.ParseException {
             // item cannot be null
@@ -517,6 +518,12 @@ public class XMLApplicationLoader implements ApplicationContext {
                         filterColumn = getAttributeByName(filterNode, "field");
                         filterFieldName = getAttributeByName(filterNode, "name");
                         String showItemsOption = getAttributeByName(filterNode, "showItemsOption");
+                        final String showHideToggle = StringUtils.ifEmpty(getAttributeByName(filterNode, "showHideToggle"), SHOW_HIDE_FEATURE_DISABLED);
+                        if(!showHideToggle.equals(SHOW_HIDE_FEATURE_DISABLED)){
+                            showHideFeatureEnabled = true;
+                            showHideIsVisible = showHideToggle.toLowerCase().equals("visible");
+                        }
+//                        Boolean enableShowHideToggle = (Boolean) showHideToggle;
                         FilterConfigVisualization filterConfigVisualization = FilterConfigVisualization.valueOf(StringUtils.ifEmpty(showItemsOption, "AVAILABLE"));
                         Node filterFieldlabelNode = getNodeByName(filterNode, "label");
                         Node visibleItemNode = getNodeByName(filterNode, "visibleItemCount");
@@ -561,10 +568,12 @@ public class XMLApplicationLoader implements ApplicationContext {
                                 if(filterColumns.length < 2){
                                     throw new IllegalArgumentException("Expected attribute fields to be contain more than one comma separated value");
                                 }
-                                filterConfig.addFilter(filterColumns, filterFieldName, filterFieldLabel, filterFieldValueToLabelMap);
+                                filterConfig.addFilterSetting(new FilterConfig.FilterMultipleFields(filterColumns, filterFieldName, filterFieldLabel, filterFieldValueToLabelMap));
                             }else{
-                                filterConfig.addFilter(filterColumn, filterFieldName, filterFieldLabel,
-                                        filterFieldValueToLabelMap, visibleItemCount, filterConfigVisualization, facetType);
+                                filterConfig.addFilterSetting(new FilterSetting.FilterSettingsBuilder(filterColumn, filterFieldName, filterFieldLabel).
+                                        setFilterFieldValueToLabelMap(filterFieldValueToLabelMap).setVisibleItemCount(visibleItemCount).
+                                        setFilterShowItemsOptions(filterConfigVisualization).setFacetType(facetType).
+                                        setIsShowHideToggleEnabled(showHideFeatureEnabled).setDefaultShowHideToggleStateIsVisible(showHideIsVisible).build());
                             }
                         }
                     }
