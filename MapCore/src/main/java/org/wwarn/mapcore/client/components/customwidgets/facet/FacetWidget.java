@@ -64,6 +64,11 @@ public interface FacetWidget extends HasChangeHandlers {
     List<FacetWidgetItem> getFacetWidgetItems();
 
     void disableItems(List<FacetWidgetItem> facetWidgetItems);
+    /**
+     * select an existing filter value
+     * @param selection
+     */
+    void selectItems(List<FacetWidgetItem> selection);
 
     void unSelectAndReset();
 

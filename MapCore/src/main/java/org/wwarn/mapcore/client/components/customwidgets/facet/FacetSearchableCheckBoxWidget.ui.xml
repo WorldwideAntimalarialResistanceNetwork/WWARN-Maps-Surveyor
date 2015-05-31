@@ -84,7 +84,11 @@
         </g:HTMLPanel>
         <g:FlowPanel ui:field="filterMainBody">
             <g:TextBox ui:field="searchBox"/>
-            <g:ScrollPanel ui:field="scrollpanel"/>
-        </g:FlowPanel>
+            <g:ScrollPanel ui:field="scrollpanel" addStyleNames="searchCheckBoxList">
+                <g:FocusPanel ui:field="focusPanel">
+                    <g:VerticalPanel ui:field="checkBoxContainer"/>
+                </g:FocusPanel>
+            </g:ScrollPanel>
+    </g:FlowPanel>
     </g:VerticalPanel>
 </ui:UiBinder>

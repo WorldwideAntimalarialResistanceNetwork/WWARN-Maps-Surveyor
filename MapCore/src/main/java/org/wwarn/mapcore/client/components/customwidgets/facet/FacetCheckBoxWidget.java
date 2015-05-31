@@ -252,6 +252,11 @@ public class FacetCheckBoxWidget extends Composite implements FacetWidget {
         moveFacetWidgetItemsToBottom(facetWidgetsItemToMove);
     }
 
+    @Override
+    public void selectItems(List<FacetWidgetItem> selection) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     private void moveFacetWidgetItemsToBottom(Set<FacetWidgetItem> facetWidgetsItemToMove) {
         if(facetWidgetsItemToMove.size() < 1){return;}
         List<FacetWidgetItem> facetWidgetItemFresh = new ArrayList<>();

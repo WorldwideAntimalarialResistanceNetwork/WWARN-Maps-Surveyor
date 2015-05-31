@@ -67,6 +67,9 @@ import org.wwarn.mapcore.client.panel.resources.TooltipResources;
 public class Tooltip {
 
     private static final TooltipResources res = GWT.create(TooltipResources.class);
+    static {
+        final boolean b = res.style().ensureInjected();
+    }
 
     public void setWidth(String s) {
         panel.setWidth(s);
@@ -160,14 +163,22 @@ public class Tooltip {
     private TooltipPosition position = TooltipPosition.CURSOR;
 
     public Tooltip() {
-        panel.addDomHandler(mouseOutHandler, MouseOutEvent.getType());
-        res.style().ensureInjected();
-        panel.setStyleName(res.style().tooltip());
+        this(res.style());
     }
 
-    public void setHtml(SafeHtml html) {
-        panel.setWidget(new HTML(html));
+    public Tooltip(TooltipResources.Style style) {
+        panel.addDomHandler(mouseOutHandler, MouseOutEvent.getType());
+
+        panel.getElement().setAttribute("style","z-index:100;");
+        panel.setStyleName(style.tooltip());
+    }
+
+    public void setHtml(Widget widget) {
+        panel.setWidget(widget);
         panel.setWidth("350");
+    }
+    public void setHtml(SafeHtml html) {
+        this.setHtml(new HTML(html));
     }
 
     public void setPosition(TooltipPosition position) {
