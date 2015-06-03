@@ -126,4 +126,22 @@ public class MapViewConfig implements ViewConfig {
     public String getImageLegendPosition() {
         return imageLegendPosition;
     }
+
+    @Override
+    public String toString() {
+        return "MapViewConfig{" +
+                "templateViewNodesConfig=" + templateViewNodesConfig +
+                ", initialLat=" + initialLat +
+                ", initialLon=" + initialLon +
+                ", initialZoomLevel=" + initialZoomLevel +
+                ", imageLegendPositionFromTopInPixels=" + imageLegendPositionFromTopInPixels +
+                ", viewName='" + viewName + '\'' +
+                ", markerLongitudeField='" + markerLongitudeField + '\'' +
+                ", markerLatitudeField='" + markerLatitudeField + '\'' +
+                ", mapImageRelativePath='" + mapImageRelativePath + '\'' +
+                ", viewLabel='" + viewLabel + '\'' +
+                ", mapType=" + mapType +
+                ", imageLegendPosition='" + imageLegendPosition + '\'' +
+                '}';
+    }
 }

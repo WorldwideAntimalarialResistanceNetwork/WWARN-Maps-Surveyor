@@ -180,6 +180,16 @@ public class TableViewConfig implements ViewConfig, IsSerializable {
         public String getDateFormat() {
             return dateFormat;
         }
+
+        @Override
+        public String toString() {
+            return "TableColumn{" +
+                    "fieldName='" + fieldName + '\'' +
+                    ", fieldTitle='" + fieldTitle + '\'' +
+                    ", hyperLinkField='" + hyperLinkField + '\'' +
+                    ", dateFormat='" + dateFormat + '\'' +
+                    '}';
+        }
     }
 
     public enum TableType implements IsSerializable{
@@ -195,5 +205,19 @@ public class TableViewConfig implements ViewConfig, IsSerializable {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "TableViewConfig{" +
+                "viewName='" + viewName + '\'' +
+                ", columns=" + columns +
+                ", sortColumn='" + sortColumn + '\'' +
+                ", sortOrder='" + sortOrder + '\'' +
+                ", label='" + label + '\'' +
+                ", pageSize=" + pageSize +
+                ", filterBy='" + filterBy + '\'' +
+                ", type=" + type +
+                '}';
     }
 }

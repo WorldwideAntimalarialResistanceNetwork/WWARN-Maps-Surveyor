@@ -137,4 +137,16 @@ public class MapBuilder {
         GOOGLE_V3, OPEN_LAYERS_OS_OFFLINE
     }
 
+    @Override
+    public String toString() {
+        return "MapBuilder{" +
+                "minZoomLevel=" + minZoomLevel +
+                ", noStudiesFoundMsg='" + noStudiesFoundMsg + '\'' +
+                ", mapTypeId=" + mapTypeId +
+                ", mapHeight=" + mapHeight +
+                ", mapWidth=" + mapWidth +
+                ", zoomLevel=" + zoomLevel +
+                ", coordinatesLatLon=" + coordinatesLatLon +
+                '}';
+    }
 }

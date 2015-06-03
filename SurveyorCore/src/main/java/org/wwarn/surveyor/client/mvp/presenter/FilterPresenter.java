@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.mvp.presenter;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -304,7 +305,7 @@ public class FilterPresenter implements Presenter {
         } catch (RuntimeException e) {
             if (!e.getMessage().startsWith("Deferred binding")) throw e;
             initialFields = new DefaultInitialFields();
-            GWT.log("Initial fields has not been implemented in the current application");
+            Log.error("Initial fields has not been implemented in the current application");
         }
         return initialFields;
     }

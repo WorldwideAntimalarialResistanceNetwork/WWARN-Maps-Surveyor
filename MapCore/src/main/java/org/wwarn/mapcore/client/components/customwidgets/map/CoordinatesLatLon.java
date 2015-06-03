@@ -56,4 +56,12 @@ class CoordinatesLatLon {
     public double getMapCentreLon() {
         return mapCentreLon;
     }
+
+    @Override
+    public String toString() {
+        return "CoordinatesLatLon{" +
+                "mapCenterLat=" + mapCenterLat +
+                ", mapCentreLon=" + mapCentreLon +
+                '}';
+    }
 }

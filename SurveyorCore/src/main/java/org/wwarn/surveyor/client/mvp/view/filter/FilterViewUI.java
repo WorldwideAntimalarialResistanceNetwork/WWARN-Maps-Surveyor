@@ -33,11 +33,13 @@ package org.wwarn.surveyor.client.mvp.view.filter;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
@@ -265,7 +267,9 @@ public class FilterViewUI extends Composite implements  FilterView {
         resetAnchor.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                GWT.log("Resetting app to default state.");
+                if (Log.isDebugEnabled()) {
+                    Log.debug("Resetting app to default state.");
+                }
                 linkedFilterSelectionState.clear();
                 resetFilters(facetWidgetList);
             }

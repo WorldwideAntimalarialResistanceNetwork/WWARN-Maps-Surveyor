@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -174,7 +175,7 @@ public class RecordListCompressedImpl extends RecordList {
         protected void validateIndex(int index, String message) {
             if(index > fieldIndex.length-1 || index < 0){
                 IndexOutOfBoundsException e = new IndexOutOfBoundsException(message);
-                GWT.log("", e);
+                Log.error("IndexOutOfBoundsException", e);
                 throw e;
             }
         }

@@ -34,8 +34,10 @@ package org.wwarn.surveyor.client;
  */
 
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.Table;
 import org.wwarn.mapcore.client.utils.MapLoadUtil;
@@ -54,11 +56,16 @@ public class Surveyor implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        GWT.setUncaughtExceptionHandler(new LoggingUnCaughtExceptionHandler());
-        //load map v3 api
-        MapLoadUtil.loadMapApi(new Runnable() {
-            public void run() {
-                loadVisualisationApi();
+        Log.setUncaughtExceptionHandler();
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                //load map v3 api
+                MapLoadUtil.loadMapApi(new Runnable() {
+                    public void run() {
+                        loadVisualisationApi();
+                    }
+                });
             }
         });
     }
@@ -67,7 +74,7 @@ public class Surveyor implements EntryPoint {
 
         @Override
         public void onUncaughtException(Throwable throwable) {
-            GWT.log("Uncaught exception", throwable);
+            Log.error("Uncaught exception", throwable);
         }
     }
 
