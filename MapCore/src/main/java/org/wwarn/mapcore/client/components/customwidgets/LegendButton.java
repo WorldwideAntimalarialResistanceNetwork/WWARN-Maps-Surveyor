@@ -64,10 +64,11 @@ public class LegendButton extends Composite {
     public LegendButton(String relativeImagePath ){
 
         legendImg = new Image(GWT.getModuleBaseForStaticFiles() + relativeImagePath);
+        legendImg.getElement().setId("mapLegendImage");
         setLegendButtonText();
         legendButton.addClickHandler(legendClickHandler);
         legendButton.setStyleName("legendButton");
-
+        legendButton.getElement().setId("mapLegendButton");
         isLegendDisplayed = true;
         panel.add(legendButton);
         panel.add(legendImg);
