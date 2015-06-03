@@ -256,7 +256,6 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     @NotNull
     private String calculateAvailableWidth() {
         int fontCount = this.facetTitle.length() + this.facetLabel.length();
-        Log.info("tooltip content width" + fontCount);
         int fontWidthEstimate = fontCount * 3;
         int clientWidth = Window.getClientWidth();
         if(clientWidth > 500){
@@ -436,7 +435,9 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     private FacetWidgetItem getFacetWidgetItemFromIndex(int currentIndices) {
         FacetWidgetItem facetWidgetItem;
         try {
-//            GWT.log("index "+ (currentIndices-1));
+            if(Log.isDebugEnabled()) {
+                Log.debug("index " + (currentIndices - 1));
+            }
             facetWidgetItem = facetWidgetItems.get(currentIndices);
 
         } catch (IndexOutOfBoundsException e) {
@@ -457,7 +458,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         //asif
         int visibleItemCount = this.getVisibleItemCount();
         if(visibleItemCount < 1) {
-            GWT.log("", new IllegalStateException("Visible item count " + visibleItemCount));
+            Log.error("", new IllegalStateException("Visible item count " + visibleItemCount));
             visibleItemCount = 1;
         }
         int indItemHeight = scrollpanel.getOffsetHeight()/ visibleItemCount;

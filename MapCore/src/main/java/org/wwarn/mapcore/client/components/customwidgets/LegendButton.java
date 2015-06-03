@@ -67,10 +67,11 @@ public class LegendButton extends Composite {
         legendImg.getElement().setId("mapLegendImage");
         setLegendButtonText();
         legendButton.addClickHandler(legendClickHandler);
-        legendButton.setStyleName("legendButton");
-        legendButton.getElement().setId("mapLegendButton");
+        final String legendButton = "legendButton";
+        this.legendButton.setStyleName(legendButton);
+        this.legendButton.getElement().setId("mapLegendButton");
         isLegendDisplayed = true;
-        panel.add(legendButton);
+        panel.add(this.legendButton);
         panel.add(legendImg);
         initWidget(panel);
     }
