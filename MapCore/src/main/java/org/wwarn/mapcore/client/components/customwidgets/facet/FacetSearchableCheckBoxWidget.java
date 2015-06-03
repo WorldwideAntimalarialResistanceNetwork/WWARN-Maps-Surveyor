@@ -33,6 +33,7 @@ package org.wwarn.mapcore.client.components.customwidgets.facet;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
@@ -66,7 +67,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     public static final int DEFAULT_VISIBLE_ITEM_COUNT = 5;
     public static final String DEFAULT_SEARCH_TEXT = "Search...";
     private static final PopupPanel toolTipPopup = new PopupPanel(true);
-    private static final String TOOL_TIP_POPUP_WIDTH = "250px";
+    private static final Integer TOOL_TIP_POPUP_WIDTH = 250;
     private static FacetSearchableCheckBoxWidgetsUiBinder ourUiBinder = GWT.create(FacetSearchableCheckBoxWidgetsUiBinder.class);
     String facetTitle = null;
     //    public static final boolean isShown = true;
@@ -254,10 +255,14 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
     @NotNull
     private String calculateAvailableWidth() {
+        int fontCount = this.facetTitle.length() + this.facetLabel.length();
+        Log.info("tooltip content width" + fontCount);
+        int fontWidthEstimate = fontCount * 3;
         int clientWidth = Window.getClientWidth();
         if(clientWidth > 500){
             clientWidth = (int) (clientWidth * 0.6);
-        }else return TOOL_TIP_POPUP_WIDTH;
+            clientWidth = Math.min(fontWidthEstimate, clientWidth);
+        }else clientWidth =  Math.min(TOOL_TIP_POPUP_WIDTH, clientWidth);
         return (clientWidth) + "px";
     }
 
