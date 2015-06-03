@@ -47,8 +47,8 @@
     </ui:style>
     <g:FlowPanel addStyleNames="{style.panel}">
         <!-- TODO: fix this hack to work around width 100% issue -->
-        <g:HTMLPanel addStyleNames="{style.hack}">
-            <p>
+        <g:HTMLPanel addStyleNames="{style.hack} styleHackClass">
+            <p id="googleV3MapWidgetFluidLayoutHack">
                 WWARN has created a suite of tools tracking the emergence and spread of antimalarial resistance. One aspect of this work is the development of user-friendly interfaces that allows users to visualise data from different sources. WWARN Explorer uses dynamic, interactive mapping to visualise summary data from multiple studies stored in the WWARN Data Repository. WWARN Surveyors display published malaria drug resistance markers and antimalarial medicine quality reports. Curabitur erat felis, volutpat sed facilisis laoreet, adipiscing a nibh. Maecenas in mauris placerat, auctor dolor in, gravida enim. Nam nisi lorem, tempor id arcu id, pellentesque aliquet arcu. Sed blandit odio erat, eget aliquam dui commodo eget.
             </p>
         </g:HTMLPanel>
