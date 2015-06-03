@@ -61,4 +61,13 @@ public class TemplateViewConfig implements ViewConfig{
     public String getViewLabel() {
         return viewLabel;
     }
+
+    @Override
+    public String toString() {
+        return "TemplateViewConfig{" +
+                "templateViewNodesConfig=" + templateViewNodesConfig +
+                ", viewName='" + viewName + '\'' +
+                ", viewLabel='" + viewLabel + '\'' +
+                '}';
+    }
 }

@@ -33,6 +33,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.maps.client.MapOptions;
@@ -73,7 +74,7 @@ public class GoogleV3MapWidget extends GenericMapWidget {
     AbsolutePanel absoluteMapContentOverlayPanel = new AbsolutePanel();
 
     private final String mapWidgetStyleName = "mapWidget";
-    private final MapWidget mapWidget;
+    private MapWidget mapWidget = null;
     final private SimplePanel legendWidgetPlaceHolder = new SimplePanel();
     final private SimplePanel filtersDisplayWidgetPlaceHolder = new SimplePanel();
     private List<GenericMarker> markers;
@@ -82,16 +83,17 @@ public class GoogleV3MapWidget extends GenericMapWidget {
 
     GoogleV3MapWidget() {
         this.builder = null;
-        this.mapWidget = new MapWidget(null);
+//        this.mapWidget = new MapWidget(null);
         absoluteMapContentOverlayPanel.add(filtersDisplayWidgetPlaceHolder, calcFiltersPanelXPos(), FILTERS_PANEL_Y_POS);
     }
 
     public GoogleV3MapWidget(MapBuilder builder) {
         this.builder = builder;
         initWidget(this.absoluteMapContentOverlayPanel);
-        MapOptions options = MapOptions.newInstance();
-        MapOptions mapOptions = setupDisplay(options);
-        mapWidget = new MapWidget(mapOptions);
+        if (builder == null) {
+            throw new IllegalArgumentException("Builder cannot be null");
+        }
+        mapWidget = initialiseMapWidget();
         mapWidget.setSize(Integer.toBinaryString(builder.mapWidth), Integer.toString(builder.mapHeight) + "px");
 
         final OverlayView overlayView = OverlayView.newInstance(mapWidget,
@@ -116,6 +118,33 @@ public class GoogleV3MapWidget extends GenericMapWidget {
 
         absoluteMapContentOverlayPanel.add(mapWidget);
         absoluteMapContentOverlayPanel.add(filtersDisplayWidgetPlaceHolder, calcFiltersPanelXPos(), FILTERS_PANEL_Y_POS);
+
+    }
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+
+    }
+
+    private MapWidget initialiseMapWidget() {
+        MapWidget mapWidget = null;
+        final String errorMessage = "Unable to create map, check google map v3 api is included by calling MapLoadUtil.loadMapApi";
+        try {
+            MapOptions options = MapOptions.newInstance();
+            MapOptions mapOptions = setupDisplay(options);
+            mapWidget = new MapWidget(mapOptions);
+        }catch (Error e1){
+            Log.error(errorMessage, e1);
+//            throw new IllegalStateException("Unable to create map, check google map v3 api is included", e);
+        }finally {
+            if (mapWidget == null) {
+                final IllegalStateException illegalStateException = new IllegalStateException(errorMessage);
+                Log.error(errorMessage, illegalStateException);
+                throw illegalStateException;
+            }
+        }
+        return mapWidget;
     }
 
     @Override

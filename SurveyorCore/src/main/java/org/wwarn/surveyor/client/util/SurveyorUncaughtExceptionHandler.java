@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.util;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
@@ -88,7 +89,9 @@ public class SurveyorUncaughtExceptionHandler implements GWT.UncaughtExceptionHa
         }
 
         // log the error to the GWT console
-        GWT.log(errorMessage, e);
+        if(Log.isErrorEnabled()) {
+            Log.error(errorMessage, e);
+        }
         if (alertMsg) {
             Window.alert(errorMessage);
         }

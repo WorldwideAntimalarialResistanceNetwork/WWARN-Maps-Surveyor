@@ -187,6 +187,11 @@ public class FacetListBoxWidget extends Composite implements HasChangeHandlers, 
         listBox.setItemSelected(0,true);
     }
 
+    @Override
+    public void selectItems(List<FacetWidgetItem> selection) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     public void addAll(List<FacetWidgetItem> facetWidgetItems){
         // handle the case where facetWidgetItems is empty or null
         listBox.clear();

@@ -121,7 +121,8 @@ public class MapViewComposite extends Composite {
             public void execute() {
                 MapBuilder builder = new MapBuilder();
                 //todo move type of map into config
-                mapWidget = builder.configureMapDimension(400, 500).setCenter(viewConfig.getInitialLat(), viewConfig.getInitialLon()).setZoomLevel(viewConfig.getInitialZoomLevel()).setMapTypeId(viewConfig.getMapType()).createMapWidget(MapBuilder.MapType.GOOGLE_V3);
+                final MapBuilder mapBuilder = builder.configureMapDimension(400, 500).setCenter(viewConfig.getInitialLat(), viewConfig.getInitialLon()).setZoomLevel(viewConfig.getInitialZoomLevel()).setMapTypeId(viewConfig.getMapType());
+                mapWidget = mapBuilder.createMapWidget(MapBuilder.MapType.GOOGLE_V3);
                 setMarkers(clientFactory.getLastQueryResult());
                 panel.add(mapWidget);
                 mapWidget.justResizeMapWidget();

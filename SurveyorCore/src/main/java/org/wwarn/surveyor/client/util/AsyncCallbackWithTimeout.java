@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.util;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -73,9 +74,11 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
         latestServerCallTimeStamps = timeSend;
         //reset
         SurveyorUncaughtExceptionHandler.alertMsg = true;
-        GWT.log("Registering latest server request with time stamp ..." + timeSend.toString());
+        if(Log.isDebugEnabled()) {
+            Log.debug("Registering latest server request with time stamp ..." + timeSend.toString());
+            Log.debug("AsyncCallbackWithTimeout constructor, timeoutMillis: " + timeoutMillis);
+        }
 
-        GWT.log("AsyncCallbackWithTimeout constructor, timeoutMillis: " + timeoutMillis);
         timer = new Timer() {
 
             @Override
@@ -89,13 +92,16 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
     }
 
     private void onTimeout() {
-        GWT.log("AsyncCallbackWithTimeout::onTimeout");
+        if(Log.isDebugEnabled()) {
+            Log.debug("AsyncCallbackWithTimeout::onTimeout");
+        }
         final TimedOutException timeOutException = new TimedOutException(TIMEOUT_ERROR);
 
         //display error only for latest timeout event
         if (latestServerCallTimeStamps!=null && timeSend.before(latestServerCallTimeStamps)) {
-
-            GWT.log("----------------- switch off alert msg ");
+            if(Log.isDebugEnabled()) {
+                Log.debug("----------------- switch off alert msg ");
+            }
             SurveyorUncaughtExceptionHandler.alertMsg = false;
             SimpleClientFactory.getInstance().getEventBus().fireEvent(new ExceptionEvent(timeOutException));
         }
@@ -113,7 +119,9 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
     public void onFailure(Throwable caught) {
 
         if (!hasTimedOut) {
-            GWT.log("AsyncCallbackWithTimeout::onFailure, hasNotTimedOut");
+            if(Log.isDebugEnabled()) {
+                Log.debug("AsyncCallbackWithTimeout::onFailure, hasNotTimedOut");
+            }
             SimpleClientFactory.getInstance().getEventBus().fireEvent(new ExceptionEvent(new IllegalStateException(caught)));
 
             timer.cancel();
@@ -127,7 +135,9 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
     public void onSuccess(T result) {
 
         if (!hasTimedOut) {
-            GWT.log("AsyncCallbackWithTimeout::onNonTimedOutSuccess, hasNotTimedOut");
+            if(Log.isDebugEnabled()) {
+                Log.debug("AsyncCallbackWithTimeout::onNonTimedOutSuccess, hasNotTimedOut");
+            }
 
             timer.cancel();
             onNonTimedOutSuccess(result);

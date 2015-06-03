@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 
 import java.util.List;
@@ -86,7 +87,7 @@ public class RecordListBuilder {
     public RecordList createRecordList() {
         switch (compressionMode) {
             case NONE:
-                GWT.log("Using RecordList uncompressed");
+                Log.error("Using RecordList uncompressed");
                 break;
             case CANONICAL:
             case CANONICAL_WITH_INVERTED_INDEX:

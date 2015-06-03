@@ -227,4 +227,13 @@ public class TemplateViewNodesConfig implements ViewConfig {
         return viewLabel;
     }
 
+    @Override
+    public String toString() {
+        return "TemplateViewNodesConfig{" +
+                "viewName='" + viewName + '\'' +
+                ", viewLabel='" + viewLabel + '\'' +
+                ", dataSource='" + dataSource + '\'' +
+                ", rootTemplateNode=" + rootTemplateNode +
+                '}';
+    }
 }

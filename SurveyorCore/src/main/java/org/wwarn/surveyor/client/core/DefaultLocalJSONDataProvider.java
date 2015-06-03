@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.http.client.*;
@@ -385,22 +386,23 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
                         onComplete.run();
                     }else{
                         final String message = "Failed to retrieve external resources ; ERROR CODE:" + response.getStatusCode();
-                        GWT.log(message);
-                        throw new IllegalStateException(message);
+                        final IllegalStateException illegalStateException = new IllegalStateException(message);
+                        Log.error(message, illegalStateException);
+                        throw illegalStateException;
                     }
                 }
 
                 @Override
                 public void onError(Request request, Throwable throwable) {
                     final String message = "Failed to retrieve external resources; ERROR CODE:" + throwable.getMessage();
-                    GWT.log(message, throwable);
+                    Log.error(message, throwable);
                     throw new IllegalStateException(message, throwable);
             }
             });
             try{
                 requestBuilder.send();
             }catch(RequestException e){
-                GWT.log("Failed to retrieve external resources ", e);
+                Log.error("Failed to retrieve external resources ", e);
             }
         }
 

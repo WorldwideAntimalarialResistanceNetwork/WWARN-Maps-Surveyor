@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.visualization.client.AbstractDataTable;
@@ -56,7 +57,7 @@ public class DataTableConversionUtility {
         // simple check to ensure schema and table definitions are aligned
         if(schema.size()!= table.getNumberOfColumns()){
             final IllegalArgumentException illegalArgumentException = new IllegalArgumentException("schema row definition do not match table supplied");
-            GWT.log("Warning:", illegalArgumentException);
+            Log.error("Warning:", illegalArgumentException);
         }
         int columnLength = table.getNumberOfColumns();
 

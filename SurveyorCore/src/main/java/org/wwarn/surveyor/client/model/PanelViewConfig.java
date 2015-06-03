@@ -97,4 +97,14 @@ public class PanelViewConfig implements ViewConfig {
             return filePath;
         }
     }
+
+    @Override
+    public String toString() {
+        return "PanelViewConfig{" +
+                "viewName='" + viewName + '\'' +
+                ", viewLabel='" + viewLabel + '\'' +
+                ", startFile='" + startFile + '\'' +
+                ", pages=" + pages +
+                '}';
+    }
 }
