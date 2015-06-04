@@ -338,10 +338,11 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         return (filterMainBody.isVisible()) ? "Hide" : "Show";
     }
 
+
     private void updateToggleFilterView() {
 //        toggleFilter.setHTML(getToggleFilterValue());
-        toggleFilter.setTitle(getToggleFilterValue());
-        toggleFilterField.setTitle(getToggleFilterValue());
+        toggleFilter.setTitle(getTitleForToggle());
+        toggleFilterField.setTitle(getTitleForToggle());
         if (filterMainBody.isVisible()) {
             toggleFilterField.removeClassName("glyphicon-plus");
             toggleFilterField.addClassName("glyphicon-minus");
@@ -349,6 +350,11 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
             toggleFilterField.removeClassName("glyphicon-minus");
             toggleFilterField.addClassName("glyphicon-plus");
         }
+    }
+
+    @NotNull
+    private String getTitleForToggle() {
+        return getToggleFilterValue() + " "+ facetTitle + " filter";
     }
 
     /**

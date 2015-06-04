@@ -33,6 +33,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.base.LatLng;
@@ -227,7 +228,7 @@ public class GenericMarker<T>{
                         final ProjectionUtility projectionUtility = new ProjectionUtility();
                         Point markerPosition = projectionUtility.calculatePixelPositionCentreFromMapCanvasPosition(position, getGenericMapWidget());
                         int popupX = (int) (markerPosition.getX() - Math.round(offsetWidth));
-                        int popupY = (int) ((markerPosition.getY()) - Math.round(offsetHeight * 1.4));
+                        int popupY = (int) ( (markerPosition.getY()) - (Math.round(offsetHeight + 25)));
                         markerHoverLabel.setPopupPosition(popupX, popupY);
                     }
                 });
