@@ -69,7 +69,6 @@ import java.util.List;
  * User: nigel
  */
 public class GoogleV3MapWidget extends GenericMapWidget {
-    public static final int MAX_CLIENT_WIDTH = 1300;
     private final MapBuilder builder;
 
     AbsolutePanel absoluteMapContentOverlayPanel = new AbsolutePanel();
@@ -335,7 +334,9 @@ public class GoogleV3MapWidget extends GenericMapWidget {
     }
 
     private int getXPositionWhenRight(Widget legendWidget) {
-        return Math.min(MAX_CLIENT_WIDTH, Window.getClientWidth()) - (410 + legendWidget.getOffsetWidth());
+        absoluteMapContentOverlayPanel.getElement().getClientWidth();
+        final int offsetWidth = Math.max(legendWidget.getElement().getClientWidth(),legendWidget.getOffsetWidth());
+        return Math.max(absoluteMapContentOverlayPanel.getElement().getClientWidth(), absoluteMapContentOverlayPanel.getOffsetWidth()) - (200 + offsetWidth);
     }
 
     private int getYPostionWhenBottom(LegendOptions legendOptions) {
