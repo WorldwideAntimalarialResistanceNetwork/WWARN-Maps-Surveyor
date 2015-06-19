@@ -61,7 +61,7 @@ public class GwtTestClientSideSearchDataProvider extends GwtTestServerSideSearch
     }
 
     private static GenericDataSource getGenericDataSource() {
-        return new GenericDataSource(null, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList, DataSourceProvider.ClientSideSearchDataProvider);
+        return new GenericDataSource(LOCATION_DEFAULT_PUBLICATIONS_JSON, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList, DataSourceProvider.ClientSideSearchDataProvider);
     }
 
     @Test
