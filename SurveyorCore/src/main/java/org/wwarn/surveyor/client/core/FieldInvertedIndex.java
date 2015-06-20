@@ -43,7 +43,7 @@ import java.util.*;
 class FieldInvertedIndex implements IsSerializable {
     private final transient DataSchema schema; // don't want this to be serialised as it is already present in parent
     int docPosition=0;
-    List<Map<String,Set<Integer>>> fields = new ArrayList<>(); // List of fields in schema order, each with field with a map of fields values to terms to document positions
+    List<Map<String,Set<Integer>>> fields = new ArrayList<>(); // Ordered list of fields in schema order, each field with a map of fields values to terms to document positions (implicitly ordered - TreeSet)
 
     public FieldInvertedIndex(DataSchema schema) {
         this.schema = schema;
@@ -53,6 +53,11 @@ class FieldInvertedIndex implements IsSerializable {
         }
     }
 
+    /**
+     * Ordered list of fields in schema order, each field hold a mapping of fields values to terms to document positions (implicitly ordered - TreeSet)
+     * OrdSeq<Fields, (FacetFieldValues, OrdSeq<DocumentPositions>)>
+     * @return
+     */
     public List<Map<String, Set<Integer>>> getFields(){
         return fields;
     }
