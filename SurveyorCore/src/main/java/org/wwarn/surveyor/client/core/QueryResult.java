@@ -61,4 +61,12 @@ public class QueryResult implements IsSerializable{
     public RecordList getRecordList() {
         return recordList;
     }
+
+    @Override
+    public String toString() {
+        return "QueryResult{" +
+                "recordList=" + recordList +
+                ", facetFields=" + facetFields +
+                '}';
+    }
 }
