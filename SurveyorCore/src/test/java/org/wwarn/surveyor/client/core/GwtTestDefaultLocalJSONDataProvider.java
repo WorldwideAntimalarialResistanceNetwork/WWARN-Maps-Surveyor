@@ -404,12 +404,13 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                         }
 
                         @Override
-                        public void onSuccess(QueryResult query) {
-                            assertNotNull(query);
-                            assertNotNull(query.getRecordList());
-                            assertNotNull(query.getFacetFields());
-                            assertEquals("Expected at least 3 facets", 3, query.getFacetFields().size());
-                            for (FacetList.FacetField facetField : query.getFacetFields()) {
+                        public void onSuccess(QueryResult queryResult) {
+                            assertNotNull(queryResult);
+                            assertNotNull(queryResult.getRecordList());
+                            assertNotNull(queryResult.getFacetFields());
+                            System.out.println((queryResult.getFacetFields()));
+                            assertEquals("Expected at least 3 facets", 3, queryResult.getFacetFields().size());
+                            for (FacetList.FacetField facetField : queryResult.getFacetFields()) {
                                 assertNotNull(facetField);
                                 assertNotNull(facetField.getDistinctFacetValues());
                                 assertNotNull(facetField.getFacetField());
