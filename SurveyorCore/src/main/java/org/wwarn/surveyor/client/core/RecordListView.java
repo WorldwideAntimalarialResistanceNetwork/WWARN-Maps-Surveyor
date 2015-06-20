@@ -40,7 +40,7 @@ import java.util.List;
  * Backed by a record list, this is a restricted view of the backing list
  */
 public class RecordListView extends RecordList{
-    private UnsupportedOperationException unsupportedOperationException = new UnsupportedOperationException();
+    private static UnsupportedOperationException unsupportedOperationException = new UnsupportedOperationException();
 
     public RecordListView(RecordList recordList, BitSet bitSet) {
         final List<Record> records = recordList.getRecords();
