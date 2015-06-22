@@ -49,14 +49,14 @@ import java.util.Set;
  * Wrapper for the following https://github.com/atonparker/bitterset impl
  */
 public class BitSet  {
-
+    static{
+        String text = Resources.IMPL.bitSetScript().getText();
+        ScriptInjector.fromString(text).setWindow(ScriptInjector.TOP_WINDOW).inject();
+    }
 
     private JavaScriptObject bitset;
 
     public BitSet() {
-        String text;
-        text = Resources.IMPL.bitSetScript().getText();
-        ScriptInjector.fromString(text).setWindow(ScriptInjector.TOP_WINDOW).inject();
         initialise();
     }
 

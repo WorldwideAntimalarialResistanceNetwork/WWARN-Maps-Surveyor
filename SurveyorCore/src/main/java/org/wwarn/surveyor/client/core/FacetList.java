@@ -49,8 +49,8 @@ import java.util.Set;
 public class FacetList implements Iterable<FacetList.FacetField>, IsSerializable {
     List<FacetField> facetFields = new ArrayList<FacetField>();
 
-    public void addFacetField(String fieldname, Set<String> unqiueFacetValues){
-        facetFields.add(new FacetField(fieldname, unqiueFacetValues));
+    public void addFacetField(String fieldname, Set<String> uniqueFacetValues){
+        facetFields.add(new FacetField(fieldname, uniqueFacetValues));
     }
 
     @Override
@@ -89,5 +89,12 @@ public class FacetList implements Iterable<FacetList.FacetField>, IsSerializable
                     ", distinctFacetValues=" + distinctFacetValues +
                     '}';
         }
+    }
+
+    @Override
+    public String toString() {
+        return "FacetList{" +
+                "facetFields=" + facetFields +
+                '}';
     }
 }

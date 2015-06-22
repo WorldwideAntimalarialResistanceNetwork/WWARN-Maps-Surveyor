@@ -45,6 +45,7 @@ import java.util.*;
  * Created by nigelthomas on 29/05/2014.
  */
 public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSONDataProvider{
+    public static final String LOCATION_DEFAULT_PUBLICATIONS_JSON = "publications.json";
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
 
     public GwtTestServerSideSearchDataProvider() {
@@ -55,7 +56,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
 //                schema = testUtility.fetchSampleDataSchema();
 //                String[] selectorList = testUtility.getSelectorList();
 
-                GenericDataSource dataSource = new GenericDataSource(null, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList);
+                GenericDataSource dataSource = new GenericDataSource(LOCATION_DEFAULT_PUBLICATIONS_JSON, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList);
                 String[] selectorList = testUtility.getSelectorList();
                 return new ServerSideSearchDataProvider(dataSource, testUtility.fetchSampleDataSchema(), selectorList);
             }
@@ -71,7 +72,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
         super.gwtSetUp();
         DataSchema schema = dataProviderTestUtility.fetchSampleDataSchema();
         String[] facetFieldList = dataProviderTestUtility.getSelectorList();
-        GenericDataSource dataSource = new GenericDataSource(null, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList);
+        GenericDataSource dataSource = new GenericDataSource(LOCATION_DEFAULT_PUBLICATIONS_JSON, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList);
         dataProvider = new ServerSideSearchDataProvider(dataSource, schema, facetFieldList);
     }
 

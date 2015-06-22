@@ -34,7 +34,7 @@ package org.wwarn.surveyor.client.core;
  */
 
 import com.google.gwt.i18n.shared.DateTimeFormat;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.jetbrains.annotations.NotNull;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
@@ -48,6 +48,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     private List<Map<String, BitSet>> fieldInvertedIndex;
     private static final String ISO8601_PATTERN = DataType.ISO_DATE_FORMAT;
     private RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex;
+    private FacetList facetList = new FacetList();
 
     public ClientSideSearchDataProvider(GenericDataSource dataSource, DataSchema dataSchema, String[] fieldList) {
         super(dataSource, dataSchema, fieldList);
@@ -90,8 +91,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     private List<Map<String, BitSet>> setupIndex(RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex) {
         final FieldInvertedIndex index = recordListCompressedWithInvertedIndex.getIndex();
         //todo, as this is expensive, instead of creating a new data structure, must reuse existing, replace Set<Integer> with BitSet in place
-        // setup initial BitSet
+        //Ordered list of fields in schema order, each field hold a mapping of fields values to terms to document positions (implicitly ordered - TreeSet)
         final List<Map<String, Set<Integer>>> fields = index.getFields();
+        // setup initial BitSet
         final List<Map<String, BitSet>> fieldsBitSet = new ArrayList<>();
         int fieldIndex = 0;
         //for each field
@@ -134,18 +136,17 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     @Override
     public void query(FilterQuery filterQuery, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) throws SearchException {
-        query(filterQuery, new String[]{}, queryResultCallBack);
+        query(filterQuery, this.facetFieldList, queryResultCallBack);
     }
 
     private void queryIndex(FilterQuery filterQuery, String[] facetFields, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) {
-        if(filterQuery instanceof MatchAllQuery){
-            queryResultCallBack.onNonTimedOutSuccess(new QueryResult(recordListCompressedWithInvertedIndex, new FacetList()));
-            return;
-        }
         final BitSet bitSet = parseQuery(filterQuery, schema);
         RecordList recordList = restrictRecordList(bitSet);
-        queryResultCallBack.onNonTimedOutSuccess(new QueryResult(recordList, new FacetList()));
+        final FacetList calculateFacetFieldsAndDistinctValues = calculateFacetFieldsAndDistinctValues(schema, facetFields, fieldInvertedIndex);
+        queryResultCallBack.onNonTimedOutSuccess(new QueryResult(recordList, calculateFacetFieldsAndDistinctValues));
     }
+
+
 
     private RecordList restrictRecordList(BitSet bitSet) {
         // filter recordListCompressedWith
@@ -154,61 +155,75 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     private BitSet parseQuery(FilterQuery filterQuery, DataSchema schema) {
         BitSet queryBitSet = new BitSet();
+        if(filterQuery instanceof MatchAllQuery || filterQuery.getFilterQueries().size() < 1) return queryBitSet;
 
-        if (!(filterQuery instanceof MatchAllQuery) && filterQuery.getFilterQueries().size() > 0) {
-            //facet drill down happens here
-            for (String filterField : filterQuery.getFilterQueries().keySet()) {
+        //facet drill down happens here
+        for (String filterField : filterQuery.getFilterQueries().keySet()) {
 
-                final int columnIndex = schema.getColumnIndex(filterField);
-                final Map<String, BitSet> map = fieldInvertedIndex.get(columnIndex);
+            final int columnIndex = schema.getColumnIndex(filterField);
+            final Map<String, BitSet> map = fieldInvertedIndex.get(columnIndex);
 
-                final FilterQuery.FilterQueryElement filterQueryElement = filterQuery.getFilterQueries().get(filterField);
-                DataType type = schema.getType(columnIndex);
-                switch (type){
-                    case CoordinateLat:
-                    case CoordinateLon:
-                    case String:
-                    case Boolean:
-                    case Integer:
-                        // if range query
-                        if(filterQueryElement instanceof FilterQuery.FilterFieldRange){
+            final FilterQuery.FilterQueryElement filterQueryElement = filterQuery.getFilterQueries().get(filterField);
+            DataType type = schema.getType(columnIndex);
+            switch (type) {
+                case CoordinateLat:
+                case CoordinateLon:
+                case String:
+                case Boolean:
+                case Integer:
+                    // if range query
+                    if (filterQueryElement instanceof FilterQuery.FilterFieldRange) {
+                        queryBitSet = processRangeQueryDefaultTypes(queryBitSet, map, filterQueryElement, type);
+                    } else if (filterQueryElement instanceof FilterQuery.FilterFieldGreaterThanInteger) {
+                        queryBitSet = processIntegerGreaterThanDefaultTypes(queryBitSet, map, filterQueryElement, type);
+                    } else {
+                        // does most of the commons multi value types
+                        queryBitSet = processMultiValueQueryDefaultTypes(queryBitSet, map, filterQueryElement, type);
+                    }
+                    break;
+                case Date:
 
-                            queryBitSet = processRangeQueryDefaultTypes(queryBitSet, map, filterQueryElement, type);
-
-                        }else if(filterQueryElement instanceof FilterQuery.FilterFieldGreaterThanInteger){
-                            queryBitSet = processIntegerGreaterThanDefaultTypes(queryBitSet, map, filterQueryElement, type);
-                        }else{
-                            // does most of the commons multi value types
-                            queryBitSet = processMultiValueQueryDefaultTypes(queryBitSet, map, filterQueryElement, type);
+                    if (filterQueryElement instanceof FilterQuery.FilterFieldRangeDate) {
+                        Date minValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMinValue();
+                        Date maxValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMaxValue();
+                        //todo query.add(filterField, NumericRangeQuery.newLongRange(filterField, minValue.getTime(), maxValue.getTime(), true, true));
+                    } else {
+                        for (String fieldValue : getFieldValues(filterQueryElement)) {
+                            final Date date = parseDateFrom(fieldValue, ISO8601_PATTERN);
+                            //todo query.add(filterField, String.valueOf(date.getTime()));
                         }
-                        break;
-                    case Date:
+                    }
 
-                        if(filterQueryElement instanceof FilterQuery.FilterFieldRangeDate){
-                            Date minValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMinValue();
-                            Date maxValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMaxValue();
-                            //todo query.add(filterField, NumericRangeQuery.newLongRange(filterField, minValue.getTime(), maxValue.getTime(), true, true));
-                        } else{
-                            for(String fieldValue : getFieldValues(filterQueryElement)){
-                                final Date date = parseDateFrom(fieldValue, ISO8601_PATTERN);
-                                //todo query.add(filterField, String.valueOf(date.getTime()));
-                            }
-                        }
+                    break;
+                case DateYear:
+                    // if range query
+                    if (filterQueryElement instanceof FilterQuery.FilterFieldRange) {
+                        queryBitSet = processRangeQueryDateYearType(queryBitSet, map, filterQueryElement, type);
+                    } else {
+                        queryBitSet = processRangeQueryMultiValueQueryDateYear(queryBitSet, map, filterQueryElement, type);
+                    }
+                    break;
+            }
 
-                        break;
-                    case DateYear:
-                        // if range query
-                        if(filterQueryElement instanceof FilterQuery.FilterFieldRange){
-                            queryBitSet = processRangeQueryDateYearType(queryBitSet, map, filterQueryElement, type);
-                        }else{
-                            queryBitSet = processRangeQueryMultiValueQueryDateYear(queryBitSet, map, filterQueryElement, type);
-                        }
-                        break;
+        }
+        return queryBitSet;
+    }
+
+    private FacetList calculateFacetFieldsAndDistinctValues(DataSchema schema, String[] facetFields, List<Map<String, BitSet>> fieldInvertedIndex) {
+        for (String facetField : facetFields) {
+            final int columnIndex = schema.getColumnIndex(facetField);
+            final Map<String, BitSet> map = fieldInvertedIndex.get(columnIndex);
+            String facetName = facetField;
+            Set<String> uniqueFacetValues = new TreeSet<>();
+            for (String fieldValue : map.keySet()) {
+                final BitSet bitSet = map.get(fieldValue);
+                if(bitSet.cardinality() > 0){
+                    uniqueFacetValues.add(fieldValue);
                 }
             }
+            facetList.addFacetField(facetName, uniqueFacetValues);
         }
-
-        return queryBitSet;
+        return facetList;
     }
 
 
@@ -284,9 +299,5 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         Arrays.fill(padArray, '0');
         final String paddedInteger = (new String(padArray)) + Integer.toString(i);
         return paddedInteger;
-    }
-
-    static class QueryResponse {
-
     }
 }

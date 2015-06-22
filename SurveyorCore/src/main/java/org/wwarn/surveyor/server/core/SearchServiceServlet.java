@@ -118,7 +118,12 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
             Files.walkFileTree(Paths.get(realPath), new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (attrs.isRegularFile() && file.getFileName().equals(fileToFind.getFileName()) && file.getParent().endsWith(fileToFind.getParent())) {
+                    if (attrs!=null && attrs.isRegularFile()
+                            && file.getFileName().equals(fileToFind.getFileName())
+                            && (file.getParent()!=null && fileToFind.getParent()!=null
+                                && file.getParent().endsWith(fileToFind.getParent())
+                                )
+                        ) {
                         publicationsPath[0] = file.toAbsolutePath().toString();
                         filePathCache.put(relativeFilePath, publicationsPath[0]);
                         return FileVisitResult.TERMINATE;
