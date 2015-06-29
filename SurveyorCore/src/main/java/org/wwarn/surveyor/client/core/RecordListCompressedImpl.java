@@ -34,10 +34,7 @@ package org.wwarn.surveyor.client.core;
  */
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.IsSerializable;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -77,7 +74,7 @@ public class RecordListCompressedImpl extends RecordList {
             }
             uniqueKeys.add(uniqueKeyField);
         }
-        return uniqueRecordListBuilder.createRecordList();
+        return uniqueRecordListBuilder.createRecordList(dataSourceHash);
     }
 
     @Override

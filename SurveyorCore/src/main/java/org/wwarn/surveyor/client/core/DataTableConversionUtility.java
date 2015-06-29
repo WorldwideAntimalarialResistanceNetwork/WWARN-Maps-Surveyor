@@ -34,7 +34,6 @@ package org.wwarn.surveyor.client.core;
  */
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.visualization.client.AbstractDataTable;
 
@@ -77,6 +76,7 @@ public class DataTableConversionUtility {
             }
             recordListBuilder.addRecord((fields));
         }
-        return recordListBuilder.createRecordList();
+        String dataSourceHash = "";
+        return recordListBuilder.createRecordList(dataSourceHash);
     }
 }

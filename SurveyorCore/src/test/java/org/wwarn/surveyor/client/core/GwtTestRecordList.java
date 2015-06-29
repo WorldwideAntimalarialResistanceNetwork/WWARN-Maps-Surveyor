@@ -135,7 +135,8 @@ public class GwtTestRecordList extends VisualizationTest {
             System.out.println(compressionMode);
 
             RecordListBuilder recordListBuilder = new RecordListBuilder(compressionMode, dataProviderTestUtility.fetchSampleDataSchema());
-            RecordList recordList = recordListBuilder.createRecordList();
+            String dataSourceHash = "";
+            RecordList recordList = recordListBuilder.createRecordList(dataSourceHash);
             assertNotNull(recordList);
             switch (compressionMode) {
                 case NONE:
@@ -155,7 +156,7 @@ public class GwtTestRecordList extends VisualizationTest {
             for (int i = 0; i < 7; i++) {
                 recordListBuilder.addRecord("200"+i,"2b","3c","4d","5e","6f","7g", "180"+i);
             }
-            recordList = recordListBuilder.createRecordList();
+            recordList = recordListBuilder.createRecordList(dataSourceHash);
             assertNotNull(recordList);
             assertTrue(recordList instanceof RecordListCompressedWithInvertedIndexImpl);
             assertNotNull(recordList.toString());

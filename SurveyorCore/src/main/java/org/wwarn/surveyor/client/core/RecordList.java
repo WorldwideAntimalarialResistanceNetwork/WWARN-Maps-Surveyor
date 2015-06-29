@@ -34,7 +34,6 @@ package org.wwarn.surveyor.client.core;
  */
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.io.Serializable;
@@ -50,12 +49,25 @@ import java.util.*;
 public class RecordList implements IsSerializable, Serializable{
     protected DataSchema schema;
     protected List<Record> records = new ArrayList<Record>();
+    protected String dataSourceHash = "";
 
     public RecordList(DataSchema schema) {
         this.schema = schema;
     }
 
     public RecordList() {
+    }
+
+    /**
+     * Return a hash of the underlying dataset, useful to check if underlying data has changed
+     * @return
+     */
+    public String getDataSourceHash() {
+        return dataSourceHash;
+    }
+
+    public void setDataSourceHash(String dataSourceHash) {
+        this.dataSourceHash = dataSourceHash;
     }
 
     public List<Record> getRecords() {
@@ -78,7 +90,7 @@ public class RecordList implements IsSerializable, Serializable{
             }
             uniqueKeys.add(uniqueKeyField);
         }
-        return uniqueRecordListBuilder.createRecordList();
+        return uniqueRecordListBuilder.createRecordList(dataSourceHash);
     }
 
     public void add(Record record) {
@@ -103,6 +115,7 @@ public class RecordList implements IsSerializable, Serializable{
     public String toString() {
         return "RecordList{" +
                 "records=" + records +
+                ", dataSourceHash=" + dataSourceHash +
                 '}';
     }
 

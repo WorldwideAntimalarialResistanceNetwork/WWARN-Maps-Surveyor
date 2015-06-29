@@ -34,7 +34,6 @@ package org.wwarn.surveyor.server.core;
  */
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.appengine.repackaged.com.google.common.io.Files;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.googlecode.luceneappengine.GaeDirectory;
 import com.googlecode.luceneappengine.GaeLuceneUtil;
@@ -57,7 +56,6 @@ import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.TableViewConfig;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -76,6 +74,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     private final FacetsConfig config = new FacetsConfig();
     public static final int MAX_RESULTS = 100;
     private String location;
+    private String dataSourceHash = "";
 
     public static LuceneSearchServiceImpl getInstance() {
         return ourInstance;
@@ -91,7 +90,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             this.dataSchema = dataSchema;
             location = dataSource.getLocation();
             //setup index
-            JSONArray jsonContent = getJsonArrayFrom(dataSource);
+            JSONWithMetaData jsonContent = getJsonArrayFrom(dataSource);
             setupIndex(dataSource, dataSchema, jsonContent);
             this.hasInitialised.getAndSet(true);
             setupIndexMonitor(dataSchema, dataSource);
@@ -129,7 +128,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             fileChangeMonitor.addObserver(new Observer() {
                 @Override
                 public void update(Observable o, Object arg) {
-                    JSONArray jsonContent;
+                    JSONWithMetaData jsonContent;
                     try {
                         jsonContent = getJsonArrayFrom(dataSource);
                     } catch (SearchException e) {
@@ -143,17 +142,43 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         }
     }
 
-    private JSONArray getJsonArrayFrom(GenericDataSource dataSource) throws SearchException {
+    private JSONWithMetaData getJsonArrayFrom(GenericDataSource dataSource) throws SearchException {
         JSONArray jsonContent;
         if(dataSource.getDataSourceType()== GenericDataSource.DataSourceType.ServletRelativeDataSource && dataSource.getLocation()!=null) {
             assertFilePathExists(dataSource.getLocation(), "jsonPath invalid:");
             File json = new File(dataSource.getLocation());
+            // grab version information
+            final String hashOfJsonFile = (new FileVersionUtil()).calculateVersionFrom(json);
             jsonContent = parseJSON(json);
+            return new JSONWithMetaData(jsonContent, hashOfJsonFile);
         }else{
             Objects.requireNonNull(dataSource.getResource());
             jsonContent = parseJSON(dataSource.getResource());
+            return new JSONWithMetaData(jsonContent);
         }
-        return jsonContent;
+    }
+
+    private class JSONWithMetaData{
+        private String dataSourceHash;
+        private JSONArray jsonArray;
+
+        public JSONWithMetaData(JSONArray jsonContent) {
+            this.jsonArray = jsonContent;
+            this.dataSourceHash = "";
+        }
+
+        public String getDataSourceHash() {
+            return dataSourceHash;
+        }
+
+        public JSONArray getJsonArray() {
+            return jsonArray;
+        }
+
+        public JSONWithMetaData(JSONArray jsonArray, String dataSourceHash) {
+            this.jsonArray = jsonArray;
+            this.dataSourceHash = dataSourceHash;
+        }
     }
 
     private JSONArray parseJSON(String resource) {
@@ -176,20 +201,27 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         return arrayObjects;
     }
 
-    private void setupIndex(GenericDataSource dataSource, DataSchema schema, JSONArray jsonContent) {
+    private void setupIndex(GenericDataSource dataSource, DataSchema schema, JSONWithMetaData jsonWithMetaData) {
         IndexWriterConfig conf = getConfigFrom(dataSource);//get configuration
         indexDirectory = getDirectoryFrom(dataSource);//create a default index
         taxonomyDirectory = new RAMDirectory();//create a default index
+        this.dataSourceHash = jsonWithMetaData.getDataSourceHash();
+        if(Log.isDebugEnabled()){
+            Log.debug("indexDirectory and taxonomyDirectory are ready");
+        }
         try (
                 IndexWriter indexWriter = new IndexWriter(indexDirectory, conf);
                 DirectoryTaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxonomyDirectory);
         ){
             // parse json into index using schema
-            List<Document> indexDocuments = parseJSONToIndexDocument(jsonContent, schema);
+            List<Document> indexDocuments = parseJSONToIndexDocument(jsonWithMetaData.getJsonArray(), schema);
             for (Document indexDocument : indexDocuments) {
                 indexWriter.addDocument(config.build(taxoWriter, indexDocument));
             }
             indexWriter.commit();
+            if(Log.isDebugEnabled()){
+                Log.debug("finished parsing json into index");
+            }
 
         } catch (IOException e) {
             Log.error("Failed to setup search index",e);
@@ -428,7 +460,8 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             }
             recordListBuilder.addRecord(fieldValues);
         }
-        return recordListBuilder.createRecordList();
+        final RecordList recordList = recordListBuilder.createRecordList(dataSourceHash);
+        return recordList;
     }
 
 
@@ -471,8 +504,9 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             List<RecordList.Record> uniqueRecords = subsetUniqueRecords(filterQuery,orderRecords);
             return getPageRecords(uniqueRecords, start,length);
         }catch(Exception e){
-            Log.error("Unable to query the table",e);
-            throw new SearchException("Unable to query the table",e);
+            final String message = "Unable to query the table";
+            Log.error(message,e);
+            throw new SearchException(message,e);
         }
     }
 
@@ -559,7 +593,8 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             List<RecordList.Record> uniqueRecords = subsetUniqueRecords(filterQuery,searchedRecords);
             RecordListBuilder recordListBuilder = new RecordListBuilder(RecordListBuilder.CompressionMode.CANONICAL, dataSchema);
             recordListBuilder.addAllRecords(uniqueRecords);
-            QueryResult queryResult = new QueryResult(recordListBuilder.createRecordList(), null);
+            final RecordList recordList = recordListBuilder.createRecordList(dataSourceHash);
+            QueryResult queryResult = new QueryResult(recordList, null);
             return queryResult;
         }catch(Exception e){
             throw new SearchException("Unable to query unique records",e);

@@ -45,7 +45,6 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
- * Created by suay on 8/1/14.
  */
 public class LuceneSearchServiceImplTest {
 
@@ -166,6 +165,7 @@ public class LuceneSearchServiceImplTest {
         filterQuery.addFilter("PY", "2010");
 
         List<RecordList.Record> records = luceneSearchService.queryTable(filterQuery, testUtility.getSelectorList(), 0, 10, null);
+        fail();
     }
 
     @Test

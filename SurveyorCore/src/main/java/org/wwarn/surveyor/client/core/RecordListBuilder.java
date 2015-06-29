@@ -35,6 +35,7 @@ package org.wwarn.surveyor.client.core;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
+import org.wwarn.mapcore.client.utils.StringUtils;
 
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class RecordListBuilder {
         return this;
     }
 
-    public RecordList createRecordList() {
+    public RecordList createRecordList(String dataSourceHash) {
         switch (compressionMode) {
             case NONE:
                 Log.error("Using RecordList uncompressed");
@@ -95,6 +96,8 @@ public class RecordListBuilder {
                 ((RecordListCompressedImpl) this.recordList).initialise();
                 break;
         }
+        dataSourceHash = StringUtils.ifEmpty(dataSourceHash, "");
+        recordList.setDataSourceHash(dataSourceHash);
         return recordList;
     }
 }

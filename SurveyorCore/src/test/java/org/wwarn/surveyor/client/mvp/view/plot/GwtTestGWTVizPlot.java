@@ -120,7 +120,8 @@ public class GwtTestGWTVizPlot extends VisualizationTest {
             public void run() {
                 DataSchema dataschema = dataProviderTestUtility.fetchSampleDataSchema();
                 final RecordListBuilder recordListBuilder = new RecordListBuilder(RecordListBuilder.CompressionMode.CANONICAL, dataschema);
-                final RecordList data = recordListBuilder.createRecordList();
+                String dataSourceHash = "";
+                final RecordList data = recordListBuilder.createRecordList(dataSourceHash);
                 gwtVizPlot.qplot(new PlotOptions.Builder().setX("CLAT").setY("CLON").setData(data).setGeom(PlotOptions.Geometry.BAR).setXlab("x label").setYlab("y label").setMain("Main title").setSub("Sub Title").createPlotOptions());
             }
         });
