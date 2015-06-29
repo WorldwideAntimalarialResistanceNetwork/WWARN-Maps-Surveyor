@@ -34,6 +34,7 @@ package org.wwarn.surveyor.server.core;
  */
 
 import org.jetbrains.annotations.NotNull;
+import org.wwarn.mapcore.client.utils.StringUtils;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.io.*;
@@ -41,6 +42,8 @@ import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -48,6 +51,18 @@ import java.util.Objects;
  * Calculate version of a file, based on stored last modified
  */
 public class FileVersionUtil {
+
+    private static class FixedSizeCache extends LinkedHashMap<String, String> {
+        private static final int MAX_ENTRIES = 10;
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
+            return size() > MAX_ENTRIES;
+        }
+    }
+
+    private static FixedSizeCache fixedSizeCache = new FixedSizeCache();
+
     public FileVersionUtil() {
     }
 
@@ -59,7 +74,13 @@ public class FileVersionUtil {
      */
     public String calculateVersionFrom(@NotNull File file){
         Objects.requireNonNull(file, "file argument cannot be null");
-        //todo could optimise by store hash against file modified time, on subsequent calls, check file modified time first to determine file and time is present and return previous data.
+        //optimise by store hash against file modified time, on subsequent calls, check file modified time first to determine file and time is present and return previous data.
+        final long lastModified = file.lastModified();
+        final String key = file.getAbsolutePath() + lastModified;
+        final String storedHashValue = fixedSizeCache.get(key);
+        if(!StringUtils.isEmpty(storedHashValue)){
+            return storedHashValue;
+        }
         MessageDigest md = getDigest();
         try(DigestInputStream digestInputStream = new DigestInputStream(Files.newInputStream(file.toPath()), md)){
             while(digestInputStream.read() != -1);
@@ -68,6 +89,7 @@ public class FileVersionUtil {
         }
         final byte[] digest = md.digest();
         final String digestHex = convertBinaryDigestToHexStringDigest(digest);
+        fixedSizeCache.put(key, digestHex);
         return digestHex;
     }
 
