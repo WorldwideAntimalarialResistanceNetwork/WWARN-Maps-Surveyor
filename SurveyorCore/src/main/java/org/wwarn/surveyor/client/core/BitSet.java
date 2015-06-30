@@ -47,12 +47,23 @@ import java.util.Set;
 
 /**
  * Wrapper for the following https://github.com/atonparker/bitterset impl
+ * TODO make this an external package and add to github
  */
 public class BitSet  {
     static{
-        String text = Resources.IMPL.bitSetScript().getText();
-        ScriptInjector.fromString(text).setWindow(ScriptInjector.TOP_WINDOW).inject();
+        if (!isLoaded()) {
+            String text = Resources.IMPL.bitSetScript().getText();
+            ScriptInjector.fromString(text).setWindow(ScriptInjector.TOP_WINDOW).inject();
+        }
     }
+
+
+    public static native boolean isLoaded()/*-{
+        if (typeof $wnd.some_externally_sourced_code === "undefined" || typeof $wnd.some_externally_sourced_code.BitSet === "undefined"  || $wnd.some_externally_sourced_code.BitSet === null) {
+            return false;
+        }
+        return true;
+    }-*/;
 
     private JavaScriptObject bitset;
 
