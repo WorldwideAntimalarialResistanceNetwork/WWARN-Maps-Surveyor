@@ -50,11 +50,13 @@ import java.util.Set;
  * Time: 11:42
  */
 public class DataSchema implements IsSerializable, Serializable{
+    private String uniqueId = "defaultDataSchemaUniqueID";
     // insertion order is preserved
     LinkedHashMap<String, DataSchemaRecord> fieldNameAndAssociatedType = new LinkedHashMap<String, DataSchemaRecord>();
     private int ordinal = 0;
 
     public DataSchema(DatasourceConfig datasourceConfig){
+        this.uniqueId = datasourceConfig.getUniqueId();
         Map<String,DatasourceConfig.SchemaConfig.FieldConfig> fields = datasourceConfig.getConfig().getFields();
         for (String key : fields.keySet()) {
             DatasourceConfig.SchemaConfig.FieldConfig fieldConfig = fields.get(key);
@@ -104,6 +106,10 @@ public class DataSchema implements IsSerializable, Serializable{
         return fieldNameAndAssociatedType.keySet();
     }
 
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
     static class DataSchemaRecord implements IsSerializable, Serializable {
         private DataType dataType;
         private int ordinal;
@@ -124,5 +130,62 @@ public class DataSchema implements IsSerializable, Serializable{
         public int getOrdinal() {
             return ordinal;
         }
+
+        @Override
+        public String toString() {
+            return "DataSchemaRecord{" +
+                    "dataType=" + dataType +
+                    ", ordinal=" + ordinal +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            DataSchemaRecord that = (DataSchemaRecord) o;
+
+            if (ordinal != that.ordinal) return false;
+            return dataType == that.dataType;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = dataType.hashCode();
+            result = 31 * result + ordinal;
+            return result;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "DataSchema{" +
+                "uniqueId='" + uniqueId + '\'' +
+                ", fieldNameAndAssociatedType=" + fieldNameAndAssociatedType +
+                ", ordinal=" + ordinal +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DataSchema that = (DataSchema) o;
+
+        if (ordinal != that.ordinal) return false;
+        if (!uniqueId.equals(that.uniqueId)) return false;
+        return fieldNameAndAssociatedType.equals(that.fieldNameAndAssociatedType);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = uniqueId.hashCode();
+        result = 31 * result + fieldNameAndAssociatedType.hashCode();
+        result = 31 * result + ordinal;
+        return result;
     }
 }

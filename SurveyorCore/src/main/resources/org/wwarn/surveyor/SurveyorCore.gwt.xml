@@ -51,10 +51,12 @@
     <inherits name="org.wwarn.mapcore.Map"/>
     <inherits name="com.google.gwt.visualization.Visualization"/>
     <inherits name='com.google.web.bindery.event.EventBinder'/>
+    <inherits name="us.storee.gwt.libs.localforage.LocalForage"/>
     <!--<inherits name='com.github.gwtd3.D3' />-->
 
     <!-- Logging -->
     <inherits name="com.allen_sauer.gwt.log.gwt-log-OFF" />
+    <inherits name="com.seanchenxi.gwt.storage.Storage"/>
 
     <!-- Specify the paths for translatable code                    -->
     <source path='client' />

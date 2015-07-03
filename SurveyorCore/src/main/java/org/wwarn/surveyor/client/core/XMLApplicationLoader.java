@@ -34,6 +34,7 @@ package org.wwarn.surveyor.client.core;
  */
 
 import com.google.gwt.maps.client.MapTypeId;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.xml.client.*;
 import org.wwarn.mapcore.client.common.types.FilterConfigVisualization;
 import org.wwarn.mapcore.client.components.customwidgets.facet.FacetType;
@@ -118,6 +119,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             DatasourceConfig datasourceConfig = null;
 
             final String type = getAttributeByName(item, "type");
+            final String uniqueId = getAttributeByName(item, "id");
             String dataSourceType = StringUtils.ifEmpty(DataSourceProvider.valueOf(type).name(), DataSourceProvider.LocalClientSideDataProvider.name());
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node currentNode = childNodes.item(i);
@@ -133,7 +135,9 @@ public class XMLApplicationLoader implements ApplicationContext {
                     if(fileLocation == null){
                         throw new XMLUtils.ParseException("fileLocation is null");
                     }
-                    datasourceConfig = new DatasourceConfig(fileLocation, dataSourceType);
+                    String generatedName = "fl"+SafeHtmlUtils.htmlEscape(fileLocation.replaceAll("/", ""));
+                    String parsedUniqueId = StringUtils.ifEmpty(uniqueId, generatedName);
+                    datasourceConfig = new DatasourceConfig(parsedUniqueId, fileLocation, dataSourceType);
                 }
 
                 if(currentNode.getNodeName().equals("schema")){

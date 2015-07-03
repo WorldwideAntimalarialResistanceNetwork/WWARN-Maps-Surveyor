@@ -1,10 +1,10 @@
-package org.wwarn.surveyor.client.core;
+package org.wwarn.surveyor.server.core;
 
 /*
  * #%L
  * SurveyorCore
  * %%
- * Copyright (C) 2013 - 2014 University of Oxford
+ * Copyright (C) 2013 - 2015 University of Oxford
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,59 +33,38 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static org.junit.Assert.*;
 
 /**
- * Simple pojo that holds a RecordList and FacetList
- * Created with IntelliJ IDEA.
- * User: nigel
- * Date: 19/07/13
- * Time: 11:24
+ * Basic test classes for file version
  */
-public class QueryResult implements IsSerializable{
-    private RecordList recordList;
-    private FacetList facetFields;
+public class FileVersionUtilTest {
+    FileVersionUtil fileVersionUtil;
 
-    public QueryResult(RecordList recordList, FacetList facetFields) {
-        this.recordList = recordList;
-        this.facetFields = facetFields;
+    @Before
+    public void setUp() throws Exception {
+        fileVersionUtil = new FileVersionUtil();
     }
 
-    public QueryResult() {
+    @Test(expected = NullPointerException.class)
+    public void testNullInput() throws Exception {
+        fileVersionUtil.calculateVersionFrom(null);
     }
 
-    public FacetList getFacetFields() {
-        return facetFields;
-    }
-
-    public RecordList getRecordList() {
-        return recordList;
-    }
-
-    @Override
-    public String toString() {
-        return "QueryResult{" +
-                "recordList=" + recordList +
-                ", facetFields=" + facetFields +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        QueryResult that = (QueryResult) o;
-
-        if (recordList != null ? !recordList.equals(that.recordList) : that.recordList != null) return false;
-        return !(facetFields != null ? !facetFields.equals(that.facetFields) : that.facetFields != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = recordList != null ? recordList.hashCode() : 0;
-        result = 31 * result + (facetFields != null ? facetFields.hashCode() : 0);
-        return result;
+    @Test
+    public void testEmptyFile() throws Exception {
+        final Path emptyFile = Files.createTempFile("emptyFile", ".txt");
+        final File file = emptyFile.toFile();
+        final String version = fileVersionUtil.calculateVersionFrom(file);
+        assertNotNull(version);
+        assertEquals("D41D8CD98F00B204E9800998ECF8427E",version);
+        file.deleteOnExit();
     }
 }

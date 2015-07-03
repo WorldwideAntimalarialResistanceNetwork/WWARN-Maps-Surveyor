@@ -33,15 +33,18 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import org.jetbrains.annotations.NotNull;
+import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
+import org.wwarn.surveyor.client.util.OfflineStorageUtil;
 
 import java.util.*;
 
 /**
- * A client search implementation using BitSets
+ * A client search implementation using BitSets and offline data storage
  * When I wrote this, only God and I understood what I was doing. Now, God only knows. - Karl Weierstrass
  */
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
@@ -49,23 +52,78 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     private static final String ISO8601_PATTERN = DataType.ISO_DATE_FORMAT;
     private RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex;
     private FacetList facetList = new FacetList();
+    OfflineStorageUtil<QueryResult> offlineDataStore = null;
+    OfflineStorageUtil<String> offlineStorageKeyProviderStore;
 
     public ClientSideSearchDataProvider(GenericDataSource dataSource, DataSchema dataSchema, String[] fieldList) {
         super(dataSource, dataSchema, fieldList);
+
         if(dataSource.getDataSourceProvider()!= DataSourceProvider.ClientSideSearchDataProvider){
             throw new IllegalArgumentException("Expected data source provider client side data provider");
         }
     }
 
+    private String createOfflineStorageUniqueKey(String keySuffix){
+        if(StringUtils.isEmpty(keySuffix)){
+            throw new IllegalArgumentException("dataSourceHash cannot be empty");
+        }
+        return getOfflineKeyProviderStoreUniqueKey() + keySuffix;
+    }
+
+    @NotNull
+    private String getOfflineKeyProviderStoreUniqueKey() {
+        return schema.getUniqueId() + "_uniqueKey";
+    }
+
     @Override
     public void onLoad(final Runnable callOnLoad) {
+        //todo move this into a better datasync abstraction or tidy up
+        offlineStorageKeyProviderStore = new OfflineStorageUtil(String.class, getOfflineKeyProviderStoreUniqueKey());
+        offlineStorageKeyProviderStore.fetch(new OfflineStorageUtil.AsyncCommand<String>() {
+            @Override
+            public void success(final String key) {
+                Objects.requireNonNull(key);
+                if(Log.isDebugEnabled()){
+                    Log.debug("Key found \""+key+"\", now using this to find data store");
+                }
+
+                //if null then first load, no keys stored yet defer offline datastore creation
+                offlineDataStore = new OfflineStorageUtil(QueryResult.class, createOfflineStorageUniqueKey(key));
+                // try to load query from data store without server calls
+                offlineDataStore.fetch(new OfflineStorageUtil.AsyncCommand<QueryResult>() {
+                    @Override
+                    public void success(QueryResult queryResult) {
+                        if(Log.isDebugEnabled()){
+                            Log.debug("Query result founds for key\""+key+"\", intialising app with offline data");
+                        }
+                        initialisedDataProvider(queryResult, callOnLoad);
+                    }
+
+                    @Override
+                    public void failure() {
+                        if(Log.isDebugEnabled()){
+                            Log.debug("failed to fetch data from store, queryresult not found");
+                        }
+                        // failed to find query result in index, then fetch from server
+                        fetchFromServers(callOnLoad);
+                    }
+                });
+            }
+            @Override
+            public void failure() {
+                // if key doesn't exist then fetch from server
+                fetchFromServers(callOnLoad);
+            }
+        });
+
+    }
+
+    private void fetchFromServers(final Runnable callOnLoad) {
         try {
             //todo something with initialFilterQuery
             InitialFilterQuery initialFilterQuery = getInitialFilterQuery();
             final FilterQuery filterQuery = new MatchAllQuery(); // fetch everything
             clientFactory.setLastFilterQuery(filterQuery);
-
-
             searchServiceAsync.preFetchData(schema, this.dataSource, this.facetFieldList, filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
                 @Override
                 public void onTimeOutOrOtherFailure(Throwable throwable) {
@@ -74,18 +132,54 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
                 @Override
                 public void onNonTimedOutSuccess(QueryResult queryResult) {
-                    clientFactory.setLastQueryResult(queryResult);
-                    final RecordList recordList = queryResult.getRecordList();
-                    if(!(recordList instanceof RecordListCompressedWithInvertedIndexImpl)){ throw new IllegalArgumentException("Expected compressed index with inverted list");}
-                    recordListCompressedWithInvertedIndex = (RecordListCompressedWithInvertedIndexImpl) recordList;
-
-                    fieldInvertedIndex = setupIndex(recordListCompressedWithInvertedIndex);
-                    callOnLoad.run();
+                    storeToOfflineDataStore(queryResult);
+                    initialisedDataProvider(queryResult, callOnLoad);
                 }
             });
         } catch (SearchException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private void storeToOfflineDataStore(final QueryResult queryResult) {
+        // store current datasourceHash
+        final String dataSourceHash = queryResult.getRecordList().getDataSourceHash();
+        offlineStorageKeyProviderStore.store((dataSourceHash), new OfflineStorageUtil.AsyncCommand<String>() {
+            @Override
+            public void success(String objectToStore) {
+                // on storing current datasourcehash, initialise offline data store
+                offlineDataStore = new OfflineStorageUtil(QueryResult.class, createOfflineStorageUniqueKey(dataSourceHash));
+                // store current query result against DataSourceHash and SchemaUniqueID
+                offlineDataStore.store(queryResult, new OfflineStorageUtil.AsyncCommand<QueryResult>() {
+                    @Override
+                    public void success(QueryResult queryResult) {/*do nothing*/}
+
+                    @Override
+                    public void failure() {
+                        final String message = "Unable to store result in offline store";
+                        Log.warn(message);
+                        throw new IllegalStateException(message);
+                    }
+                });
+            }
+
+            @Override
+            public void failure() {
+                final String message = "Unable to store key in offlinestore";
+                Log.warn(message);
+                throw new IllegalStateException(message);
+            }
+        });
+;
+    }
+
+    private void initialisedDataProvider(QueryResult queryResult, Runnable callOnLoad) {
+        clientFactory.setLastQueryResult(queryResult);
+        final RecordList recordList = queryResult.getRecordList();
+        if(!(recordList instanceof RecordListCompressedWithInvertedIndexImpl)){ throw new IllegalArgumentException("Expected compressed index with inverted list");}
+        recordListCompressedWithInvertedIndex = (RecordListCompressedWithInvertedIndexImpl) recordList;
+        fieldInvertedIndex = setupIndex(recordListCompressedWithInvertedIndex);
+        callOnLoad.run();
     }
 
     private List<Map<String, BitSet>> setupIndex(RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex) {

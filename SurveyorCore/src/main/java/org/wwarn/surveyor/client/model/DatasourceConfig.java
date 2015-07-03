@@ -44,9 +44,14 @@ public class DatasourceConfig implements Config {
     private final DataSourceProvider dataSourceProvider;
     private final String filename;
     private final SchemaConfig config = new SchemaConfig();
+    private final String uniqueId;
 
     public DataSourceProvider getDataSourceProvider() {
         return dataSourceProvider;
+    }
+
+    public String getUniqueId() {
+        return uniqueId;
     }
 
     public static class SchemaConfig {
@@ -79,7 +84,8 @@ public class DatasourceConfig implements Config {
         }
     }
 
-    public DatasourceConfig(String filename, String dataSourceType) {
+    public DatasourceConfig(String uniqueId, String filename, String dataSourceType) {
+        this.uniqueId = uniqueId;
         this.filename = filename;
         this.dataSourceProvider = DataSourceProvider.valueOf(dataSourceType);
     }
