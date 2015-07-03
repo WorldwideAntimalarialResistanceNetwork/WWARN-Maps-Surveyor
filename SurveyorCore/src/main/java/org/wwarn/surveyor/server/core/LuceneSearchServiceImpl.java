@@ -450,6 +450,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         for (ScoreDoc doc : docs) {
             final Document document = indexSearcher.doc(doc.doc);
             String[] fieldValues = new String[dataSchema.size()];
+            Arrays.fill(fieldValues, ""); //ensure all fields initialized to empty string
             for (IndexableField indexableField : document) {
                 final String fieldName = indexableField.name();
                 final int columnIndex = dataSchema.getColumnIndex(fieldName);

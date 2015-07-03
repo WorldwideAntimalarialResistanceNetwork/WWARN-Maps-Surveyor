@@ -127,6 +127,8 @@ public class GwtTestXMLApplicationLoader extends GWTTestCase {
         // check data schema
         DataSchema dataSchema = new DataSchema(datasource);
         assertNotNull(dataSchema);
+        assertNotNull(dataSchema.getUniqueId());
+        assertEquals("fldatapublications.json",dataSchema.getUniqueId());
         assertTrue(dataSchema.hasColumn("CLON"));
     }
 

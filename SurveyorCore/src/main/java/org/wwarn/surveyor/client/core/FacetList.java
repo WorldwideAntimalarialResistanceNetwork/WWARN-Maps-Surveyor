@@ -89,6 +89,25 @@ public class FacetList implements Iterable<FacetList.FacetField>, IsSerializable
                     ", distinctFacetValues=" + distinctFacetValues +
                     '}';
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            FacetField that = (FacetField) o;
+
+            if (!facetField.equals(that.facetField)) return false;
+            return distinctFacetValues.equals(that.distinctFacetValues);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = facetField.hashCode();
+            result = 31 * result + distinctFacetValues.hashCode();
+            return result;
+        }
     }
 
     @Override
@@ -96,5 +115,21 @@ public class FacetList implements Iterable<FacetList.FacetField>, IsSerializable
         return "FacetList{" +
                 "facetFields=" + facetFields +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FacetList facetList = (FacetList) o;
+
+        return !(facetFields != null ? !facetFields.equals(facetList.facetFields) : facetList.facetFields != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return facetFields != null ? facetFields.hashCode() : 0;
     }
 }

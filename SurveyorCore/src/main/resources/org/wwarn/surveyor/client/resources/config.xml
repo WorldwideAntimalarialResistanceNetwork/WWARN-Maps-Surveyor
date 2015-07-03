@@ -37,7 +37,7 @@
     <!--
    A sample data source, default might be the standard JSON data source
     -->
-    <datasource type="LocalClientSideDataProvider">
+    <datasource type="LocalClientSideDataProvider" id="surveyorCoreLocalClientSideDataProvider">
         <property name="fileLocation" value="data/publications.json"/>
         <schema>
             <field name="CLON" type="CoordinateLon"/> <!-- type would be controlled vocabulary containing: Coordinate, Date, String, Integer-->

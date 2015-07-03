@@ -1,10 +1,10 @@
-package org.wwarn.surveyor.client.core;
+package org.wwarn.surveyor.client.util;
 
 /*
  * #%L
  * SurveyorCore
  * %%
- * Copyright (C) 2013 - 2014 University of Oxford
+ * Copyright (C) 2013 - 2015 University of Oxford
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,59 +33,42 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.SerializationException;
+import com.seanchenxi.gwt.storage.client.serializer.StorageSerializer;
 
 /**
- * Simple pojo that holds a RecordList and FacetList
- * Created with IntelliJ IDEA.
- * User: nigel
- * Date: 19/07/13
- * Time: 11:24
+ * Supports serialisation of GWT Java objects to string and vice versa
+ * Uses gwt-storage codebase to facilitate this, reuses GWT RPC mechanism
  */
-public class QueryResult implements IsSerializable{
-    private RecordList recordList;
-    private FacetList facetFields;
+public class SerializationUtil {
 
-    public QueryResult(RecordList recordList, FacetList facetFields) {
-        this.recordList = recordList;
-        this.facetFields = facetFields;
+    private static final StorageSerializer storageSerializer = GWT.create(StorageSerializer.class);
+
+    public <T> String serialize(Class<T> aClass, T object1){
+        String seralisedOutput = "";
+        try {
+            seralisedOutput = storageSerializer.serialize(aClass, object1);
+        } catch (SerializationException e) {
+            throw new IllegalStateException("unable to serialise", e);
+        }
+        return seralisedOutput;
     }
 
-    public QueryResult() {
-    }
-
-    public FacetList getFacetFields() {
-        return facetFields;
-    }
-
-    public RecordList getRecordList() {
-        return recordList;
-    }
-
-    @Override
-    public String toString() {
-        return "QueryResult{" +
-                "recordList=" + recordList +
-                ", facetFields=" + facetFields +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        QueryResult that = (QueryResult) o;
-
-        if (recordList != null ? !recordList.equals(that.recordList) : that.recordList != null) return false;
-        return !(facetFields != null ? !facetFields.equals(that.facetFields) : that.facetFields != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = recordList != null ? recordList.hashCode() : 0;
-        result = 31 * result + (facetFields != null ? facetFields.hashCode() : 0);
-        return result;
+    /**
+     * Returns an object from a serialised string
+     * @param clazz Class.name value
+     * @param stringContainingSerialisedInput
+     * @param <T>
+     * @return
+     */
+    public <T> T deserialize(Class<T> clazz, String stringContainingSerialisedInput) {
+        T instance;
+        try {
+            instance = storageSerializer.deserialize(clazz, stringContainingSerialisedInput);
+        } catch (SerializationException e) {
+            throw new IllegalStateException("unable to serialise", e);
+        }
+        return instance;
     }
 }

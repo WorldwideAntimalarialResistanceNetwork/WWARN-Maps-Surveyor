@@ -79,7 +79,7 @@ public class GwtTestRecordList extends VisualizationTest {
 
     public void setupDefaultData(){
         String dataSourceType = DataSourceProvider.LocalClientSideDataProvider.name();
-        schema = new DataSchema(new DatasourceConfig("", dataSourceType));
+        schema = new DataSchema(new DatasourceConfig("UniqueId","", dataSourceType));
         schema.addField(UNIQUE_FIELD, DataType.Integer);
         schema.addField(NON_UNIQUE_FIELD, DataType.String);
         table = DataTable.create();

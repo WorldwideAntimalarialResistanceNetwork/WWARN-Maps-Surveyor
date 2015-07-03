@@ -51,7 +51,7 @@ public class DataProviderTestUtility {
 
     public DataSchema fetchSampleDataSchema() {
         String dataSourceType = DataSourceProvider.LocalClientSideDataProvider.name();
-        DatasourceConfig dataSourceConfig = new DatasourceConfig("f", dataSourceType);
+        DatasourceConfig dataSourceConfig = new DatasourceConfig("uniqueID","f", dataSourceType);
         DataSchema schema = new DataSchema(dataSourceConfig);
         schema.addField(FIELD_PUBLICATION_YEAR, DataType.DateYear);
         schema.addField("PUB", DataType.String);

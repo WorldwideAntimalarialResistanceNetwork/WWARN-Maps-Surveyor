@@ -119,6 +119,27 @@ public class RecordList implements IsSerializable, Serializable{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RecordList that = (RecordList) o;
+
+        if (!schema.equals(that.schema)) return false;
+        if (!records.equals(that.records)) return false;
+        return dataSourceHash.equals(that.dataSourceHash);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = schema.hashCode();
+        result = 31 * result + records.hashCode();
+        result = 31 * result + dataSourceHash.hashCode();
+        return result;
+    }
+
     public static class Record implements IsSerializable, Serializable{
         //array of fields
         // map of column names to fields
