@@ -284,7 +284,7 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
 
 //        EventLogger.logEvent("org.wwarn.surveyor.client.core.DefaultLocalJSONDataProvider", "query(org.wwarn.surveyor.client.core.FilterQuery, java.lang.String[])", "end");
         final QueryResult queryResult = new QueryResult(filteredResults.getRecordList(), facetList);
-        queryResultCallBack.onNonTimedOutSuccess(queryResult);
+        queryResultCallBack.onSuccess(queryResult);
     }
 
 

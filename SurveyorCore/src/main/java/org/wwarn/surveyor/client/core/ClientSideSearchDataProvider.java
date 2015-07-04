@@ -34,6 +34,7 @@ package org.wwarn.surveyor.client.core;
  */
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.utils.StringUtils;
@@ -94,7 +95,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     @Override
                     public void success(QueryResult queryResult) {
                         if(Log.isDebugEnabled()){
-                            Log.debug("Query result founds for key\""+key+"\", intialising app with offline data");
+                            Log.debug("Query result found for key\""+key+"\", intialising app with offline data");
                         }
                         initialisedDataProvider(queryResult, callOnLoad);
                     }
@@ -233,11 +234,16 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         query(filterQuery, this.facetFieldList, queryResultCallBack);
     }
 
-    private void queryIndex(FilterQuery filterQuery, String[] facetFields, AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) {
-        final BitSet bitSet = parseQuery(filterQuery, schema);
-        RecordList recordList = restrictRecordList(bitSet);
-        final FacetList calculateFacetFieldsAndDistinctValues = calculateFacetFieldsAndDistinctValues(schema, facetFields, fieldInvertedIndex);
-        queryResultCallBack.onNonTimedOutSuccess(new QueryResult(recordList, calculateFacetFieldsAndDistinctValues));
+    private void queryIndex(final FilterQuery filterQuery, final String[] facetFields, final AsyncCallbackWithTimeout<QueryResult> queryResultCallBack) {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                final BitSet bitSet = parseQuery(filterQuery, schema);
+                RecordList recordList = restrictRecordList(bitSet);
+                final FacetList calculateFacetFieldsAndDistinctValues = calculateFacetFieldsAndDistinctValues(schema, facetFields, fieldInvertedIndex);
+                queryResultCallBack.onSuccess(new QueryResult(recordList, calculateFacetFieldsAndDistinctValues));
+            }
+        });
     }
 
 
