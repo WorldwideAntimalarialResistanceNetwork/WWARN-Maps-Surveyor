@@ -33,13 +33,16 @@ package org.wwarn.surveyor.server.core;
  * #L%
  */
 
+import com.google.gwt.core.shared.GWT;
+import com.sun.nio.file.SensitivityWatchEventModifier;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
+import com.allen_sauer.gwt.log.client.Log;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -54,10 +57,10 @@ public class FileChangeMonitor extends Observable {
     private FileChangeMonitor fileChangeMonitor = this;
     private boolean trace = false;
 
-    private FileChangeMonitor() {
+    protected FileChangeMonitor() {
     }
 
-    private static class Loader{
+    protected static class Loader{
         static FileChangeMonitor INSTANCE = new FileChangeMonitor();
     }
 
@@ -70,7 +73,7 @@ public class FileChangeMonitor extends Observable {
     }
 
     public void init(Path monitoredFile) throws IOException {
-        init(monitoredFile, new CountDownLatch(1), new CountDownLatch(1));
+        initNewThread(monitoredFile, new CountDownLatch(1), new CountDownLatch(1));
     }
 
     /**
@@ -81,23 +84,35 @@ public class FileChangeMonitor extends Observable {
      * @param stop calling stop.await() allows calling code to wait until a fileChangedEvent is processed
      * @throws IOException
      */
-    protected void init(Path monitoredFile, CountDownLatch start, CountDownLatch stop) throws IOException {
-        try {
-            if (!Files.isRegularFile(monitoredFile)) {
-                throw new IllegalArgumentException("Input of type File expected");
-            }
-        }catch(NoClassDefFoundError e){
-            return; //app engine specific horror, checks if this error is thrown and prevents this code from running
+    protected void initNewThread(Path monitoredFile, CountDownLatch start, CountDownLatch stop) throws IOException {
+        final Runnable watcher = initializeWatcherWithDirectory(monitoredFile, start, stop);
+        final Thread thread = new Thread(watcher);
+        thread.setDaemon(false);
+        thread.start();
+    }
+
+    /**
+     * A blocking method to start begin the monitoring of a directory, only exists on thread interrupt
+     * @param monitoredFile
+     * @throws IOException
+     */
+    public void initSynchronous(Path monitoredFile) throws IOException {
+        final Runnable watcher = initializeWatcherWithDirectory(monitoredFile, new CountDownLatch(1), new CountDownLatch(1));
+        watcher.run();
+    }
+
+
+    private Runnable initializeWatcherWithDirectory(Path monitoredFile, CountDownLatch start, CountDownLatch stop) throws IOException {
+        if (!Files.isRegularFile(monitoredFile)) {
+            throw new IllegalArgumentException("Input of type File expected");
         }
-//        start.countDown(); // start countdown
         final FileSystem fileSystem = FileSystems.getDefault();
         watcher = fileSystem.newWatchService();
         this.monitoredFile = monitoredFile;
         final Path monitoredFileParentDirectory = monitoredFile.getParent();
         register(monitoredFileParentDirectory);
-        final Thread thread = new Thread(new Watcher(start, stop));
-        thread.setDaemon(false);
-        thread.start();
+        final Runnable watcher = new Watcher(start, stop);
+        return watcher;
     }
 
 
@@ -110,7 +125,8 @@ public class FileChangeMonitor extends Observable {
      * Register the given directory with the WatchService
      */
     private void register(Path dir) throws IOException {
-        WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+//        WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_MODIFY);
+        WatchKey key = dir.register(watcher, new WatchEvent.Kind[]{StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_CREATE}, SensitivityWatchEventModifier.HIGH);
         if (trace) {
             Path prev = keys.get(key);
             if (prev == null) {
@@ -134,21 +150,28 @@ public class FileChangeMonitor extends Observable {
             stopSignal = stop;
         }
         void processEvents() throws IOException, InterruptedException {
-
+            //loop forever or until thread interrupted
             while(!Thread.currentThread().isInterrupted()){
                 // wait for key to be signalled
-                WatchKey key;
 
-                key = watcher.take(); /* This can take a while complete,
+                GWT.log("Watcher::processEvents"+ "Started the long blocking call");
+                Log.debug("Watcher::processEvents", "Started the long blocking call");
+                WatchKey key = watcher.take(); /* This call is blocking until events are present
+                This can take a while complete,
                 hence startSignal given only after this is loaded*/
                 startSignal.countDown();
+                GWT.log("Watcher::processEvents" + "Finished the long blocking call");
+                Log.debug("Watcher::processEvents", "Finished the long blocking call");
 
 
                 Path dir = keys.get(key);
                 if (dir == null) {
-                    throw new IllegalStateException("WatchKey not recognized!!");
+                    final String warningmsg = "WatchKey not recognized!!";
+                    Log.error("Watcher::processEvents", warningmsg);
+                    throw new IllegalStateException(warningmsg);
                 }
 
+                // poll for file system events on the WatchKey
                 for (WatchEvent<?> event : key.pollEvents()) {
                     WatchEvent.Kind kind = event.kind();
                     // TBD - provide example of how OVERFLOW event is handled
@@ -184,10 +207,13 @@ public class FileChangeMonitor extends Observable {
         @Override
         public void run() {
             try {
+                Log.debug("Watcher::run", "Entered run state");
                 processEvents();
             } catch (IOException e) {
+                Log.error("Watcher::run", "I/O failure while call to processEvents", e);
                 throw new IllegalStateException(e);
             } catch (InterruptedException e) {
+                Log.error("Watcher::run", "Threat interrupted exception", e);
                 throw new IllegalStateException(e);
             }
         }
