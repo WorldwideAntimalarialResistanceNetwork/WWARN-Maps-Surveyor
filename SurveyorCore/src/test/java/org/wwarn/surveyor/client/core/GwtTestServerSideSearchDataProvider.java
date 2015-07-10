@@ -35,8 +35,10 @@ package org.wwarn.surveyor.client.core;
 
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.wwarn.surveyor.client.event.FilterChangedEvent;
+import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.*;
@@ -45,7 +47,8 @@ import java.util.*;
  * Created by nigelthomas on 29/05/2014.
  */
 public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSONDataProvider{
-    public static final String LOCATION_DEFAULT_PUBLICATIONS_JSON = "publications.json";
+    public static final String LOCATION_DEFAULT_PUBLICATIONS_JSON = "data/surveyorCorepublications.json";
+    public static final String DATASOURCE_HASH = "A430121496FE8E899F60011854A13257";
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
 
     public GwtTestServerSideSearchDataProvider() {
@@ -56,11 +59,16 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
 //                schema = testUtility.fetchSampleDataSchema();
 //                String[] selectorList = testUtility.getSelectorList();
 
-                GenericDataSource dataSource = new GenericDataSource(LOCATION_DEFAULT_PUBLICATIONS_JSON, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList);
+                GenericDataSource dataSource = getGenericDataSource();
                 String[] selectorList = testUtility.getSelectorList();
                 return new ServerSideSearchDataProvider(dataSource, testUtility.fetchSampleDataSchema(), selectorList);
             }
         });
+    }
+
+    @NotNull
+    private static GenericDataSource getGenericDataSource() {
+        return new GenericDataSource(LOCATION_DEFAULT_PUBLICATIONS_JSON, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.ServletRelativeDataSource, DataSourceProvider.ServerSideLuceneDataProvider);
     }
 
     public GwtTestServerSideSearchDataProvider(DataProviderTestUtility.DataProviderSource dataProviderSource) {
@@ -72,21 +80,54 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
         super.gwtSetUp();
         DataSchema schema = dataProviderTestUtility.fetchSampleDataSchema();
         String[] facetFieldList = dataProviderTestUtility.getSelectorList();
-        GenericDataSource dataSource = new GenericDataSource(LOCATION_DEFAULT_PUBLICATIONS_JSON, Constants.JSON_DATA_SOURCE, GenericDataSource.DataSourceType.JSONPropertyList);
+        GenericDataSource dataSource = getGenericDataSource();
         dataProvider = new ServerSideSearchDataProvider(dataSource, schema, facetFieldList);
     }
 
     @Test
     public void testOnLoad() throws Exception {
-        delayTestFinish(10*1000);
+        delayTestFinish(10 * 1000);
         dataProvider.onLoad(new Runnable() {
             @Override
             public void run() {
+                assertTrue(dataProvider instanceof ServerSideSearchDataProvider);
                 finishTest();
             }
         });
 
     }
+
+    @Test
+    public void testDataSourceHash() throws Exception {
+        // todo need to ensure the test data is properly set,
+        // so that I can get a hash value from the data source
+        runTestWithDefaultDataSetup(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ServerSideSearchDataProvider serverSideSearchDataProvider = (ServerSideSearchDataProvider)dataProvider;
+                    serverSideSearchDataProvider.fetchDataVersion(schema, serverSideSearchDataProvider.dataSource, new AsyncCallbackWithTimeout<String>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            throw new IllegalStateException(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(String result) {
+                            assertNotNull(result);
+                            assertEquals(DATASOURCE_HASH, result);
+                            finishTest();
+                        }
+                    });
+                } catch (SearchException e) {
+                    throw new IllegalStateException(e);
+                }
+
+
+            }
+        });
+    }
+
 
     @Test
     public void testQuery() throws Exception {
