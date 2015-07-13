@@ -37,19 +37,12 @@ import com.google.web.bindery.event.shared.binder.GenericEvent;
 import org.wwarn.surveyor.client.core.QueryResult;
 
 /**
- * An event to register changes in query results after a new query is issued
- * User: nigelthomas
- * Date: 12/09/2013
- * Time: 23:03
+ * An event to capture that the underlying data has been updated on the server
+ * This can be used to inform end users that the browser needs reloading to show updated data
  */
 public class DataUpdatedEvent extends GenericEvent {
-    private final QueryResult queryResult;
 
-    public QueryResult getQueryResult() {
-        return queryResult;
-    }
+    public DataUpdatedEvent() {
 
-    public DataUpdatedEvent(QueryResult queryResult) {
-        this.queryResult = queryResult;
     }
 }

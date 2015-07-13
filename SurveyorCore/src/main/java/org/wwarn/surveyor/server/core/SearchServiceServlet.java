@@ -33,17 +33,11 @@ package org.wwarn.surveyor.server.core;
  * #L%
  */
 
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.TableViewConfig;
-
-import net.sf.jsr107cache.Cache;
-import net.sf.jsr107cache.CacheException;
-import net.sf.jsr107cache.CacheFactory;
-import net.sf.jsr107cache.CacheManager;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -56,7 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by nigelthomas on 28/05/2014.
  */
 public class SearchServiceServlet extends RemoteServiceServlet implements SearchService {
-    public static final String DEFAULT_DATA_PUBLICATIONS_JSON = "/data/publications.json";
+    public static final String DEFAULT_DATA_PUBLICATIONS_JSON = "/data/surveyorCorepublications.json";
     private SearchServiceLayer searchServiceLayer;
     private static Map<String, String> filePathCache = new ConcurrentHashMap<>();
 
@@ -65,6 +59,18 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         super.init();
         searchServiceLayer = LuceneSearchServiceImpl.getInstance();
         // add filePath to publications.json
+    }
+
+    @Override
+    public QueryResult preFetchData(DataSchema schema, GenericDataSource dataSource, String[] facetFields,FilterQuery filterQuery) throws SearchException {
+        //relative path to absolute path
+        attemptToInitializeSearchService(schema, dataSource);
+        QueryResult queryResult = null;
+        if(dataSource.getDataSourceProvider() == DataSourceProvider.ClientSideSearchDataProvider){
+            filterQuery.setBuildInvertedIndex(true);
+        }
+        queryResult = this.query(filterQuery, facetFields);
+        return queryResult;
     }
 
     @Override
@@ -79,26 +85,23 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         return records;
     }
 
+
     @Override
     public QueryResult queryUniqueRecords(FilterQuery filterQuery,String[] facetFields) throws SearchException {
         return searchServiceLayer.queryUniqueRecords(filterQuery, facetFields);
     }
 
-
     @Override
-    public QueryResult preFetchData(DataSchema schema, GenericDataSource dataSource, String[] facetFields,FilterQuery filterQuery) throws SearchException {
-        Objects.requireNonNull(schema);
-        Objects.requireNonNull(dataSource);
+    public String fetchDataVersion(DataSchema schema, GenericDataSource dataSource) throws SearchException {
         //relative path to absolute path
+        attemptToInitializeSearchService(schema, dataSource);
+        return searchServiceLayer.fetchDataVersion();
+    }
+
+    private void attemptToInitializeSearchService(DataSchema schema, GenericDataSource dataSource) throws SearchException {
         final String filePathInServletContext = (dataSource.getLocation() == null) ? null : findFileInServletContext(dataSource.getLocation());
         final GenericDataSource source = new GenericDataSource(filePathInServletContext, dataSource.getResource(), dataSource.getDataSourceType(), dataSource.getDataSourceProvider());
         searchServiceLayer.init(schema, source);
-        QueryResult queryResult = null;
-        if(dataSource.getDataSourceProvider() == DataSourceProvider.ClientSideSearchDataProvider){
-            filterQuery.setBuildInvertedIndex(true);
-        }
-        queryResult = this.query(filterQuery, facetFields);
-        return queryResult;
     }
 
 
@@ -149,19 +152,5 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         return this.getServletContext().getRealPath("/");
     }
 
-    private static class CacheMap {
-        Cache cache;
-
-        private CacheMap() {
-            Map props = new HashMap();
-            props.put(GCacheFactory.EXPIRATION_DELTA, 3600*24);
-
-            try {
-                CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
-                cache = cacheFactory.createCache(Collections.emptyMap());
-            } catch (CacheException e) {}
-        }
-
-    }
 
 }

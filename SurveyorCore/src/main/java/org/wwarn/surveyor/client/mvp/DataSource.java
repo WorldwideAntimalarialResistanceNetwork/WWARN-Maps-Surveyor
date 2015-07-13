@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.mvp;
  * #L%
  */
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import org.wwarn.surveyor.client.core.GenericDataSource;
 
 /**
@@ -40,7 +41,7 @@ import org.wwarn.surveyor.client.core.GenericDataSource;
  * User: nigel
  * Date: 31/07/13
  */
-public interface DataSource {
+public interface DataSource extends IsSerializable{
     public String getResource();
     public String getLocation();
     public GenericDataSource.DataSourceType getDataSourceType();

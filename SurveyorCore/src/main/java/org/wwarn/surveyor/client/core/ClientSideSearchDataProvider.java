@@ -38,9 +38,12 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.utils.StringUtils;
+import org.wwarn.surveyor.client.event.DataUpdatedEvent;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
+import org.wwarn.surveyor.client.mvp.DataSource;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 import org.wwarn.surveyor.client.util.OfflineStorageUtil;
+import com.google.gwt.user.client.Timer;
 
 import java.util.*;
 
@@ -54,7 +57,8 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     private RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex;
     private FacetList facetList = new FacetList();
     OfflineStorageUtil<QueryResult> offlineDataStore = null;
-    OfflineStorageUtil<String> offlineStorageKeyProviderStore;
+    OfflineStorageUtil<String> offlineStorageCurrentKeyStore;
+    OfflineStorageUtil<String> offlineStoragePreviousKeyStore;
 
     public ClientSideSearchDataProvider(GenericDataSource dataSource, DataSchema dataSchema, String[] fieldList) {
         super(dataSource, dataSchema, fieldList);
@@ -68,24 +72,29 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         if(StringUtils.isEmpty(keySuffix)){
             throw new IllegalArgumentException("dataSourceHash cannot be empty");
         }
-        return getOfflineKeyProviderStoreUniqueKey() + keySuffix;
+        return getOfflineStoreUniqueKey() + keySuffix;
     }
 
     @NotNull
-    private String getOfflineKeyProviderStoreUniqueKey() {
+    private String getOfflineStoreUniqueKey() {
         return schema.getUniqueId() + "_uniqueKey";
+    }
+
+    @NotNull
+    private String getOfflineStorePreviousUniqueKey() {
+        return schema.getUniqueId() + "_previousUniqueKey";
     }
 
     @Override
     public void onLoad(final Runnable callOnLoad) {
         //todo move this into a better datasync abstraction or tidy up
-        offlineStorageKeyProviderStore = new OfflineStorageUtil(String.class, getOfflineKeyProviderStoreUniqueKey());
-        offlineStorageKeyProviderStore.fetch(new OfflineStorageUtil.AsyncCommand<String>() {
+        offlineStorageCurrentKeyStore = new OfflineStorageUtil(String.class, getOfflineStoreUniqueKey());
+        offlineStorageCurrentKeyStore.fetch(new OfflineStorageUtil.AsyncCommand<String>() {
             @Override
             public void success(final String key) {
                 Objects.requireNonNull(key);
-                if(Log.isDebugEnabled()){
-                    Log.debug("Key found \""+key+"\", now using this to find data store");
+                if (Log.isDebugEnabled()) {
+                    Log.debug("Key found \"" + key + "\", now using this to find data store");
                 }
 
                 //if null then first load, no keys stored yet defer offline datastore creation
@@ -94,15 +103,17 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 offlineDataStore.fetch(new OfflineStorageUtil.AsyncCommand<QueryResult>() {
                     @Override
                     public void success(QueryResult queryResult) {
-                        if(Log.isDebugEnabled()){
-                            Log.debug("Query result found for key\""+key+"\", intialising app with offline data");
+                        if (Log.isDebugEnabled()) {
+                            Log.debug("Query result found for key\"" + key + "\", intialising app with offline data");
                         }
                         initialisedDataProvider(queryResult, callOnLoad);
+                        // setup future calls to check for fresh data
+                        scheduleCheckForDataUpdates();
                     }
 
                     @Override
                     public void failure() {
-                        if(Log.isDebugEnabled()){
+                        if (Log.isDebugEnabled()) {
                             Log.debug("failed to fetch data from store, queryresult not found");
                         }
                         // failed to find query result in index, then fetch from server
@@ -110,6 +121,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     }
                 });
             }
+
             @Override
             public void failure() {
                 // if key doesn't exist then fetch from server
@@ -117,15 +129,16 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
             }
         });
 
+
     }
 
     private void fetchFromServers(final Runnable callOnLoad) {
         try {
             //todo something with initialFilterQuery
-            InitialFilterQuery initialFilterQuery = getInitialFilterQuery();
+//            InitialFilterQuery initialFilterQuery = getInitialFilterQuery();
             final FilterQuery filterQuery = new MatchAllQuery(); // fetch everything
             clientFactory.setLastFilterQuery(filterQuery);
-            searchServiceAsync.preFetchData(schema, this.dataSource, this.facetFieldList, filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+            searchServiceAsync.preFetchData(this.schema, this.dataSource, this.facetFieldList, filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
                 @Override
                 public void onTimeOutOrOtherFailure(Throwable throwable) {
                     throw new IllegalStateException(throwable);
@@ -142,10 +155,149 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         }
     }
 
+    private void scheduleCheckForDataUpdates() {
+//        //checks server for data updates
+        final DataSchema schema = this.schema;
+        final GenericDataSource dataSource = this.dataSource;
+        final Timer timer = new Timer() {
+
+            @Override
+            public void run() {
+                searchServiceAsync.fetchDataVersion(schema, dataSource, new AsyncCallbackWithTimeout<String>() {
+                    @Override
+                    public void onTimeOutOrOtherFailure(Throwable caught) {
+                        Log.warn("Unable to fetch latest data version", caught);
+                    }
+
+                    @Override
+                    public void onNonTimedOutSuccess(final String currentDataHash) {
+                        if (recordListCompressedWithInvertedIndex == null) throw new IllegalStateException("recordList was null");
+                        if (recordListCompressedWithInvertedIndex.getDataSourceHash().equals(currentDataHash)) { cleanupPreviousData(currentDataHash); return; }
+                        final String previousDataSourceHash = recordListCompressedWithInvertedIndex.getDataSourceHash();
+                        if(Log.isDebugEnabled()) Log.debug("New data found, fetch records from server");
+                        fetchFromServers(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(Log.isDebugEnabled()) Log.debug("New data fetch complete");
+                                storePreviousDataSourceHash(previousDataSourceHash);
+                            }
+                        });
+
+                    }
+                });
+
+            }
+        };
+        timer.schedule(20 * 1000); // check for new data after
+//        final int i = 10;
+//        Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
+//            @Override
+//            public boolean execute() {
+//                searchServiceAsync.fetchDataVersion(new AsyncCallback<String>() {
+//                    @Override
+//                    public void onFailure(Throwable throwable) {
+//                        //unable to fetch version info
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(String dataSource) {
+//                        if(recordListCompressedWithInvertedIndex == null) throw new IllegalStateException("recordList was null");
+//                        if(recordListCompressedWithInvertedIndex.getDataSourceHash().equals(dataSource)) return;
+//                        String previousDataSourceHash = recordListCompressedWithInvertedIndex.getDataSourceHash();
+//                        fetchFromServers(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//                            }
+//                        });
+//                    }
+//                });
+//                return false;
+//            }
+//        }, i * 1000);
+    }
+
+    private void cleanupPreviousData(final String currentDataHash) {
+        if(Log.isDebugEnabled()) Log.debug("Attempting to remove old key, if present");
+        final OfflineStorageUtil<String> offlineStoragePreviousKeyStore = getOfflineStoragePreviousKeyStore();
+
+        offlineStoragePreviousKeyStore.fetch(new OfflineStorageUtil.AsyncCommand<String>() {
+            @Override
+            public void success(@NotNull String previousKeyToRemove) {
+                if(StringUtils.isEmpty(previousKeyToRemove)) return;
+                if(previousKeyToRemove.equals(currentDataHash)){
+                    offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), new Runnable() {
+                        @Override
+                        public void run() {
+                            if(Log.isDebugEnabled()){
+                                Log.debug("Old key not removed, as current and previous keys are equal, remove previous key reference instead");
+                            }
+                        }
+                    });
+                }else {
+                    final String keyForOldHash = createOfflineStorageUniqueKey(previousKeyToRemove);
+                    offlineStoragePreviousKeyStore.removeItem(keyForOldHash, new Runnable() {
+                        @Override
+                        public void run() {
+                            if (Log.isDebugEnabled()) {
+                                Log.debug(" Old key removed : " + keyForOldHash);
+                            }
+                            //remove previous key reference, now old key referenced data deleted
+                            offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(Log.isDebugEnabled()){
+                                        Log.debug("removing previous key, now old key referenced data deleted");
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void failure() {
+                Log.warn("Offline storage: Unable to remove old key, probably because key not found or already deleted");
+            }
+        });
+    }
+
+    private void storePreviousDataSourceHash(String previousDataSourceHash) {
+        if(Log.isDebugEnabled()) Log.debug("Attempting to store previous datasourcehash");
+        OfflineStorageUtil<String> offlineStoragePreviousKeyStore = getOfflineStoragePreviousKeyStore();
+        offlineStoragePreviousKeyStore.store(previousDataSourceHash, new OfflineStorageUtil.AsyncCommand<String>() {
+            @Override
+            public void success(@NotNull String objectToStore) {
+                if(Log.isDebugEnabled()) Log.debug("Stored previous datasourcehash - successfully");
+                // send an event to inform users to refresh browser as data has been updated.
+                clientFactory.getEventBus().fireEvent(new DataUpdatedEvent());
+//  Remove surplus call to fetch data
+//                fetchFromServers(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                    }
+//                });
+            }
+
+            @Override
+            public void failure() {
+                Log.warn("failed to store previous key");
+            }
+        });
+    }
+
+    private OfflineStorageUtil<String> getOfflineStoragePreviousKeyStore() {
+        if(offlineStoragePreviousKeyStore == null){
+            offlineStoragePreviousKeyStore = new OfflineStorageUtil(String.class, getOfflineStorePreviousUniqueKey());
+        }
+        return offlineStoragePreviousKeyStore;
+    }
+
     private void storeToOfflineDataStore(final QueryResult queryResult) {
         // store current datasourceHash
         final String dataSourceHash = queryResult.getRecordList().getDataSourceHash();
-        offlineStorageKeyProviderStore.store((dataSourceHash), new OfflineStorageUtil.AsyncCommand<String>() {
+        offlineStorageCurrentKeyStore.store((dataSourceHash), new OfflineStorageUtil.AsyncCommand<String>() {
             @Override
             public void success(String objectToStore) {
                 // on storing current datasourcehash, initialise offline data store
@@ -153,7 +305,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 // store current query result against DataSourceHash and SchemaUniqueID
                 offlineDataStore.store(queryResult, new OfflineStorageUtil.AsyncCommand<QueryResult>() {
                     @Override
-                    public void success(QueryResult queryResult) {/*do nothing*/}
+                    public void success(QueryResult queryResult) {if(Log.isDebugEnabled()){Log.debug("stored current query result");}}
 
                     @Override
                     public void failure() {

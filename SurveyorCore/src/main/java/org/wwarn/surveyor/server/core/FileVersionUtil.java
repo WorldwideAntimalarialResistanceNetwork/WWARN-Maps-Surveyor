@@ -34,6 +34,7 @@ package org.wwarn.surveyor.server.core;
  */
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
@@ -81,16 +82,26 @@ public class FileVersionUtil {
         if(!StringUtils.isEmpty(storedHashValue)){
             return storedHashValue;
         }
+        final String digestHex;
+        try {
+            digestHex = getHashFromInputStream(Files.newInputStream(file.toPath()));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        fixedSizeCache.put(key, digestHex);
+        return digestHex;
+    }
+
+    @Nullable
+    public String getHashFromInputStream(InputStream stream) {
         MessageDigest md = getDigest();
-        try(DigestInputStream digestInputStream = new DigestInputStream(Files.newInputStream(file.toPath()), md)){
+        try(DigestInputStream digestInputStream = new DigestInputStream(stream, md)){
             while(digestInputStream.read() != -1);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
         final byte[] digest = md.digest();
-        final String digestHex = convertBinaryDigestToHexStringDigest(digest);
-        fixedSizeCache.put(key, digestHex);
-        return digestHex;
+        return convertBinaryDigestToHexStringDigest(digest);
     }
 
     @NotNull
