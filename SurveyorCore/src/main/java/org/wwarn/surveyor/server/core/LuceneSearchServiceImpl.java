@@ -75,6 +75,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     public static final int MAX_RESULTS = 100;
     private String location;
     private String dataSourceHash = "";
+    private FileChangeMonitor fileChangeMonitor;
 
     public static LuceneSearchServiceImpl getInstance() {
         return ourInstance;
@@ -85,17 +86,20 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
 
     public void init(final DataSchema dataSchema, final GenericDataSource dataSource) throws SearchException {
         try {
-            if(this.hasInitialised.get() && dataSource != null && dataSource.getLocation() == location){return;}
+            if(this.hasInitialised.get() && dataSource != null && dataSource.getLocation() == location){
+                if(Log.isDebugEnabled()) Log.debug("LuceneSearchServiceImpl::init", "skipping initialisation, already called previously");
+                return;
+            }
             Objects.requireNonNull(dataSchema);
             this.dataSchema = dataSchema;
             location = dataSource.getLocation();
             //setup index
             JSONWithMetaData jsonContent = getJsonArrayFrom(dataSource);
             setupIndex(dataSource, dataSchema, jsonContent);
+            if(Log.isDebugEnabled()) Log.debug("LuceneSearchServiceImpl::init", "Finished setup of index from json data");
             this.hasInitialised.getAndSet(true);
             setupIndexMonitor(dataSchema, dataSource);
-        } catch (Exception
-                e) {
+        } catch (Exception e) {
             Log.error("Failed to initialise index", e);
             throw e;
         }
@@ -107,29 +111,34 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
      * @param dataSource
      */
     private void setupIndexMonitor(final DataSchema dataSchema, final GenericDataSource dataSource) {
+        if(Log.isDebugEnabled()) Log.debug("LuceneSearchServiceImpl::setupIndexMonitor","Attempting to setup Index monitor...");
+
         try {
             if(GoogleAppEngineUtil.isGaeEnv()){
                 return; // only use for pure lucene tomcat implementation, doesn't work on GAE.
             }
-            FileChangeMonitor fileChangeMonitor;
-            if( dataSource.getDataSourceType()== GenericDataSource.DataSourceType.ServletRelativeDataSource && dataSource.getLocation()!=null) {
-                assertFilePathExists(dataSource.getLocation(), "jsonPath invalid:");
-                File json = new File(dataSource.getLocation());
-                try {
-                    fileChangeMonitor = FileChangeMonitor.getInstance();
-                    fileChangeMonitor.init(json.toPath());
-                } catch (IOException e) {
-                    throw new SearchException("Unable to initialize file change monitor",e);
-                }
-            }else{
+            if (dataSource.getDataSourceType() != GenericDataSource.DataSourceType.ServletRelativeDataSource || dataSource.getLocation() == null) {
                 // only able to monitor servlet relative datasources
                 return;
+            } else {
+//                assertFilePathExists(dataSource.getLocation(), "jsonPath invalid:");
+//                File json = new File(dataSource.getLocation());
+//                try {
+//                    fileChangeMonitor = FileChangeMonitor.getInstance();
+//                    fileChangeMonitor.init(json.toPath());
+//                    if(Log.isDebugEnabled()) Log.debug("LuceneSearchServiceImpl::setupIndexMonitor","Index monitor setup completed.");
+//                } catch (IOException e) {
+//                    throw new SearchException("Unable to initialize file change monitor",e);
+//                }
             }
+            fileChangeMonitor = FileChangeMonitor.getInstance();
             fileChangeMonitor.addObserver(new Observer() {
                 @Override
                 public void update(Observable o, Object arg) {
                     JSONWithMetaData jsonContent;
                     try {
+                        if (Log.isDebugEnabled())
+                            Log.debug("LuceneSearchServiceImpl::setupIndexMonitor", "Index monitor change noted.");
                         jsonContent = getJsonArrayFrom(dataSource);
                     } catch (SearchException e) {
                         throw new IllegalStateException(e);
@@ -138,34 +147,34 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                 }
             });
         } catch (Exception e) {
-            Log.warn("Failed to setup monitor for indexed file changes", e);
+            Log.error("LuceneSearchServiceImpl::setupIndexMonitor","Failed to setup monitor for indexed file changes", e);
         }
     }
 
+
     private JSONWithMetaData getJsonArrayFrom(GenericDataSource dataSource) throws SearchException {
         JSONArray jsonContent;
+        final FileVersionUtil fileVersionUtil = new FileVersionUtil();
         if(dataSource.getDataSourceType()== GenericDataSource.DataSourceType.ServletRelativeDataSource && dataSource.getLocation()!=null) {
             assertFilePathExists(dataSource.getLocation(), "jsonPath invalid:");
             File json = new File(dataSource.getLocation());
             // grab version information
-            final String hashOfJsonFile = (new FileVersionUtil()).calculateVersionFrom(json);
+            final String hashOfJsonFile = fileVersionUtil.calculateVersionFrom(json);
             jsonContent = parseJSON(json);
             return new JSONWithMetaData(jsonContent, hashOfJsonFile);
         }else{
             Objects.requireNonNull(dataSource.getResource());
-            jsonContent = parseJSON(dataSource.getResource());
-            return new JSONWithMetaData(jsonContent);
+            final String stringResource = dataSource.getResource();
+            final byte[] bytes = stringResource.getBytes();
+            final String hashFromInputStream = fileVersionUtil.getHashFromInputStream(new ByteArrayInputStream(bytes));
+            jsonContent = parseJSON(stringResource);
+            return new JSONWithMetaData(jsonContent, hashFromInputStream);
         }
     }
 
     private class JSONWithMetaData{
         private String dataSourceHash;
         private JSONArray jsonArray;
-
-        public JSONWithMetaData(JSONArray jsonContent) {
-            this.jsonArray = jsonContent;
-            this.dataSourceHash = "";
-        }
 
         public String getDataSourceHash() {
             return dataSourceHash;
@@ -600,6 +609,14 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         }catch(Exception e){
             throw new SearchException("Unable to query unique records",e);
         }
+    }
+
+    @Override
+    public String fetchDataVersion() {
+        if (!hasInitialised.get()) {
+            throw new IllegalStateException("Search not ready : init method must be called first");
+        }
+        return this.dataSourceHash;
     }
 
     /**

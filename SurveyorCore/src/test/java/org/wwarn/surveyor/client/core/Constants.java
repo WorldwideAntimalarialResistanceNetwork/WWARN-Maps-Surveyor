@@ -47,7 +47,7 @@ public interface Constants {
             "   A sample data source, default might be the standard JSON data source\n" +
             "    -->\n" +
             "    <datasource type=\"LocalClientSideDataProvider\">\n" +
-            "        <property name=\"fileLocation\" value=\"data/publications.json\"/>\n" +
+            "        <property name=\"fileLocation\" value=\"data/surveyorCorepublications.json\"/>\n" +
             "        <schema>\n" +
             "            <field name=\"CLON\" type=\"CoordinateLon\"/> <!-- type would be controlled vocabulary containing: Coordinate, Date, String, Integer-->\n" +
             "            <field name=\"CLAT\" type=\"CoordinateLat\"/>\n" +

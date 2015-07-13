@@ -1,4 +1,4 @@
-package org.wwarn.surveyor.server.core;
+package org.wwarn.surveyor.client.event;
 
 /*
  * #%L
@@ -33,24 +33,16 @@ package org.wwarn.surveyor.server.core;
  * #L%
  */
 
-import org.wwarn.surveyor.client.core.*;
-import org.wwarn.surveyor.client.model.TableViewConfig;
-import org.wwarn.surveyor.client.mvp.DataSource;
-
-import java.util.List;
+import com.google.web.bindery.event.shared.binder.GenericEvent;
+import org.wwarn.surveyor.client.core.QueryResult;
 
 /**
- * Created by nigelthomas on 03/06/2014.
+ * An event to capture that the underlying data has been updated on the server
+ * This can be used to inform end users that the browser needs reloading to show updated data
  */
-public interface SearchServiceLayer {
-    /**
-     * Call first to initialise the search service
-     * @param dataSchema
-     * @param dataSource
-     */
-    public void init(DataSchema dataSchema, GenericDataSource dataSource) throws SearchException;
-    public QueryResult query(FilterQuery filterQuery, String[] facetFields) throws SearchException;
-    public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length, TableViewConfig tableViewConfig) throws SearchException;
-    public QueryResult queryUniqueRecords(FilterQuery filterQuery, String[] facetFields) throws SearchException;
-    public String fetchDataVersion();
+public class DataUpdatedEvent extends GenericEvent {
+
+    public DataUpdatedEvent() {
+
+    }
 }

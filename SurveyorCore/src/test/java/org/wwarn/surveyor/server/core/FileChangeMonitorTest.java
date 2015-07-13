@@ -58,17 +58,16 @@ public class FileChangeMonitorTest {
     @Before
     public void setUp() throws Exception {
         tempFile = Files.createTempFile("tmp", ".txt");
+        tempFile.toFile().deleteOnExit();
         fileChangedEvent = new CountDownLatch(1);
         fileListenerLoadEvent = new CountDownLatch(1);
         fileChangeMonitor = FileChangeMonitor.getInstance();
-        fileChangeMonitor.init(tempFile, fileListenerLoadEvent, fileChangedEvent);
+        fileChangeMonitor.initNewThread(tempFile, fileListenerLoadEvent, fileChangedEvent);
         registerObserver();
     }
 
     private void simulateFileWrites() throws IOException {
         try(
-            final FileWriter fileWriter = new FileWriter(tempFile.toFile());
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             PrintWriter printWriter = new PrintWriter(tempFile.toFile());
         ){
             printWriter.write("test");
@@ -88,13 +87,29 @@ public class FileChangeMonitorTest {
         });
     }
 
-//    @Test
-//    public void testFileChangeEvent() throws InterruptedException, IOException {
-//        final int timeoutInMilliseconds = 15 * 1000;
-//        fileListenerLoadEvent.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS); // wait until file listener is setup
-//        simulateFileWrites(); // write to file
-//        fileChangedEvent.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS); // wait for thread to detect change
-//        assertTrue(hasBeenCalled);
-//    }
+    @Test
+    public void testFileChangeEvent() throws InterruptedException, IOException {
+        final int timeoutInMilliseconds = 15 * 1000;
+        final PrintStream systemOutputInterceptor = new PrintStream(System.out, true) {
+            final StringBuilder sb = new StringBuilder();
+            @Override
+            public void print(String s){
+                super.print(s);
+                sb.append(s);
+            }
+
+            @Override
+            public String toString() {
+                return sb.toString();
+            }
+        };
+        System.setOut(systemOutputInterceptor);
+        fileListenerLoadEvent.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS); // wait until file listener is setup
+        simulateFileWrites(); // write to file
+        fileChangedEvent.await(timeoutInMilliseconds, TimeUnit.MILLISECONDS); // wait for thread to detect change
+
+        assertEquals("Exception thrown, see stack trace", "test", systemOutputInterceptor.toString());
+        assertTrue(hasBeenCalled);
+    }
 }
 

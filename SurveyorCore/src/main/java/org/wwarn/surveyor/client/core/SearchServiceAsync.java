@@ -35,6 +35,8 @@ package org.wwarn.surveyor.client.core;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.wwarn.surveyor.client.model.TableViewConfig;
+import org.wwarn.surveyor.client.mvp.DataSource;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.List;
 
@@ -48,6 +50,7 @@ public interface SearchServiceAsync {
 
     void preFetchData(DataSchema schema, GenericDataSource dataSource, String[] facetList,FilterQuery filterQuery, AsyncCallback<QueryResult> async) throws SearchException;
 
-    void queryUniqueRecords(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> async);
+    void fetchDataVersion(DataSchema schema, GenericDataSource dataSource, AsyncCallback<String> async);
 
+    void queryUniqueRecords(FilterQuery filterQuery, String[] facetFields, AsyncCallback<QueryResult> async);
 }

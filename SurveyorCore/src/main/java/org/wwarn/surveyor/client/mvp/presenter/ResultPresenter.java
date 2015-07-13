@@ -33,13 +33,8 @@ package org.wwarn.surveyor.client.mvp.presenter;
  * #L%
  */
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
-import com.google.web.bindery.event.shared.binder.EventBinder;
-import com.google.web.bindery.event.shared.binder.EventHandler;
 import org.wwarn.surveyor.client.core.ApplicationContext;
-import org.wwarn.surveyor.client.event.FilterChangedEvent;
-import org.wwarn.surveyor.client.event.ResultChangedEvent;
 import org.wwarn.surveyor.client.model.ResultsViewConfig;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;

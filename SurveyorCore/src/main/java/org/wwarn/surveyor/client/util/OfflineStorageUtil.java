@@ -47,7 +47,7 @@ import java.util.Objects;
 public class OfflineStorageUtil<T> {
     private final String uniqueKey;
     private final Class<T> clazz;
-    private LocalForage offlineDataStore = new LocalForage();
+    private static LocalForage offlineDataStore = new LocalForage();
     private SerializationUtil serializationUtil = new SerializationUtil();
 
     public OfflineStorageUtil(Class<T> clazz,String uniqueKey) {
@@ -59,6 +59,15 @@ public class OfflineStorageUtil<T> {
         this.uniqueKey = uniqueKey;
     }
 
+    public void removeItem(String key, final Runnable onComplete){
+        offlineDataStore.removeItem(key, new LocalForageCallback() {
+            @Override
+            public void onComplete(boolean error, Object o) {
+                if(error){ throw new IllegalStateException("unexpected error while removing time");}
+                onComplete.run();
+            }
+        });
+    }
 
     public void fetch(final AsyncCommand asyncCommand) {
         // using schema uniqueID to fetch queryResult

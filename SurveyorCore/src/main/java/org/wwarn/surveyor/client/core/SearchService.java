@@ -37,6 +37,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.core.client.GWT;
 import org.wwarn.surveyor.client.model.TableViewConfig;
+import org.wwarn.surveyor.client.mvp.DataSource;
 
 import java.util.List;
 
@@ -45,18 +46,19 @@ import java.util.List;
  */
 @RemoteServiceRelativePath("SearchService")
 public interface SearchService extends RemoteService {
+
     /**
      * Utility/Convenience class.
      * Use SearchService.App.getInstance() to access static instance of SearchServiceAsync
      */
     public static class App {
-        private static final SearchServiceAsync ourInstance = (SearchServiceAsync) GWT.create(SearchService.class);
 
+        private static final SearchServiceAsync ourInstance = (SearchServiceAsync) GWT.create(SearchService.class);
         public static SearchServiceAsync getInstance() {
             return ourInstance;
         }
-    }
 
+    }
     /**
      * Call first to initialise the index
      * @param schema
@@ -65,6 +67,8 @@ public interface SearchService extends RemoteService {
      * @return
      */
     public QueryResult preFetchData(DataSchema schema, GenericDataSource dataSource, String[] facetList, FilterQuery filterQuery) throws SearchException;
+
+    public String fetchDataVersion(DataSchema schema, GenericDataSource dataSource) throws SearchException;
 
     public QueryResult query(FilterQuery filterQuery, String[] facetFields) throws SearchException;
 

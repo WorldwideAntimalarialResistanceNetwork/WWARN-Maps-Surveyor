@@ -89,7 +89,6 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
         return new String[]{Table.PACKAGE};    //Must Override
     }
 
-
     void runTestWithDefaultDataSetup(final Runnable runnable){
         final boolean callFinishTest = false; // important as if this is called other calls to finishTest fails
         delayTestFinish(FINISH_TEST_DELAY_TIMEOUT_MILLIS);
