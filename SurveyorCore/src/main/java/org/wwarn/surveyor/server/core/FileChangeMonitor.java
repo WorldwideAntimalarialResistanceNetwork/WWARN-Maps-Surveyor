@@ -41,6 +41,7 @@ import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
 import com.allen_sauer.gwt.log.client.Log;
 
@@ -62,6 +63,14 @@ public class FileChangeMonitor extends Observable {
 
     protected static class Loader{
         static FileChangeMonitor INSTANCE = new FileChangeMonitor();
+    }
+
+    @Override
+    public synchronized void addObserver(Observer o) {
+        if(watcher == null) {
+            Log.warn("FileChangeMonitor::addObserver", "init/initSynchronous not yet called - ensure it is called with a path to file to observer, or there will be nothing to observe!");
+        }
+        super.addObserver(o);
     }
 
     /**
