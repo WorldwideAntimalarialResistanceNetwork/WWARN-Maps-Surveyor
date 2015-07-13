@@ -129,4 +129,14 @@ public class ServerSideSearchDataProvider implements DataProvider {
             throw new SearchException("query unique record failed", e);
         }
     }
+
+    public void fetchDataVersion(DataSchema schema, GenericDataSource dataSource, AsyncCallbackWithTimeout<String> dataVersionCallback)throws SearchException{
+        try {
+            searchServiceAsync.fetchDataVersion(schema, dataSource, dataVersionCallback);
+        } catch (Exception e) {
+            final String message = "unable to fetch data version";
+            Log.error(message, e);
+            throw new SearchException(message, e);
+        }
+    }
 }

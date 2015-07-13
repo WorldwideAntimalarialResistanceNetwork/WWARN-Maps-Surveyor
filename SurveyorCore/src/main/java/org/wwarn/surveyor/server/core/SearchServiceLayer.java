@@ -35,6 +35,7 @@ package org.wwarn.surveyor.server.core;
 
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.TableViewConfig;
+import org.wwarn.surveyor.client.mvp.DataSource;
 
 import java.util.List;
 
@@ -51,4 +52,5 @@ public interface SearchServiceLayer {
     public QueryResult query(FilterQuery filterQuery, String[] facetFields) throws SearchException;
     public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length, TableViewConfig tableViewConfig) throws SearchException;
     public QueryResult queryUniqueRecords(FilterQuery filterQuery, String[] facetFields) throws SearchException;
+    public String fetchDataVersion();
 }

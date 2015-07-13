@@ -602,6 +602,14 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         }
     }
 
+    @Override
+    public String fetchDataVersion() {
+        if (!hasInitialised.get()) {
+            throw new IllegalStateException("Search not ready : init method must be called first");
+        }
+        return this.dataSourceHash;
+    }
+
     /**
      * Consider moving this to use TopDocsCollector later for paging
      */
