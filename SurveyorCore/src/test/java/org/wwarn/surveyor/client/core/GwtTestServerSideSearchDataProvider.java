@@ -34,7 +34,6 @@ package org.wwarn.surveyor.client.core;
  */
 
 import com.google.gwt.i18n.shared.DateTimeFormat;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.wwarn.surveyor.client.event.FilterChangedEvent;
@@ -48,7 +47,8 @@ import java.util.*;
  */
 public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSONDataProvider{
     public static final String LOCATION_DEFAULT_PUBLICATIONS_JSON = "data/surveyorCorepublications.json";
-    public static final String DATASOURCE_HASH = "A430121496FE8E899F60011854A13257";
+    public static final String DATASOURCE_HASH_EMPTY_FILE = "A430121496FE8E899F60011854A13257";
+    public static final String HASH_NON_EMPTY_FILE = "07B88B6F5DCD98A1A15CC854B7F1BADA";
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
 
     public GwtTestServerSideSearchDataProvider() {
@@ -99,8 +99,6 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
 
     @Test
     public void testDataSourceHash() throws Exception {
-        // todo need to ensure the test data is properly set,
-        // so that I can get a hash value from the data source
         runTestWithDefaultDataSetup(new Runnable() {
             @Override
             public void run() {
@@ -115,15 +113,13 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                         @Override
                         public void onNonTimedOutSuccess(String result) {
                             assertNotNull(result);
-                            assertEquals(DATASOURCE_HASH, result);
+                            assertEquals(HASH_NON_EMPTY_FILE, result);
                             finishTest();
                         }
                     });
                 } catch (SearchException e) {
                     throw new IllegalStateException(e);
                 }
-
-
             }
         });
     }

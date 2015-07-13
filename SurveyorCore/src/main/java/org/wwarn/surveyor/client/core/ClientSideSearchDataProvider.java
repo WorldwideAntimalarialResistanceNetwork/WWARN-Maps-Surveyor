@@ -44,6 +44,7 @@ import org.wwarn.surveyor.client.mvp.DataSource;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 import org.wwarn.surveyor.client.util.OfflineStorageUtil;
 import com.google.gwt.user.client.Timer;
+import org.wwarn.surveyor.client.util.SerializationUtil;
 
 import java.util.*;
 
@@ -52,6 +53,7 @@ import java.util.*;
  * When I wrote this, only God and I understood what I was doing. Now, God only knows. - Karl Weierstrass
  */
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
+    private boolean isTest = false;
     private List<Map<String, BitSet>> fieldInvertedIndex;
     private static final String ISO8601_PATTERN = DataType.ISO_DATE_FORMAT;
     private RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex;
@@ -66,6 +68,15 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         if(dataSource.getDataSourceProvider()!= DataSourceProvider.ClientSideSearchDataProvider){
             throw new IllegalArgumentException("Expected data source provider client side data provider");
         }
+    }
+
+    protected ClientSideSearchDataProvider(GenericDataSource dataSource, DataSchema dataSchema, String[] fieldList, boolean isTest) {
+        this(dataSource, dataSchema, fieldList);
+
+        if(dataSource.getDataSourceProvider()!= DataSourceProvider.ClientSideSearchDataProvider){
+            throw new IllegalArgumentException("Expected data source provider client side data provider");
+        }
+        this.isTest = isTest;
     }
 
     private String createOfflineStorageUniqueKey(String keySuffix){
@@ -87,6 +98,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     @Override
     public void onLoad(final Runnable callOnLoad) {
+        if(isTest){
+            fetchFromServers(callOnLoad);return;
+        }
         //todo move this into a better datasync abstraction or tidy up
         offlineStorageCurrentKeyStore = new OfflineStorageUtil(String.class, getOfflineStoreUniqueKey());
         offlineStorageCurrentKeyStore.fetch(new OfflineStorageUtil.AsyncCommand<String>() {
@@ -295,6 +309,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private void storeToOfflineDataStore(final QueryResult queryResult) {
+        if(isTest) return;
         // store current datasourceHash
         final String dataSourceHash = queryResult.getRecordList().getDataSourceHash();
         offlineStorageCurrentKeyStore.store((dataSourceHash), new OfflineStorageUtil.AsyncCommand<String>() {

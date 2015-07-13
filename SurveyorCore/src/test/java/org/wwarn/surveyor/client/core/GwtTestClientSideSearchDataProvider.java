@@ -36,6 +36,8 @@ package org.wwarn.surveyor.client.core;
 import org.junit.Test;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
+import org.wwarn.surveyor.client.util.OfflineStorageUtil;
+import org.wwarn.surveyor.client.util.SerializationUtil;
 
 public class GwtTestClientSideSearchDataProvider extends GwtTestServerSideSearchDataProvider{
     private static DataProvider dataProvider;
@@ -47,7 +49,8 @@ public class GwtTestClientSideSearchDataProvider extends GwtTestServerSideSearch
             public DataProvider getDataProvider() {
                 GenericDataSource dataSource = GwtTestClientSideSearchDataProvider.getGenericDataSource();
                 String[] selectorList = testUtility.getSelectorList();
-                return new ClientSideSearchDataProvider(dataSource, testUtility.fetchSampleDataSchema(), selectorList);
+                boolean isTest = true;
+                return new ClientSideSearchDataProvider(dataSource, testUtility.fetchSampleDataSchema(), selectorList, isTest);
             }
         });
     }
@@ -57,7 +60,20 @@ public class GwtTestClientSideSearchDataProvider extends GwtTestServerSideSearch
         DataSchema schema = dataProviderTestUtility.fetchSampleDataSchema();
         String[] facetFieldList = dataProviderTestUtility.getSelectorList();
         GenericDataSource dataSource = getGenericDataSource();
-        dataProvider = new ClientSideSearchDataProvider(dataSource, schema, facetFieldList);
+        final boolean isTest = true;
+        dataProvider = new ClientSideSearchDataProvider(dataSource, schema, facetFieldList, isTest);
+    }
+
+    static class TestSerializationUtil extends SerializationUtil{
+        @Override
+        public <T> String serialize(Class<T> aClass, T object1) {
+            return super.serialize(aClass, object1);
+        }
+
+        @Override
+        public <T> T deserialize(Class<T> clazz, String stringContainingSerialisedInput) {
+            return super.deserialize(clazz, stringContainingSerialisedInput);
+        }
     }
 
     private static GenericDataSource getGenericDataSource() {
