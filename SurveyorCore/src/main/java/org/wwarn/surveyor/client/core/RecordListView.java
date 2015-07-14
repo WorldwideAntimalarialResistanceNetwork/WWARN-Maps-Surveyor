@@ -39,7 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Backed by a record list, this is a restricted view of the backing list
+ * This is a restricted view of a RecordListCompressedWithInvertedIndexImpl,
+ * intended to be a light weight (in terms of memory) representation of the record list
  */
 public class RecordListView extends RecordList{
     private static UnsupportedOperationException unsupportedOperationException = new UnsupportedOperationException();

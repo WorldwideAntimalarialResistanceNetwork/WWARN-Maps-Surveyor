@@ -159,14 +159,28 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 }
 
                 @Override
-                public void onNonTimedOutSuccess(QueryResult queryResult) {
-                    storeToOfflineDataStore(queryResult);
+                public void onNonTimedOutSuccess(final QueryResult queryResult) {
                     initialisedDataProvider(queryResult, callOnLoad);
+                    scheduleStoreToOfflineDataStore(queryResult);
+
                 }
+
             });
         } catch (SearchException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private void scheduleStoreToOfflineDataStore(final QueryResult queryResult) {
+        // attempt to store in 7 seconds after fetching from server, should help reduce initial load time.
+        Timer scheduleStoreLater = new Timer() {
+            @Override
+            public void run() {
+                storeToOfflineDataStore(queryResult);
+
+            }
+        };
+        scheduleStoreLater.schedule(7000);
     }
 
     private void scheduleCheckForDataUpdates() {
