@@ -36,6 +36,7 @@ package org.wwarn.surveyor.client.core;
 import org.junit.Test;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 import org.wwarn.surveyor.client.util.OfflineStorageUtil;
 import org.wwarn.surveyor.client.util.SerializationUtil;
 
@@ -100,4 +101,42 @@ public class GwtTestClientSideSearchDataProvider extends GwtTestServerSideSearch
 
     }
 
+    @Test
+    public void testRecordListView() throws Exception {
+        delayTestFinish(10*1000);
+        dataProvider.onLoad(new Runnable() {
+            @Override
+            public void run() {
+                final QueryResult lastQueryResult = SimpleClientFactory.getInstance().getLastQueryResult();
+                assertNotNull(lastQueryResult);
+                final RecordList recordList = lastQueryResult.getRecordList();
+                assertTrue(recordList instanceof RecordListCompressedWithInvertedIndexImpl);
+                final RecordList uniqueRecordsByPublicationYear = recordList.getUniqueRecordsBy(DataProviderTestUtility.FIELD_PUBLICATION_YEAR);
+                assertNotNull(uniqueRecordsByPublicationYear);
+                assertTrue(uniqueRecordsByPublicationYear instanceof RecordList);
+                assertEquals(8, uniqueRecordsByPublicationYear.size());
+                try {
+                    dataProvider.query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            fail();
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            final RecordList resultRecordList = result.getRecordList();
+                            assertNotNull(resultRecordList);
+                            final RecordList uniqueRecordsBy = resultRecordList.getUniqueRecordsBy(DataProviderTestUtility.FIELD_PUBLICATION_YEAR);
+                            assertTrue(uniqueRecordsBy instanceof RecordList);
+                            assertEquals(8, uniqueRecordsBy.size());
+                            finishTest();
+                        }
+                    });
+                } catch (SearchException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        });
+
+    }
 }
