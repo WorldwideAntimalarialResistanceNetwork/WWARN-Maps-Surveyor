@@ -33,6 +33,8 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,22 +61,22 @@ public class RecordListView extends RecordList{
     }
 
     public RecordListView(DataSchema schema) {
-        throw unsupportedOperationException;
+        throw getUnsupportedOperationException();
     }
 
-    @Override
-    public RecordList getUniqueRecordsBy(String fieldName) {
-        throw unsupportedOperationException;
+    @NotNull
+    private UnsupportedOperationException getUnsupportedOperationException() {
+        return unsupportedOperationException;
     }
 
     @Override
     public void add(Record record) {
-        throw unsupportedOperationException;
+        throw getUnsupportedOperationException();
     }
 
     @Override
     public void addRecord(String... fields) {
-        throw unsupportedOperationException;
+        throw getUnsupportedOperationException();
     }
 
     @Override

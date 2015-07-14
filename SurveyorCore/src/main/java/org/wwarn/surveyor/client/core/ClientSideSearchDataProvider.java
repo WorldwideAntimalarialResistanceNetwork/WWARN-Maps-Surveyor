@@ -202,7 +202,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
             }
         };
-        timer.schedule(20 * 1000); // check for new data after
+        timer.schedule(20 * 1000); // check for new data after 20 seconds
 //        final int i = 10;
 //        Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
 //            @Override
