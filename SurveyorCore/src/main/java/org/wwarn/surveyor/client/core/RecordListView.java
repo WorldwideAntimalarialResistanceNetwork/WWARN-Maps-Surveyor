@@ -33,11 +33,14 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Backed by a record list, this is a restricted view of the backing list
+ * This is a restricted view of a RecordListCompressedWithInvertedIndexImpl,
+ * intended to be a light weight (in terms of memory) representation of the record list
  */
 public class RecordListView extends RecordList{
     private static UnsupportedOperationException unsupportedOperationException = new UnsupportedOperationException();
@@ -59,22 +62,22 @@ public class RecordListView extends RecordList{
     }
 
     public RecordListView(DataSchema schema) {
-        throw unsupportedOperationException;
+        throw getUnsupportedOperationException();
     }
 
-    @Override
-    public RecordList getUniqueRecordsBy(String fieldName) {
-        throw unsupportedOperationException;
+    @NotNull
+    private UnsupportedOperationException getUnsupportedOperationException() {
+        return unsupportedOperationException;
     }
 
     @Override
     public void add(Record record) {
-        throw unsupportedOperationException;
+        throw getUnsupportedOperationException();
     }
 
     @Override
     public void addRecord(String... fields) {
-        throw unsupportedOperationException;
+        throw getUnsupportedOperationException();
     }
 
     @Override

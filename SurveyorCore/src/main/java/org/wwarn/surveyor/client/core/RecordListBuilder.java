@@ -88,7 +88,7 @@ public class RecordListBuilder {
     public RecordList createRecordList(String dataSourceHash) {
         switch (compressionMode) {
             case NONE:
-                Log.error("Using RecordList uncompressed");
+                Log.warn("RecordListBuilder::createRecordList","Using RecordList uncompressed - high memory use risk");
                 break;
             case CANONICAL:
             case CANONICAL_WITH_INVERTED_INDEX:
