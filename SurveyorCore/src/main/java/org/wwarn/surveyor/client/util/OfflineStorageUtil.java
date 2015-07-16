@@ -33,6 +33,7 @@ package org.wwarn.surveyor.client.util;
  * #L%
  */
 
+import com.google.gwt.core.client.Scheduler;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.QueryResult;
@@ -88,13 +89,27 @@ public class OfflineStorageUtil<T> {
     public void store(@NotNull final T object, final AsyncCommand asyncCommand) {
         // using schema uniqueID to fetch queryResult
         Objects.requireNonNull(object);
-        final String queryResultSerialisedString = serializationUtil.serialize(clazz, object);
-        offlineDataStore.setItem(uniqueKey, queryResultSerialisedString, new LocalForageCallback<String>() {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
-            public void onComplete(boolean error, String storedString) {
-                if (!error && storedString != null) {
-                    asyncCommand.success(object);
-                } else asyncCommand.failure();
+            public void execute() {
+                final String queryResultSerialisedString = serializationUtil.serialize(clazz, object); // can be very slow esp in IE!
+                scheduleStorageOfItem(queryResultSerialisedString, asyncCommand, object);
+            }
+        });
+    }
+
+    private void scheduleStorageOfItem(final String queryResultSerialisedString, final AsyncCommand asyncCommand, @NotNull final T item) {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                offlineDataStore.setItem(uniqueKey, queryResultSerialisedString, new LocalForageCallback<String>() {
+                    @Override
+                    public void onComplete(boolean error, String storedString) {
+                        if (!error && storedString != null) {
+                            asyncCommand.success(item);
+                        } else asyncCommand.failure();
+                    }
+                });
             }
         });
     }
