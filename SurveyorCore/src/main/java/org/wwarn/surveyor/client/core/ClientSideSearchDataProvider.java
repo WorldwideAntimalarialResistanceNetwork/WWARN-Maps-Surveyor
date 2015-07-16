@@ -354,11 +354,13 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     public boolean execute() {
                         Scheduler.RepeatingCommand next = iterator.next();
                         try {
+                            Log.debug("ClientSideSearchDataProvider::executeScheduleTasks", "attempting to execute task");
                             boolean isOK = next != null && next.execute();
                             if(!isOK){
                              //handle case where execution failed
                                 Log.warn("ClientSideSearchDataProvider::executeScheduleTasks","execution returned false");
-                            }
+                            }else Log.debug("ClientSideSearchDataProvider::executeScheduleTasks", "task execution complete");
+
                             return isOK && iterator.hasNext();
                         } catch (Exception e){
                             Log.error("ClientSideSearchDataProvider::executeScheduleTasks", "failed to execute task",e);
@@ -375,7 +377,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 });
             }
         };
-        scheduleTaskExector.schedule(10 * 1000); // start 10 seconds after page load
+        scheduleTaskExector.schedule(20 * 1000); // start 20 seconds after page load
     }
 
     private List<Map<String, BitSet>> setupIndex(RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex) {
