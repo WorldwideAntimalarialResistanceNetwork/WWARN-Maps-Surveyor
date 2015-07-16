@@ -90,10 +90,10 @@ public class FileChangeContextListener implements ServletContextListener {
                 try {
                     Log.debug("FileChangeContextListener::contextInitialized", "Index monitor setup starting");
                     fileChangeMonitor.initSynchronous(Paths.get(monitoredFileRealPath));
-                } catch (RuntimeException e){ // must catch all exceptions, otherwise, subsequent calls to fails
-                    logExceptions(e);
-                } catch (Exception e) {
-                    logExceptions(e);
+                } catch (Throwable e) {// must catch all exceptions, otherwise, subsequent calls to fails
+                    if(e instanceof Exception) {
+                        logExceptions((Exception) e);
+                    }else logExceptions(new IllegalStateException(e));
                 }
             }
         }, 0, 100, TimeUnit.MILLISECONDS);
