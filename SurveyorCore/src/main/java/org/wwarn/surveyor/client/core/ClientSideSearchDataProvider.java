@@ -173,24 +173,22 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     private void scheduleStoreToOfflineDataStore(final QueryResult queryResult) {
         // attempt to store in 7 seconds after fetching from server, should help reduce initial load time.
-        Timer scheduleStoreLater = new Timer() {
+        listOfScheduledJobs.add(new Scheduler.RepeatingCommand() {
             @Override
-            public void run() {
+            public boolean execute() {
                 storeToOfflineDataStore(queryResult);
-
+                return true;
             }
-        };
-        scheduleStoreLater.schedule(7000);
+        });
     }
 
     private void scheduleCheckForDataUpdates() {
 //        //checks server for data updates
         final DataSchema schema = this.schema;
         final GenericDataSource dataSource = this.dataSource;
-        final Timer timer = new Timer() {
-
+        listOfScheduledJobs.add(new Scheduler.RepeatingCommand() {
             @Override
-            public void run() {
+            public boolean execute() {
                 searchServiceAsync.fetchDataVersion(schema, dataSource, new AsyncCallbackWithTimeout<String>() {
                     @Override
                     public void onTimeOutOrOtherFailure(Throwable caught) {
@@ -214,35 +212,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     }
                 });
 
+                return true;
             }
-        };
-        timer.schedule(20 * 1000); // check for new data after 20 seconds
-//        final int i = 10;
-//        Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
-//            @Override
-//            public boolean execute() {
-//                searchServiceAsync.fetchDataVersion(new AsyncCallback<String>() {
-//                    @Override
-//                    public void onFailure(Throwable throwable) {
-//                        //unable to fetch version info
-//                    }
-//
-//                    @Override
-//                    public void onSuccess(String dataSource) {
-//                        if(recordListCompressedWithInvertedIndex == null) throw new IllegalStateException("recordList was null");
-//                        if(recordListCompressedWithInvertedIndex.getDataSourceHash().equals(dataSource)) return;
-//                        String previousDataSourceHash = recordListCompressedWithInvertedIndex.getDataSourceHash();
-//                        fetchFromServers(new Runnable() {
-//                            @Override
-//                            public void run() {
-//
-//                            }
-//                        });
-//                    }
-//                });
-//                return false;
-//            }
-//        }, i * 1000);
+        });
     }
 
     private void cleanupPreviousData(final String currentDataHash) {
@@ -297,7 +269,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         offlineStoragePreviousKeyStore.store(previousDataSourceHash, new OfflineStorageUtil.AsyncCommand<String>() {
             @Override
             public void success(@NotNull String objectToStore) {
-                if(Log.isDebugEnabled()) Log.debug("Stored previous datasourcehash - successfully");
+                if (Log.isDebugEnabled()) Log.debug("Stored previous datasourcehash - successfully");
                 // send an event to inform users to refresh browser as data has been updated.
                 clientFactory.getEventBus().fireEvent(new DataUpdatedEvent());
 //  Remove surplus call to fetch data
@@ -361,7 +333,49 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         if(!(recordList instanceof RecordListCompressedWithInvertedIndexImpl)){ throw new IllegalArgumentException("Expected compressed index with inverted list");}
         recordListCompressedWithInvertedIndex = (RecordListCompressedWithInvertedIndexImpl) recordList;
         fieldInvertedIndex = setupIndex(recordListCompressedWithInvertedIndex);
+        onLoadComplete(callOnLoad);
+    }
+
+    private void onLoadComplete(Runnable callOnLoad) {
         callOnLoad.run();
+        executeScheduleTasks();
+    }
+
+    private List<Scheduler.RepeatingCommand> listOfScheduledJobs = new ArrayList<>();
+
+    private void executeScheduleTasks() {
+
+        final Iterator<Scheduler.RepeatingCommand> iterator = listOfScheduledJobs.iterator();
+        Timer scheduleTaskExector = new Timer() {
+            @Override
+            public void run() {
+                Scheduler.get().scheduleIncremental(new Scheduler.RepeatingCommand() {
+                    @Override
+                    public boolean execute() {
+                        Scheduler.RepeatingCommand next = iterator.next();
+                        try {
+                            boolean isOK = next != null && next.execute();
+                            if(!isOK){
+                             //handle case where execution failed
+                                Log.warn("ClientSideSearchDataProvider::executeScheduleTasks","execution returned false");
+                            }
+                            return isOK && iterator.hasNext();
+                        } catch (Exception e){
+                            Log.error("ClientSideSearchDataProvider::executeScheduleTasks", "failed to execute task",e);
+                            return false;
+                        } finally {
+                            if(next != null)
+                                iterator.remove();
+                            if(!iterator.hasNext()){
+                                // end of list clean up
+                                listOfScheduledJobs.clear();
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        scheduleTaskExector.schedule(10 * 1000); // start 10 seconds after page load
     }
 
     private List<Map<String, BitSet>> setupIndex(RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex) {
