@@ -176,7 +176,12 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         listOfScheduledJobs.add(new Scheduler.RepeatingCommand() {
             @Override
             public boolean execute() {
-                storeToOfflineDataStore(queryResult);
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        storeToOfflineDataStore(queryResult);
+                    }
+                });
                 return true;
             }
         });
@@ -344,40 +349,46 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     private List<Scheduler.RepeatingCommand> listOfScheduledJobs = new ArrayList<>();
 
     private void executeScheduleTasks() {
-
-        final Iterator<Scheduler.RepeatingCommand> iterator = listOfScheduledJobs.iterator();
-        Timer scheduleTaskExector = new Timer() {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
-            public void run() {
-                Scheduler.get().scheduleIncremental(new Scheduler.RepeatingCommand() {
-                    @Override
-                    public boolean execute() {
-                        Scheduler.RepeatingCommand next = iterator.next();
-                        try {
-                            Log.debug("ClientSideSearchDataProvider::executeScheduleTasks", "attempting to execute task");
-                            boolean isOK = next != null && next.execute();
-                            if(!isOK){
-                             //handle case where execution failed
-                                Log.warn("ClientSideSearchDataProvider::executeScheduleTasks","execution returned false");
-                            }else Log.debug("ClientSideSearchDataProvider::executeScheduleTasks", "task execution complete");
+            public void execute() {
 
-                            return isOK && iterator.hasNext();
-                        } catch (Exception e){
-                            Log.error("ClientSideSearchDataProvider::executeScheduleTasks", "failed to execute task",e);
-                            return false;
-                        } finally {
-                            if(next != null)
-                                iterator.remove();
-                            if(!iterator.hasNext()){
-                                // end of list clean up
-                                listOfScheduledJobs.clear();
+                final Iterator<Scheduler.RepeatingCommand> iterator = listOfScheduledJobs.iterator();
+                Timer scheduleTaskExector = new Timer() {
+                    @Override
+                    public void run() {
+                        Scheduler.get().scheduleIncremental(new Scheduler.RepeatingCommand() {
+                            @Override
+                            public boolean execute() {
+                                Scheduler.RepeatingCommand next = iterator.next();
+                                try {
+                                    Log.debug("ClientSideSearchDataProvider::executeScheduleTasks", "attempting to execute task");
+                                    boolean isOK = next != null && next.execute();
+                                    if (!isOK) {
+                                        //handle case where execution failed
+                                        Log.warn("ClientSideSearchDataProvider::executeScheduleTasks", "execution returned false");
+                                    } else
+                                        Log.debug("ClientSideSearchDataProvider::executeScheduleTasks", "task execution complete");
+
+                                    return isOK && iterator.hasNext();
+                                } catch (Exception e) {
+                                    Log.error("ClientSideSearchDataProvider::executeScheduleTasks", "failed to execute task", e);
+                                    return false;
+                                } finally {
+                                    if (next != null)
+                                        iterator.remove();
+                                    if (!iterator.hasNext()) {
+                                        // end of list clean up
+                                        listOfScheduledJobs.clear();
+                                    }
+                                }
                             }
-                        }
+                        });
                     }
-                });
+                };
+                scheduleTaskExector.schedule(20 * 1000); // start 20 seconds after page load
             }
-        };
-        scheduleTaskExector.schedule(20 * 1000); // start 20 seconds after page load
+        });
     }
 
     private List<Map<String, BitSet>> setupIndex(RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex) {
