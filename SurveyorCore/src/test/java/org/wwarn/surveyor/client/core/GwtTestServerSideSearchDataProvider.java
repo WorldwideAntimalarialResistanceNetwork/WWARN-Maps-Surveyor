@@ -47,8 +47,8 @@ import java.util.*;
  */
 public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSONDataProvider{
     public static final String LOCATION_DEFAULT_PUBLICATIONS_JSON = "data/surveyorCorepublications.json";
-    public static final String DATASOURCE_HASH_EMPTY_FILE = "A430121496FE8E899F60011854A13257";
-    public static final String HASH_NON_EMPTY_FILE = "07B88B6F5DCD98A1A15CC854B7F1BADA";
+    public static final String HASH_NON_EMPTY_FILE  = "A430121496FE8E899F60011854A13257";
+    public static final String DATASOURCE_HASH_EMPTY_FILE= "07B88B6F5DCD98A1A15CC854B7F1BADA";
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
 
     public GwtTestServerSideSearchDataProvider() {
