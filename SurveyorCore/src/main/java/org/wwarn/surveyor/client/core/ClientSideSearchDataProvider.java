@@ -40,11 +40,9 @@ import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.event.DataUpdatedEvent;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
-import org.wwarn.surveyor.client.mvp.DataSource;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 import org.wwarn.surveyor.client.util.OfflineStorageUtil;
 import com.google.gwt.user.client.Timer;
-import org.wwarn.surveyor.client.util.SerializationUtil;
 
 import java.util.*;
 
@@ -99,7 +97,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     @Override
     public void onLoad(final Runnable callOnLoad) {
         if(isTest){
-            fetchFromServers(callOnLoad);return;
+            fetchAllDataFromServers(callOnLoad);return;
         }
         //todo move this into a better datasync abstraction or tidy up
         offlineStorageCurrentKeyStore = new OfflineStorageUtil(String.class, getOfflineStoreUniqueKey());
@@ -131,7 +129,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                             Log.debug("failed to fetch data from store, queryresult not found");
                         }
                         // failed to find query result in index, then fetch from server
-                        fetchFromServers(callOnLoad);
+                        fetchAllDataFromServers(callOnLoad);
                     }
                 });
             }
@@ -139,17 +137,15 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
             @Override
             public void failure() {
                 // if key doesn't exist then fetch from server
-                fetchFromServers(callOnLoad);
+                fetchAllDataFromServers(callOnLoad);
             }
         });
 
 
     }
 
-    private void fetchFromServers(final Runnable callOnLoad) {
+    private void fetchAllDataFromServers(final Runnable callOnLoad) {
         try {
-            //todo something with initialFilterQuery
-//            InitialFilterQuery initialFilterQuery = getInitialFilterQuery();
             final FilterQuery filterQuery = new MatchAllQuery(); // fetch everything
             clientFactory.setLastFilterQuery(filterQuery);
             searchServiceAsync.preFetchData(this.schema, this.dataSource, this.facetFieldList, filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
@@ -206,10 +202,10 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                         if (recordListCompressedWithInvertedIndex.getDataSourceHash().equals(currentDataHash)) { cleanupPreviousData(currentDataHash); return; }
                         final String previousDataSourceHash = recordListCompressedWithInvertedIndex.getDataSourceHash();
                         if(Log.isDebugEnabled()) Log.debug("New data found, fetch records from server");
-                        fetchFromServers(new Runnable() {
+                        fetchAllDataFromServers(new Runnable() {
                             @Override
                             public void run() {
-                                if(Log.isDebugEnabled()) Log.debug("New data fetch complete");
+                                if (Log.isDebugEnabled()) Log.debug("New data fetch complete");
                                 storePreviousDataSourceHash(previousDataSourceHash);
                             }
                         });
@@ -278,7 +274,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 // send an event to inform users to refresh browser as data has been updated.
                 clientFactory.getEventBus().fireEvent(new DataUpdatedEvent());
 //  Remove surplus call to fetch data
-//                fetchFromServers(new Runnable() {
+//                fetchAllDataFromServers(new Runnable() {
 //                    @Override
 //                    public void run() {
 //                    }
@@ -536,8 +532,8 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
 
     private BitSet processRangeQueryDefaultTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
-        String minValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue();
-        String maxValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue();
+        String minValue = leftPaddedInteger(Integer.parseInt(((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue()));
+        String maxValue = leftPaddedInteger(Integer.parseInt(((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue()));
         //sorted set assumes all keys are of same type and sorted..
         final TreeMap treeMap = (TreeMap) map;
         final NavigableMap navigableMap = treeMap.subMap(minValue, true, maxValue, true);
