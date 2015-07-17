@@ -113,7 +113,7 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                         @Override
                         public void onNonTimedOutSuccess(String result) {
                             assertNotNull(result);
-                            assertEquals(HASH_NON_EMPTY_FILE, result);
+                            assertTrue(HASH_NON_EMPTY_FILE.equals(result) || DATASOURCE_HASH_EMPTY_FILE.equals(result));
                             finishTest();
                         }
                     });
