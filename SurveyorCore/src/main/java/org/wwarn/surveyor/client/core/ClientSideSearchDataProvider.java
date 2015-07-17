@@ -46,6 +46,7 @@ import com.google.gwt.user.client.Timer;
 
 import java.util.*;
 
+
 /**
  * A client search implementation using BitSets and offline data storage
  * When I wrote this, only God and I understood what I was doing. Now, God only knows. - Karl Weierstrass
@@ -53,16 +54,15 @@ import java.util.*;
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
     private boolean isTest = false;
     private List<Map<String, BitSet>> fieldInvertedIndex;
-    private static final String ISO8601_PATTERN = DataType.ISO_DATE_FORMAT;
     private RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex;
     private FacetList facetList = new FacetList();
     OfflineStorageUtil<QueryResult> offlineDataStore = null;
     OfflineStorageUtil<String> offlineStorageCurrentKeyStore;
     OfflineStorageUtil<String> offlineStoragePreviousKeyStore;
+    private DateTimeFormat dateTimeFormat = DataType.ParseUtil.getDateFormatFrom(DataType.ISO_DATE_FORMAT);
 
     public ClientSideSearchDataProvider(GenericDataSource dataSource, DataSchema dataSchema, String[] fieldList) {
         super(dataSource, dataSchema, fieldList);
-
         if(dataSource.getDataSourceProvider()!= DataSourceProvider.ClientSideSearchDataProvider){
             throw new IllegalArgumentException("Expected data source provider client side data provider");
         }
@@ -198,10 +198,14 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
                     @Override
                     public void onNonTimedOutSuccess(final String currentDataHash) {
-                        if (recordListCompressedWithInvertedIndex == null) throw new IllegalStateException("recordList was null");
-                        if (recordListCompressedWithInvertedIndex.getDataSourceHash().equals(currentDataHash)) { cleanupPreviousData(currentDataHash); return; }
+                        if (recordListCompressedWithInvertedIndex == null)
+                            throw new IllegalStateException("recordList was null");
+                        if (recordListCompressedWithInvertedIndex.getDataSourceHash().equals(currentDataHash)) {
+                            cleanupPreviousData(currentDataHash);
+                            return;
+                        }
                         final String previousDataSourceHash = recordListCompressedWithInvertedIndex.getDataSourceHash();
-                        if(Log.isDebugEnabled()) Log.debug("New data found, fetch records from server");
+                        if (Log.isDebugEnabled()) Log.debug("New data found, fetch records from server");
                         fetchAllDataFromServers(new Runnable() {
                             @Override
                             public void run() {
@@ -225,17 +229,17 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         offlineStoragePreviousKeyStore.fetch(new OfflineStorageUtil.AsyncCommand<String>() {
             @Override
             public void success(@NotNull String previousKeyToRemove) {
-                if(StringUtils.isEmpty(previousKeyToRemove)) return;
-                if(previousKeyToRemove.equals(currentDataHash)){
+                if (StringUtils.isEmpty(previousKeyToRemove)) return;
+                if (previousKeyToRemove.equals(currentDataHash)) {
                     offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), new Runnable() {
                         @Override
                         public void run() {
-                            if(Log.isDebugEnabled()){
+                            if (Log.isDebugEnabled()) {
                                 Log.debug("Old key not removed, as current and previous keys are equal, remove previous key reference instead");
                             }
                         }
                     });
-                }else {
+                } else {
                     final String keyForOldHash = createOfflineStorageUniqueKey(previousKeyToRemove);
                     offlineStoragePreviousKeyStore.removeItem(keyForOldHash, new Runnable() {
                         @Override
@@ -247,7 +251,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                             offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), new Runnable() {
                                 @Override
                                 public void run() {
-                                    if(Log.isDebugEnabled()){
+                                    if (Log.isDebugEnabled()) {
                                         Log.debug("removing previous key, now old key referenced data deleted");
                                     }
                                 }
@@ -307,7 +311,11 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 // store current query result against DataSourceHash and SchemaUniqueID
                 offlineDataStore.store(queryResult, new OfflineStorageUtil.AsyncCommand<QueryResult>() {
                     @Override
-                    public void success(QueryResult queryResult) {if(Log.isDebugEnabled()){Log.debug("stored current query result");}}
+                    public void success(QueryResult queryResult) {
+                        if (Log.isDebugEnabled()) {
+                            Log.debug("stored current query result");
+                        }
+                    }
 
                     @Override
                     public void failure() {
@@ -477,7 +485,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 case Integer:
                     // if range query
                     if (filterQueryElement instanceof FilterQuery.FilterFieldRange) {
-                        queryBitSet = processRangeQueryDefaultTypes(queryBitSet, map, filterQueryElement, type);
+                        queryBitSet = processRangeQueryIntegerTypes(queryBitSet, map, filterQueryElement, type);
                     } else if (filterQueryElement instanceof FilterQuery.FilterFieldGreaterThanInteger) {
                         queryBitSet = processIntegerGreaterThanDefaultTypes(queryBitSet, map, filterQueryElement, type);
                     } else {
@@ -488,14 +496,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 case Date:
 
                     if (filterQueryElement instanceof FilterQuery.FilterFieldRangeDate) {
-                        Date minValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMinValue();
-                        Date maxValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMaxValue();
-                        //todo query.add(filterField, NumericRangeQuery.newLongRange(filterField, minValue.getTime(), maxValue.getTime(), true, true));
+                        queryBitSet = processRangeQueryISODateTypes(queryBitSet, map, filterQueryElement, type);
                     } else {
-                        for (String fieldValue : getFieldValues(filterQueryElement)) {
-                            final Date date = parseDateFrom(fieldValue, ISO8601_PATTERN);
-                            //todo query.add(filterField, String.valueOf(date.getTime()));
-                        }
+                        queryBitSet = processRangeQueryMultiValueQueryDateYear(queryBitSet, map, filterQueryElement, type);
                     }
 
                     break;
@@ -531,9 +534,18 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
 
-    private BitSet processRangeQueryDefaultTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
+    private BitSet processRangeQueryIntegerTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
         String minValue = leftPaddedInteger(Integer.parseInt(((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue()));
         String maxValue = leftPaddedInteger(Integer.parseInt(((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue()));
+        //sorted set assumes all keys are of same type and sorted..
+        final TreeMap treeMap = (TreeMap) map;
+        final NavigableMap navigableMap = treeMap.subMap(minValue, true, maxValue, true);
+        return processMultiValueQueryAllTypes(queryBitSet, map, navigableMap.keySet(), type);
+    }
+
+    private BitSet processRangeQueryISODateTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
+        String minValue = (dateTimeFormat.format(((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMinValue()));
+        String maxValue = (dateTimeFormat.format(((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMaxValue()));
         //sorted set assumes all keys are of same type and sorted..
         final TreeMap treeMap = (TreeMap) map;
         final NavigableMap navigableMap = treeMap.subMap(minValue, true, maxValue, true);
@@ -546,7 +558,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private BitSet processRangeQueryDateYearType(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
-        return processRangeQueryDefaultTypes(queryBitSet, map, filterQueryElement, type);
+        return processRangeQueryIntegerTypes(queryBitSet, map, filterQueryElement, type);
     }
 
     private BitSet processIntegerGreaterThanDefaultTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
