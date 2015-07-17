@@ -36,7 +36,6 @@ package org.wwarn.surveyor.client.core;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.visualization.client.visualizations.Table;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
@@ -475,7 +474,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             @Override
             public void run() {
                 FilterQuery filterQuery = new FilterQuery();
-                filterQuery.addRangeFilter("SD", parseYearOnly("2001"), parseYearOnly("2002"));
+                filterQuery.addRangeFilter("SD", parseDateFromYearOnly("2001"), parseDateFromYearOnly("2002"));
                 try {
                     dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
                         @Override
@@ -561,7 +560,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
 
     }
 
-    private Date parseYearOnly(String rawDate){
+    private Date parseDateFromYearOnly(String rawDate){
         return  DataType.ParseUtil.parseDateYearOnly(rawDate);
     }
 
