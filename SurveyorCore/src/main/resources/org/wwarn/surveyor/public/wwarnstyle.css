@@ -181,7 +181,7 @@ h1.logo a:hover, h2.logo a:hover {
     border:none;
 }
 .secondary-wrap ul ul li:first-child a {
-    background:url(http://www.wwarn.org/images/icons/icon-arrow.png) no-repeat 80px 8px;
+    /*background:url(http://www.wwarn.org/images/icons/icon-arrow.png) no-repeat 80px 8px;*/
     border-left:1px solid #fff;
     border-right:1px solid #fff;
     padding-right:15px;
@@ -206,7 +206,7 @@ h1.logo a:hover, h2.logo a:hover {
 }
 .secondary-wrap .ShareData,
 .secondary-wrap .Fournirdesdonnes {
-    background:url(http://www.wwarn.org/sites/all/themes/wwarn/images/icons/top-contributing-data.jpg) no-repeat 0 3px;
+    /*background:url(http://www.wwarn.org/sites/all/themes/wwarn/images/icons/top-contributing-data.jpg) no-repeat 0 3px;*/
     padding-left:14px;
 }
 .secondary-wrap .ShareData a,
