@@ -46,8 +46,8 @@ import org.wwarn.mapcore.client.i18nstatic.MapTextConstants;
  */
 public class LegendButton extends Composite {
 
-    public static final String minimizeString = " <";
-    public static final String maximizeString = " >";
+    public static final String maximizeString = " <span class='glyphicon glyphicon-expand'/>";
+    public static final String minimizeString = " <span class='glyphicon glyphicon-collapse-down'/>";
 
     Button legendButton = new Button();
 
@@ -79,7 +79,7 @@ public class LegendButton extends Composite {
     private void setLegendButtonText(){
         MapTextConstants mapTextConstants = GWT.create(MapTextConstants.class);
         legendWord = mapTextConstants.legend();
-        legendButton.setText(legendWord+minimizeString);
+        legendButton.setHTML(legendWord+minimizeString);
     }
 
     ClickHandler legendClickHandler =  new ClickHandler() {
@@ -91,12 +91,12 @@ public class LegendButton extends Composite {
                         isLegendDisplayed = false;
                         resizeAnimation = new ResizeWidthAnimation(0);
                         resizeAnimation.run(500);
-                        legendButton.setText(legendWord+maximizeString);
+                        legendButton.setHTML(legendWord + maximizeString);
                     }else{
                         isLegendDisplayed = true;
                         resizeAnimation = new ResizeWidthAnimation(legendWidth);
                         resizeAnimation.run(500);
-                        legendButton.setText(legendWord+minimizeString);
+                        legendButton.setHTML(legendWord + minimizeString);
 
                     }
                 }
