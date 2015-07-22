@@ -171,7 +171,7 @@ public class StringUtils
     }
 
     public static boolean isEmpty(String input) {
-        return input == null || input.isEmpty();
+        return input == null || input.isEmpty() || "null".equalsIgnoreCase(input) ;
     }
 
     public static boolean isEmpty(String... input) {
