@@ -2,9 +2,9 @@ package org.wwarn.mapcore.client.resources;
 
 /*
  * #%L
- * SurveyorCore
+ * MapCore
  * %%
- * Copyright (C) 2013 - 2014 University of Oxford
+ * Copyright (C) 2013 - 2015 University of Oxford
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -35,15 +35,21 @@ package org.wwarn.mapcore.client.resources;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ExternalTextResource;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.TextResource;
 
-/**
- *
- * User: nigel
- * Date: 30/07/13
- * Time: 16:00
- */
-public interface Resources extends ClientBundle {
-    Resources IMPL = (Resources) GWT.create(Resources.class);
+public interface OpenLayersV3Resources extends ClientBundle {
+
+    public OpenLayersV3Resources INSTANCE = GWT.create(OpenLayersV3Resources.class);
+
+    @Source("proj4j.v2.3.3/proj4.js")
+    TextResource proj4js();
+
+    @Source("ol.v3.7.0/ol.js")
+    TextResource js();
+
+    @Source("ol.v3.7.0/ol.css")
+    TextResource css();
+
 }
+

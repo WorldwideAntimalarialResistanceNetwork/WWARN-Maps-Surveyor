@@ -33,11 +33,11 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.google.gwt.maps.client.MapTypeId;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.xml.client.*;
 import org.wwarn.mapcore.client.common.types.FilterConfigVisualization;
 import org.wwarn.mapcore.client.components.customwidgets.facet.FacetType;
+import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
 import org.wwarn.surveyor.client.model.*;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.mapcore.client.utils.XMLUtils;
@@ -292,6 +292,7 @@ public class XMLApplicationLoader implements ApplicationContext {
          */
         private ViewConfig parseMapNode(Node mapNode) throws XMLUtils.ParseException {
             String name = getAttributeByName(mapNode, "name");
+            String implementation = StringUtils.ifEmpty(getAttributeByName(mapNode, "impl"), MapBuilder.MapImplementation.GOOGLE_V3.toString());
             String initialZoomLevelRaw = StringUtils.ifEmpty(getAttributeByName(mapNode, "initialZoomLevel"), "2");
             String initialMapCenterCoordsLatLonRaw = StringUtils.ifEmpty(getAttributeByName(mapNode, "initialMapCenterCoordsLatLon"), "1.0,1.0");
             final String[] coords = initialMapCenterCoordsLatLonRaw.split(",");
@@ -346,15 +347,15 @@ public class XMLApplicationLoader implements ApplicationContext {
                 }
             }
 
-            final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPosition, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig);
+            final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPosition, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig, convertTotMapImplementation(implementation));
             String mapType = StringUtils.ifEmpty(getAttributeByName(mapNode, "mapType"), "TERRAIN");
             mapViewConfig.setMapType(resolveMapType(mapType));
             configs.put(MapViewConfig.class.getName(), mapViewConfig);
             return mapViewConfig;
         }
 
-        private MapTypeId resolveMapType(String mapType){
-            return MapTypeId.valueOf(mapType);
+        private MapBuilder.MapTypeId resolveMapType(String mapType){
+            return MapBuilder.MapTypeId.valueOf(mapType);
         }
 
         private TemplateViewNodesConfig parseInfoWindowTemplate(Node infoWindowTemplate) throws XMLUtils.ParseException{
@@ -477,6 +478,10 @@ public class XMLApplicationLoader implements ApplicationContext {
 
             return panelViewConfig;
         }
+    }
+
+    private MapBuilder.MapImplementation convertTotMapImplementation(String implementation) {
+        return MapBuilder.MapImplementation.fromValue(implementation);
     }
 
     /**

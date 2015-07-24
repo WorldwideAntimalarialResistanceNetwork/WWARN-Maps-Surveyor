@@ -34,7 +34,6 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  */
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.maps.client.MapOptions;
 import com.google.gwt.maps.client.MapTypeId;
@@ -53,7 +52,6 @@ import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewMethods;
 import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewOnAddHandler;
 import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewOnDrawHandler;
 import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewOnRemoveHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
@@ -121,12 +119,6 @@ public class GoogleV3MapWidget extends GenericMapWidget {
 
     }
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-
-    }
-
     private MapWidget initialiseMapWidget() {
         MapWidget mapWidget = null;
         final String errorMessage = "Unable to create map, check google map v3 api is included by calling MapLoadUtil.loadMapApi";
@@ -176,7 +168,7 @@ public class GoogleV3MapWidget extends GenericMapWidget {
         mapTypeControlOptions.setMapTypeIds(new MapTypeId[]{MapTypeId.TERRAIN, MapTypeId.SATELLITE, MapTypeId.HYBRID, MapTypeId.ROADMAP});
         options.setMapTypeControl(true);
         options.setMapTypeControlOptions(mapTypeControlOptions);
-        MapTypeId mapTypeId = builder.mapTypeId != null ? builder.mapTypeId: MapTypeId.TERRAIN;
+        MapTypeId mapTypeId = builder.mapTypeId != null ? MapTypeId.fromValue(builder.mapTypeId.toString()): MapTypeId.TERRAIN;
         options.setMapTypeId(mapTypeId);
 
 
@@ -186,7 +178,7 @@ public class GoogleV3MapWidget extends GenericMapWidget {
 
         options.setMinZoom(builder.minZoomLevel);
         options.setZoom(builder.zoomLevel);
-        options.setCenter(getLatLng(builder.coordinatesLatLon));
+        options.setCenter(getLatLng(builder.centerCoordinatesLatLon));
 
         return options;
     }
@@ -203,6 +195,7 @@ public class GoogleV3MapWidget extends GenericMapWidget {
     public int getZoomLevel(){
         return mapWidget.getZoom();
     }
+
     @Override
     public void setZoomLevel(int zoomLevel) {
         mapWidget.setZoom(zoomLevel);
@@ -219,27 +212,6 @@ public class GoogleV3MapWidget extends GenericMapWidget {
         mapWidget.setCenter(getLatLng(center));
     }
 
-    /**
-     * Set markers for the map
-     * @param m
-     */
-    @Override
-    public void addMarkers(List<GenericMarker> m){
-        this.markers = m;
-        for (GenericMarker marker : m) {
-            marker.setMap(mapWidget);
-        }
-    }
-
-    @Override
-    public void clearMarkers(){
-        if(markers == null){
-            return;
-        }
-        for (GenericMarker marker : markers) {
-            marker.clear();
-        }
-    }
     @Override
     public HandlerRegistration onLoadComplete(final Runnable onLoadComplete){
         mapWidget.triggerResize(); // Added to prevent only single tile showing : http://stackoverflow.com/a/16348551/192040

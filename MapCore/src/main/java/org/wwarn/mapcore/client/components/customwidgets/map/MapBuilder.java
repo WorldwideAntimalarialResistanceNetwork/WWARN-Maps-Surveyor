@@ -34,8 +34,6 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  */
 
 
-import com.google.gwt.maps.client.MapTypeId;
-
 /**
 * Created by nigelthomas on 09/12/2014.
 */
@@ -51,7 +49,9 @@ public class MapBuilder {
     int mapHeight = 0;
     int mapWidth = 0;
     int zoomLevel = DEFAULT_ZOOM_LEVEL;
-    CoordinatesLatLon coordinatesLatLon;
+    CoordinatesLatLon centerCoordinatesLatLon;
+    private MapBuilder.MapImplementation mapImplementation;
+
     /**
      * set max zoom out level
      * @param minZoomLevel
@@ -78,7 +78,7 @@ public class MapBuilder {
     }
 
     public MapBuilder setCenter(double mapCentreLat, double mapCentreLon){
-        coordinatesLatLon = CoordinatesLatLon.newInstance(mapCentreLat, mapCentreLon);
+        centerCoordinatesLatLon = CoordinatesLatLon.newInstance(mapCentreLat, mapCentreLon);
         return this;
     }
 
@@ -112,9 +112,9 @@ public class MapBuilder {
         return new GoogleV3MapWidget(this);
     }
 
-    public GenericMapWidget createMapWidget(MapType mapType) {
+    public GenericMapWidget createMapWidget(MapImplementation mapImplementation) {
         validate();
-        switch (mapType) {
+        switch (mapImplementation) {
             default:
             case GOOGLE_V3:
                 return new GoogleV3MapWidget(this);
@@ -128,15 +128,55 @@ public class MapBuilder {
             throw new IllegalArgumentException("Expected map width and height to be set");
         }
 
-        if(this.coordinatesLatLon == null){
+        if(this.centerCoordinatesLatLon == null){
             throw new IllegalArgumentException("Expected centre coordinates to be set");
         }
     }
 
-    public static enum MapType{
-        GOOGLE_V3, OPEN_LAYERS_OS_OFFLINE
+    public MapImplementation getMapImplementation() {
+        return mapImplementation;
     }
 
+    public static enum MapImplementation {
+        GOOGLE_V3, OPEN_LAYERS_OS_OFFLINE;
+
+        MapImplementation() {
+        }
+
+        public String value() {
+            return this.name();
+        }
+
+        public static MapImplementation fromValue(String type) {
+            return valueOf(type.toUpperCase());
+        }
+
+        public String toString() {
+            return this.name().toLowerCase();
+        }
+    }
+
+    public enum MapTypeId {
+        HYBRID,
+        ROADMAP,
+        SATELLITE,
+        TERRAIN;
+
+        private MapTypeId() {
+        }
+
+        public String value() {
+            return this.name();
+        }
+
+        public static MapTypeId fromValue(String type) {
+            return valueOf(type.toUpperCase());
+        }
+
+        public String toString() {
+            return this.name().toLowerCase();
+        }
+    }
     @Override
     public String toString() {
         return "MapBuilder{" +
@@ -146,7 +186,8 @@ public class MapBuilder {
                 ", mapHeight=" + mapHeight +
                 ", mapWidth=" + mapWidth +
                 ", zoomLevel=" + zoomLevel +
-                ", coordinatesLatLon=" + coordinatesLatLon +
+                ", centerCoordinatesLatLon=" + centerCoordinatesLatLon +
+                ", mapImplementation=" + mapImplementation +
                 '}';
     }
 }

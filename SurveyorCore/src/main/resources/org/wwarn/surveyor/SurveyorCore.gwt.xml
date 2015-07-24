@@ -77,16 +77,16 @@
     	<when-type-is class="org.wwarn.surveyor.client.mvp.ClientFactory"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerHoverLabelBuilder">
-    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerHoverLabelBuilder"/>
+    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3Marker.MarkerHoverLabelBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.DefaultMarkerClickInfoWindowBuilder">
-    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerClickInfoWindowBuilder"/>
+    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3Marker.MarkerClickInfoWindowBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.DefaultTableRecordsFilter">
     	<when-type-is class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.TableRecordsFilter"/>
     </replace-with>
-    <replace-with class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.DefaultMarkerIconPathBuilder">
-    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerIconPathBuilder"/>
+    <replace-with class="org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3Marker.DefaultMarkerIconPathBuilder">
+    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3Marker.MarkerIconPathBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerDisplayFilter">
     	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerDisplayFilter"/>

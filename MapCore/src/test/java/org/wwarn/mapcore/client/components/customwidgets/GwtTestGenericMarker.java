@@ -37,6 +37,7 @@ import com.google.gwt.maps.client.LoadApi;
 import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
 import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3MapWidget;
 import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
+import org.wwarn.mapcore.client.components.customwidgets.map.MapMarkerBuilder;
 import org.wwarn.mapcore.client.utils.AbstractMapsGWTTestHelper;
 
 /**
@@ -48,7 +49,7 @@ public class GwtTestGenericMarker extends AbstractMapsGWTTestHelper{
         asyncLibTest(new Runnable() {
             @Override
             public void run() {
-                GenericMarker.Builder builder = new GenericMarker.Builder();
+                MapMarkerBuilder builder = new MapMarkerBuilder();
                 builder.setMarkerLon(47.8);
                 builder.setMarkerLat(-121.4);
                 builder.setTitle("marker title");
