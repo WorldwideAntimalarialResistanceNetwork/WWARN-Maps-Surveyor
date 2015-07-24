@@ -37,14 +37,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
-import org.wwarn.mapcore.client.components.customwidgets.map.GenericMapWidget;
-import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
+import org.wwarn.mapcore.client.components.customwidgets.map.*;
 import org.wwarn.mapcore.client.components.customwidgets.LegendButton;
-import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
 import org.wwarn.surveyor.client.core.DataSchema;
 import org.wwarn.surveyor.client.core.QueryResult;
 import org.wwarn.surveyor.client.core.RecordList;
@@ -74,12 +71,12 @@ public class MapViewComposite extends Composite {
     private static MapViewConfig viewConfig = null;
     private GenericMapWidget mapWidget;
     private ClientFactory clientFactory = SimpleClientFactory.getInstance();
-    private GenericMarker.MarkerIconPathBuilder markerIconPathBuilder;
+    private GoogleV3Marker.MarkerIconPathBuilder markerIconPathBuilder;
     private MarkerDisplayFilter markerDisplayFilter;
     private MarkerCoordinateSource markerCoordinateSource;
     private Scheduler scheduler = Scheduler.get();
-    private GenericMarker.MarkerHoverLabelBuilder markerHoverLabelBuilder;
-    private GenericMarker.MarkerClickInfoWindowBuilder markerClickInfoWindow;
+    private GoogleV3Marker.MarkerHoverLabelBuilder markerHoverLabelBuilder;
+    private GoogleV3Marker.MarkerClickInfoWindowBuilder markerClickInfoWindow;
     private MarkerLegendLoader markerLegendLoader;
 
     // UI Binder boiler plate
@@ -122,13 +119,13 @@ public class MapViewComposite extends Composite {
                 MapBuilder builder = new MapBuilder();
                 //todo move type of map into config
                 final MapBuilder mapBuilder = builder.configureMapDimension(400, 500).setCenter(viewConfig.getInitialLat(), viewConfig.getInitialLon()).setZoomLevel(viewConfig.getInitialZoomLevel()).setMapTypeId(viewConfig.getMapType());
-                mapWidget = mapBuilder.createMapWidget(MapBuilder.MapType.GOOGLE_V3);
-                setMarkers(clientFactory.getLastQueryResult());
+                mapWidget = mapBuilder.createMapWidget(viewConfig.getMapImplementation());
                 panel.add(mapWidget);
                 mapWidget.justResizeMapWidget();
                 mapWidget.resizeMapWidget();
                 loadMapLegend();
                 onLoadComplete();
+                setMarkers(clientFactory.getLastQueryResult());
             }
         });
 
@@ -155,13 +152,13 @@ public class MapViewComposite extends Composite {
         final MarkerDisplayFilter markerFilter = getMarkerDisplayFilter();
         markerFilter.init();
         for (final RecordList.Record record : records) {
-            GenericMarker.Builder markerBuilder = new GenericMarker.Builder();
+            MapMarkerBuilder markerBuilder = new MapMarkerBuilder();
             final MarkerCoordinateSource.LatitudeLongitude latitudeLongitude = markerCoordinateSource1.process(record);
             double lat = latitudeLongitude.getLatitude();
             double lon = latitudeLongitude.getLongitude();
 
             if(markerFilter.filter(record)){
-                GenericMarker<RecordList.Record> marker = markerBuilder.setMarkerLat(lat).setMarkerLon(lon).setMarkerIconPath(getMarkerIconPathBuilder()).createMarker(record, mapWidget);
+                GenericMarker<RecordList.Record> marker = markerBuilder.setMarkerLat(lat).setMarkerLon(lon).setMarkerIconPathBuilder(getMarkerIconPathBuilder()).createMarker(record, mapWidget);
                 marker.setupMarkerHoverLabel(getMarkerHoverLabelBuilder());
                 marker.setupMarkerClickInfoWindow(getMarkerClickInfoWindow());
                 marker.addClickHandler(new GenericMarker.MarkerCallBackEventHandler<GenericMarker>() {
@@ -202,7 +199,7 @@ public class MapViewComposite extends Composite {
         return markerDisplayFilter;
     }
 
-    private GenericMarker.MarkerIconPathBuilder getMarkerIconPathBuilder() {
+    private GoogleV3Marker.MarkerIconPathBuilder getMarkerIconPathBuilder() {
         if(markerIconPathBuilder !=null){ return markerIconPathBuilder; }
         try{
             markerIconPathBuilder = GWT.create(GenericMarker.MarkerIconPathBuilder.class);
@@ -215,7 +212,7 @@ public class MapViewComposite extends Composite {
 
     }
 
-    private GenericMarker.MarkerClickInfoWindowBuilder getMarkerClickInfoWindow() {
+    private GoogleV3Marker.MarkerClickInfoWindowBuilder getMarkerClickInfoWindow() {
         if(markerClickInfoWindow !=null){ return markerClickInfoWindow; }
         try{
             markerClickInfoWindow = GWT.create(GenericMarker.MarkerClickInfoWindowBuilder.class);
@@ -227,10 +224,10 @@ public class MapViewComposite extends Composite {
         return markerClickInfoWindow;
     }
 
-    private GenericMarker.MarkerHoverLabelBuilder getMarkerHoverLabelBuilder() {
+    private GoogleV3Marker.MarkerHoverLabelBuilder getMarkerHoverLabelBuilder() {
         if(markerHoverLabelBuilder!=null){ return markerHoverLabelBuilder; }
         try {
-            markerHoverLabelBuilder = GWT.create(GenericMarker.MarkerHoverLabelBuilder.class);
+            markerHoverLabelBuilder = GWT.create(GoogleV3Marker.MarkerHoverLabelBuilder.class);
         }catch (RuntimeException e){
             if(!e.getMessage().startsWith("Deferred binding")) throw e;
             //by pass deferred binding error and use default value
@@ -239,7 +236,7 @@ public class MapViewComposite extends Composite {
         return markerHoverLabelBuilder;
     }
 
-    public static class DefaultMarkerHoverLabelBuilder implements GenericMarker.MarkerHoverLabelBuilder<RecordList.Record>{
+    public static class DefaultMarkerHoverLabelBuilder implements GoogleV3Marker.MarkerHoverLabelBuilder<RecordList.Record>{
         SimpleClientFactory simpleClientFactory = SimpleClientFactory.getInstance();
         DataSchema schema = simpleClientFactory.getSchema();
         @Override

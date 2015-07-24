@@ -40,6 +40,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
+import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3Marker;
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.TemplateViewNodesConfig;
 import org.wwarn.surveyor.client.model.MapViewConfig;
@@ -52,7 +53,7 @@ import java.util.Set;
 /**
 * Created by nigelthomas on 16/07/2014.
 */
-public class DefaultMarkerClickInfoWindowBuilder implements GenericMarker.MarkerClickInfoWindowBuilderAsync<RecordList.Record>{
+public class DefaultMarkerClickInfoWindowBuilder implements GenericMarker.MarkerClickInfoWindowBuilderAsync<RecordList.Record> {
     SimpleClientFactory simpleClientFactory = SimpleClientFactory.getInstance();
     DataSchema schema = simpleClientFactory.getSchema();
     TemplateViewNodesConfig config;
@@ -74,7 +75,7 @@ public class DefaultMarkerClickInfoWindowBuilder implements GenericMarker.Marker
     }
 
     @Override
-    public Widget build(RecordList.Record markerContext) {
+    public Widget build(Object markerContext) {
         throw new UnsupportedOperationException();
     }
 

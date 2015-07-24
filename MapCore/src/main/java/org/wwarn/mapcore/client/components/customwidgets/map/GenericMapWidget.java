@@ -45,6 +45,7 @@ import java.util.Objects;
 public abstract class GenericMapWidget extends Composite {
     int LEGEND_X_INDENT = 42; /*just to the right of the map zoom controls */
     int FILTERS_PANEL_Y_POS = 45;
+    private List<GenericMarker> markers;
 
     public abstract void indicateLoading();
 
@@ -58,9 +59,21 @@ public abstract class GenericMapWidget extends Composite {
 
     public abstract void setCenter(CoordinatesLatLon center);
 
-    public abstract void addMarkers(List<GenericMarker> m);
+    public void clearMarkers(){
+        if(markers == null){
+            return;
+        }
+        for (GenericMarker marker : markers) {
+            marker.clear();
+        }
+    }
 
-    public abstract void clearMarkers();
+    public void addMarkers(List<GenericMarker> m){
+        this.markers = m;
+        for (GenericMarker marker : m) {
+            marker.setMap(this);
+        }
+    }
 
     public abstract HandlerRegistration onLoadComplete(Runnable onLoadComplete);
 

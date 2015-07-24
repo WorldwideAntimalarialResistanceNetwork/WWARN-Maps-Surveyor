@@ -33,7 +33,7 @@ package org.wwarn.surveyor.client.model;
  * #L%
  */
 
-import com.google.gwt.maps.client.MapTypeId;
+import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
 
 /**
  * Holds map model
@@ -52,12 +52,13 @@ public class MapViewConfig implements ViewConfig {
     String markerLatitudeField = "";
     String mapImageRelativePath = "";
     private String viewLabel;
-    private MapTypeId mapType;
+    private MapBuilder.MapTypeId mapType;
     private String imageLegendPosition = "";
+    private MapBuilder.MapImplementation mapImplementation;
 
     private MapViewConfig(){};
 
-    public MapViewConfig(String viewName, int initialZoomLevel, double initialLat, double initialLon, String markerLongitudeField, String markerLatitudeField, String mapImageRelativePath, String imageLegendPosition, Integer imageLegendPositionFromTopInPixels, String mapTabLabel, TemplateViewNodesConfig templateViewNodesConfig) {
+    public MapViewConfig(String viewName, int initialZoomLevel, double initialLat, double initialLon, String markerLongitudeField, String markerLatitudeField, String mapImageRelativePath, String imageLegendPosition, Integer imageLegendPositionFromTopInPixels, String mapTabLabel, TemplateViewNodesConfig templateViewNodesConfig, MapBuilder.MapImplementation mapImplementation) {
         this.viewName = viewName;
         this.markerLongitudeField = markerLongitudeField;
         this.markerLatitudeField = markerLatitudeField;
@@ -68,6 +69,7 @@ public class MapViewConfig implements ViewConfig {
         this.initialLat = initialLat;
         this.initialLon = initialLon;
         this.imageLegendPosition = imageLegendPosition;
+        this.mapImplementation = mapImplementation;
         if(templateViewNodesConfig !=null) {
             this.templateViewNodesConfig = templateViewNodesConfig;
         }
@@ -115,11 +117,11 @@ public class MapViewConfig implements ViewConfig {
         return templateViewNodesConfig;
     }
 
-    public MapTypeId getMapType() {
+    public MapBuilder.MapTypeId getMapType() {
         return mapType;
     }
 
-    public void setMapType(MapTypeId mapType) {
+    public void setMapType(MapBuilder.MapTypeId mapType) {
         this.mapType = mapType;
     }
 
@@ -143,5 +145,9 @@ public class MapViewConfig implements ViewConfig {
                 ", mapType=" + mapType +
                 ", imageLegendPosition='" + imageLegendPosition + '\'' +
                 '}';
+    }
+
+    public MapBuilder.MapImplementation getMapImplementation() {
+        return mapImplementation;
     }
 }

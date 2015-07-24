@@ -34,14 +34,10 @@ package org.wwarn.mapcore.client.components.customwidgets;
  */
 
 import com.google.gwt.maps.client.LoadApi;
-import com.google.gwt.maps.client.MapTypeId;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import org.wwarn.mapcore.client.components.customwidgets.map.GenericMapWidget;
-import org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker;
-import org.wwarn.mapcore.client.components.customwidgets.map.GoogleV3MapWidget;
-import org.wwarn.mapcore.client.components.customwidgets.map.MapBuilder;
+import org.wwarn.mapcore.client.components.customwidgets.map.*;
 import org.wwarn.mapcore.client.utils.AbstractMapsGWTTestHelper;
 
 /**
@@ -87,7 +83,7 @@ public class GwtTestGenericMapWidget extends AbstractMapsGWTTestHelper {
     }
 
     private void addMarkersAndTest(GoogleV3MapWidget mapWidget) {
-        GenericMarker.Builder builder = new GenericMarker.Builder();
+        MapMarkerBuilder builder = new MapMarkerBuilder();
         builder.setMarkerLon(47.8);
         builder.setMarkerLat(-121.4);
         builder.setTitle("marker title");
@@ -109,8 +105,8 @@ public class GwtTestGenericMapWidget extends AbstractMapsGWTTestHelper {
             @Override
             public void run() {
                 MapBuilder builder = new MapBuilder();
-                GenericMapWidget mapWidget = builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).setMapTypeId(MapTypeId.HYBRID).createMapWidget();
-                assertEquals(MapTypeId.HYBRID, builder.mapTypeId);
+                GenericMapWidget mapWidget = builder.configureMapDimension(400, 500).setCenter(1.0, 1.0).setMapTypeId(MapBuilder.MapTypeId.HYBRID).createMapWidget();
+                assertEquals(MapBuilder.MapTypeId.HYBRID, builder.mapTypeId);
                 assertNotNull(mapWidget);
                 assertTrue(mapWidget instanceof GoogleV3MapWidget);
                 GoogleV3MapWidget googleV3MapWidget = (GoogleV3MapWidget) mapWidget;
@@ -120,12 +116,12 @@ public class GwtTestGenericMapWidget extends AbstractMapsGWTTestHelper {
         });
     }
 
-    public class MarkerHoverLabelTestImpl implements GenericMarker.MarkerHoverLabelBuilder<String> {
+    public class MarkerHoverLabelTestImpl implements GoogleV3Marker.MarkerHoverLabelBuilder<String> {
         public Widget build(String markerContext) {
             return new Label("hello");
         }
     }
-    public class MarkerClickWindowTestImpl implements GenericMarker.MarkerClickInfoWindowBuilder<String> {
+    public class MarkerClickWindowTestImpl implements GoogleV3Marker.MarkerClickInfoWindowBuilder<String> {
         public Widget build(String markerContext) {
             return new Label("hello");
         }
