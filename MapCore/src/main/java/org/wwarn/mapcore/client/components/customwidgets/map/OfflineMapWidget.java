@@ -56,7 +56,6 @@ public class OfflineMapWidget extends GenericMapWidget {
     private String currentId;
     private Runnable loadCompleted;
     private boolean mapDrawCalled = false;
-    private List<GenericMarker> markers;
 
     static {
         if (!isLoaded()) {
@@ -95,6 +94,10 @@ public class OfflineMapWidget extends GenericMapWidget {
         htmlPanel.setHeight(mapBuilder.mapHeight + "px");
         initializePopup(htmlPanel, currentId);
         initWidget(htmlPanel);
+    }
+
+    public void removeMarker(GenericMarker m){
+        markers.remove(m);
     }
 
     void initializePopup(HTMLPanel htmlPanel, String currentId) {
