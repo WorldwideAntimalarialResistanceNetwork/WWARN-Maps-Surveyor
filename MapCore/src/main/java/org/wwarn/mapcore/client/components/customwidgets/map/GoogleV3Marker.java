@@ -116,6 +116,9 @@ public class GoogleV3Marker<T> extends GenericMarker<T> {
     }
 
     private Point castToGooglPoint(org.wwarn.mapcore.client.components.customwidgets.map.Point p) {
+        if(p == null){
+            return null;
+        }
         return Point.newInstance(p.getX(), p.getY());
     }
 
