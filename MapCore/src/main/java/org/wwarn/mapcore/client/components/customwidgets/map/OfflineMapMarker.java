@@ -1,22 +1,74 @@
 package org.wwarn.mapcore.client.components.customwidgets.map;
 
+/*
+ * #%L
+ * MapCore
+ * %%
+ * Copyright (C) 2013 - 2015 University of Oxford
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the University of Oxford nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Offline marker implementation
  */
 public class OfflineMapMarker<T> extends GenericMarker<T> {
+    public static final String MARKER_ID_PREFIX = "ol3MapsMarkerID";
     private final double markerLat;
     private final double markerLon;
+    private static int GUID = 0;
+
+
+    private String markerID;
     private JavaScriptObject markerContainer;
+    private JavaScriptObject markerFeature;
+
     private OfflineMapWidget offlineMapWidget;
     private String markerTitle;
     private Point markerAnchorPoint;
     private Integer zIndex;
     private String markerIconPath;
     private OfflineMapMarker<T> referenceToOfflineMapMarker;
+    private MarkerCallBackEventHandler<GenericMarker> mouseOverCallback;
+    private MarkerCallBackEventHandler<GenericMarker> mouseOutCallback;
+    private List<MarkerCallBackEventHandler> clickCallbackHandlers = new ArrayList<>();
 
 
     public OfflineMapMarker(MapMarkerBuilder mapMarkerBuilder, T markerContext) {
@@ -24,9 +76,11 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         if (!(mapMarkerBuilder.map instanceof OfflineMapWidget)) {
             throw new IllegalArgumentException("Expected an offline map widget");
         }
+        this.markerID = generateUID();
         this.referenceToOfflineMapMarker = this;
         this.markerTitle = mapMarkerBuilder.title;
         this.offlineMapWidget = (OfflineMapWidget) mapMarkerBuilder.map;
+//        this.offlineMapWidget.addMarkers();
         this.markerContainer = offlineMapWidget.getMarkerContainer();
         this.markerIconPathBuilder = mapMarkerBuilder.markerIconPathBuilder;
         this.markerLat = mapMarkerBuilder.markerLat;
@@ -37,10 +91,16 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
             this.setIcon(markerIconPathBuilder, mapMarkerBuilder.markerAnchor, mapMarkerBuilder.zIndex);
         }
         if (mapMarkerBuilder.preventMarkerRepeatingHorizontally) {
-         //todo fine equvalent for open layers
+         //todo find equivalent for open layers
         }
+    }
 
+    public String getMarkerID() {
+        return markerID;
+    }
 
+    private String generateUID() {
+        return MARKER_ID_PREFIX + GUID++;
     }
 
     private void setIcon(MarkerIconPathBuilder markerIconPath, final Point markerAnchor, final Integer zIndex) {
@@ -69,8 +129,17 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         setupMarker(this, markerContainer);
     }
 
+    public void fireClickEvent(){
+        for (MarkerCallBackEventHandler clickCallbackHandler : clickCallbackHandlers) {
+            clickCallbackHandler.run(this);
+        }
+    }
+
     private static native void setupMarker(OfflineMapMarker offlineMapMarker, JavaScriptObject markerContainer)/*-{
-        var ol = $wnd.ol, markerTitle, markerIconPath, zIndex, styleProperties, markerAnchorPoint, markerGeom, markerLat, markerLon;
+        var ol = $wnd.ol, iconFeature, markerID, markerTitle, markerIconPath, zIndex, styleProperties, markerAnchorPoint, markerGeom, markerLat, markerLon;
+
+        // assignments from java attributes to local variables
+        markerID = offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::markerID;
         markerTitle = offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::markerTitle;
         markerIconPath = offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::markerIconPath;
         zIndex = offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::zIndex;
@@ -90,8 +159,13 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
 
         iconFeature = new ol.Feature({
             geometry: markerGeom,
-            name: ''+markerTitle,
+            name: '' + markerTitle,
+            markerID: '' + markerID
         });
+
+        // assignments from local variables to java class attributes
+        offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::markerFeature = iconFeature;
+
 
         styleProperties = {
             opacity: 0.75,
@@ -106,43 +180,106 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
                 image: new ol.style.Icon( (styleProperties))
             })
         )
+
         markerContainer.addFeature(iconFeature);
     }-*/;
 
     @Override
     public void addClickHandler(MarkerCallBackEventHandler<GenericMarker> clickCallback) {
-
+        this.clickCallbackHandlers.add(clickCallback);
     }
 
     @Override
     void addMouseOverHandler(MarkerCallBackEventHandler<GenericMarker> mouseOverCallback) {
-
+        this.mouseOverCallback = mouseOverCallback;
     }
 
     @Override
     void addMouseOutMoveHandler(MarkerCallBackEventHandler<GenericMarker> mouseOutCallback) {
-
+        this.mouseOutCallback = mouseOutCallback;
     }
 
 
 
     @Override
     public void setMap(GenericMapWidget mapWidget) {
-
+        if (!(mapWidget instanceof OfflineMapWidget)) {
+            throw new IllegalArgumentException("Expected offline map widget");
+        }
+        this.offlineMapWidget = (OfflineMapWidget) mapWidget;
     }
 
     @Override
     void clear() {
-
+//        offlineMapWidget.removeMarker(this);
+        if(markerContainer!=null) {
+            removeMarker(this, markerContainer);
+        }
     }
+
+    private static native void removeMarker(OfflineMapMarker offlineMapMarker, JavaScriptObject markerContainer)/*-{
+        var feature;
+        feature = (offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::markerFeature);
+        if(((typeof feature !== "undefined") && feature !== null)){
+            markerContainer.removeFeature(feature);
+        }
+    }-*/;
+
 
     @Override
     void displayPopup(Widget infoWindowWidget) {
-
+        infoWindowWidget.setVisible(false);
+        RootPanel.get().add(infoWindowWidget); // this hack fixes various event related bugs for gwt components embedded in info window
+        final JavaScriptObject mapPopupOverlay = this.offlineMapWidget.getMapPopupOverlay();
+        final JavaScriptObject mapPopupContainerElement = this.offlineMapWidget.getMapPopupContainerElement();
+        infoWindowWidget.setVisible(true);
+        final HTMLPanel panel = this.offlineMapWidget.getPopupElement();
+        final Element popupElement = panel.getElement();
+        setDataAttribute(popupElement, "<div style='width:500px;height:500px;' id='"+markerID+"'></div>");
+        displayPopup(this, mapPopupOverlay, mapPopupContainerElement, this.markerFeature, popupElement);
+        panel.getElement().removeClassName("popover");
+        /*
+        * Works around the horrors of HTMLPanel.wrap(DOM.getElementById("moo")),
+        * which fails with "A widget that has an existing parent widget may not be added to the detach list",
+        * if the parent is already a widget, you cannont use HTMLPanel wrap to create a widget from a dom element
+        * instead use the addAndReplaceElement to find the element and replace with widget...
+        * */
+        panel.addAndReplaceElement(infoWindowWidget, markerID);
     }
+
+    protected void setDataAttribute(Element e , String value) {
+        e.setAttribute("data-content", value);
+    }
+
+    private static native void displayPopup(OfflineMapMarker offlineMapMarker, JavaScriptObject mapPopupOverlay, JavaScriptObject mapPopupContainerElement, JavaScriptObject markerFeature, Element element)/*-{
+        var ol = $wnd.ol;
+        var $ = $wnd.$;
+        //setup popup on click stuff
+        //var element = mapPopupContainerElement;
+        var feature = markerFeature;
+        var popup = mapPopupOverlay;
+        if (feature) {
+            var geometry = feature.getGeometry();
+            var coord = geometry.getCoordinates();
+            popup.setPosition(coord);
+
+            var popOverSettings = {
+                'placement': 'top',
+                'html': true
+                //,'content': popupHTMLContent // this gets overwritten later for dynamic popups content
+            };
+            var popover = $(element).popover(popOverSettings);
+                //.on('show.bs.popover'
+                //, function() {
+                //    popover.attr('data-content', popupHTMLContent);
+                //});
+
+            $(element).popover('show');
+        }
+    }-*/;
 
     @Override
     public void setupMarkerHoverLabel(MarkerHoverLabelBuilder markerHoverLabelBuilder) {
-
+        //todo hover logic
     }
 }

@@ -60,9 +60,7 @@ public abstract class GenericMapWidget extends Composite {
     public abstract void setCenter(CoordinatesLatLon center);
 
     public void clearMarkers(){
-        if(markers == null){
-            return;
-        }
+        if(markers == null){return;}
         for (GenericMarker marker : markers) {
             marker.clear();
         }
