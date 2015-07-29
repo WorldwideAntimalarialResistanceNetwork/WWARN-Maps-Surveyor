@@ -75,7 +75,7 @@ public class MapMarkerBuilder {
     }
 
     public MapMarkerBuilder setMarkerAnchor(Point anchor) {
-        this.markerAnchor = markerAnchor;
+        this.markerAnchor = anchor;
         return this;
     }
 

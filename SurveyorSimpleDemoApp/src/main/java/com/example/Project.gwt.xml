@@ -31,9 +31,6 @@
   OF THE POSSIBILITY OF SUCH DAMAGE.
   #L%
   -->
-
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.5.0//EN"
-  "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module rename-to='Project'>
     <!-- Inherit the core Web Toolkit stuff.                        -->
     <inherits name='com.google.gwt.user.User'/>
@@ -59,7 +56,34 @@
         <when-type-is class="org.wwarn.surveyor.client.mvp.ConfigLoader"/>
     </replace-with>
 
+    <replace-with class="org.wwarn.surveyor.client.mvp.SimpleClientFactory">
+            	<when-type-is class="org.wwarn.surveyor.client.mvp.ClientFactory"/>
+    </replace-with>
 
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerHoverLabelBuilder">
+            	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerHoverLabelBuilder"/>
+    </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.DefaultMarkerClickInfoWindowBuilder">
+            	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerClickInfoWindowBuilder"/>
+    </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.DefaultTableRecordsFilter">
+            	<when-type-is class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.TableRecordsFilter"/>
+    </replace-with>
+    <replace-with class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.DefaultMarkerIconPathBuilder">
+            	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerIconPathBuilder"/>
+    </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerDisplayFilter">
+            	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerDisplayFilter"/>
+    </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerCoordinateSource">
+            	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerCoordinateSource"/>
+    </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.core.ServerSideSearchDataProvider.DefaultInitialFilterQuery">
+        <when-type-is class="org.wwarn.surveyor.client.core.InitialFilterQuery"/>
+    </replace-with>
+    <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultLegendBuilder">
+        <when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerLegendLoader"/>
+    </replace-with>
 
 
 </module>

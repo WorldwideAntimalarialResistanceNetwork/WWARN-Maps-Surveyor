@@ -38,6 +38,15 @@
     version="2.5">
     <display-name>SurveyorSimpleDemoApp</display-name>
     <servlet>
+        <servlet-name>remoteLogging</servlet-name>
+        <servlet-class>com.google.gwt.logging.server.RemoteLoggingServiceImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>remoteLogging</servlet-name>
+        <url-pattern>/Project/remote_logging</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>org.wwarn.surveyor.SurveyorCore SearchService</servlet-name>
         <servlet-class>org.wwarn.surveyor.server.core.SearchServiceServlet</servlet-class>
     </servlet>

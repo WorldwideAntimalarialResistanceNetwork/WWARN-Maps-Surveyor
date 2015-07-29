@@ -144,7 +144,7 @@ public abstract class GenericMarker<T> {
     public abstract void setupMarkerHoverLabel(final MarkerHoverLabelBuilder markerHoverLabelBuilder);
 
     /**
-     * Marker call back event handler
+     * Marker cal
      * @param <U>
      */
     public interface MarkerCallBackEventHandler<U extends GenericMarker> {
