@@ -40,7 +40,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.wwarn.mapcore.client.resources.OpenLayersV3Resources;
+import org.wwarn.mapcore.client.utils.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,12 +53,13 @@ public class OfflineMapWidget extends GenericMapWidget {
     private final MapBuilder builder;
     private static int GUID = 0;
     private JavaScriptObject map;
+    private JavaScriptObject mapPopupOverlay;
+    private JavaScriptObject mapPopupContainerElement;
     private JavaScriptObject markerContainer;
     HTMLPanel htmlPanel = new HTMLPanel("");
     private String currentId;
     private Runnable loadCompleted;
     private boolean mapDrawCalled = false;
-    private List<GenericMarker> markers;
 
     static {
         if (!isLoaded()) {
@@ -69,6 +72,12 @@ public class OfflineMapWidget extends GenericMapWidget {
     private double mapCentreLon;
     private int zoomLevel;
     private CoordinatesLatLon centerCoordinatesLatLon;
+
+    public HTMLPanel getPopupElement() {
+        return popupElement;
+    }
+
+    private HTMLPanel popupElement;
 
     /**
      * Loads the offline library.
@@ -97,11 +106,15 @@ public class OfflineMapWidget extends GenericMapWidget {
         initWidget(htmlPanel);
     }
 
+    public void removeMarker(GenericMarker m){
+        markers.remove(m);
+    }
+
     void initializePopup(HTMLPanel htmlPanel, String currentId) {
-        final HTMLPanel popup = new HTMLPanel("");
+        popupElement = new HTMLPanel("");
         final String popupID = currentId+"Popup";
-        popup.getElement().setId(popupID);
-        htmlPanel.add(popup);
+        popupElement.getElement().setId(popupID);
+        htmlPanel.add(popupElement);
     }
 
     private void mapBuilderToLocalAttributes(MapBuilder mapBuilder) {
@@ -110,8 +123,6 @@ public class OfflineMapWidget extends GenericMapWidget {
         centerCoordinatesLatLon = mapBuilder.centerCoordinatesLatLon;
         mapCenterLat = centerCoordinatesLatLon.getMapCenterLat();
         mapCentreLon = centerCoordinatesLatLon.getMapCentreLon();
-
-//        Window.alert(String.valueOf(mapBuilder.mapHeight));
     }
 
     @Override
@@ -122,12 +133,26 @@ public class OfflineMapWidget extends GenericMapWidget {
 
     private void drawMap() {
         if(!mapDrawCalled) {
-            drawBasicMap(this, currentId);
+            drawBasicMap(this, currentId, popupElement);
             mapDrawCalled = true;
         }
     }
 
-    private static native void drawBasicMap(OfflineMapWidget offlineMapWidget, String mapContainerId)/*-{
+    private void dispatchClickEventToMarker(String markerID){
+        // find marker by id and delegate click
+        if(StringUtils.isEmpty(markerID)){
+            throw new IllegalArgumentException("markerID was empty");
+        };
+//        int index = Integer.parseInt(markerID.replace(OfflineMapMarker.MARKER_ID_PREFIX,""));
+        for (GenericMarker marker : markers) {
+            OfflineMapMarker offlineMapMarker = (OfflineMapMarker) marker;
+            if(offlineMapMarker.getMarkerID().equals(markerID)){
+                offlineMapMarker.fireClickEvent();
+            }
+        }
+    }
+
+    private static native void drawBasicMap(OfflineMapWidget offlineMapWidget, String mapContainerId, HTMLPanel popupElement)/*-{
         var ol = $wnd.ol;
         var $ = $wnd.$;
         var map, mapSource, markerContainer, boolHasRendered, iconFeature, iconStyle, mapCentreLon, mapCentreLat, zoomLevel;
@@ -143,7 +168,6 @@ public class OfflineMapWidget extends GenericMapWidget {
         zoomLevel = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::zoomLevel;
 
         offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::markerContainer = markerContainer;
-
 
         var vectorLayer = new ol.layer.Vector({
             source: markerContainer
@@ -189,39 +213,44 @@ public class OfflineMapWidget extends GenericMapWidget {
         });
         map.addOverlay(popup);
 
+        offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::mapPopupOverlay = popup;
+        offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::mapPopupContainerElement = element;
+
         // display popup on click
         map.on('click', function (evt) {
-            var feature = map.forEachFeatureAtPixel(evt.pixel,
-                function (feature, layer) {
-                    return feature;
+            var pixel = map.getEventPixel(evt.originalEvent);
+            var feature = map.forEachFeatureAtPixel(pixel,
+                function (featureFromClick, layer) {
+                    return featureFromClick;
                 });
             if (feature) {
-                var geometry = feature.getGeometry();
-                var coord = geometry.getCoordinates();
-                popup.setPosition(coord);
-                $(element).popover({
-                    'placement': 'top',
-                    'html': true,
-                    'content': feature.get('name')
-                });
-                $(element).popover('show');
+                offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::dispatchClickEventToMarker(Ljava/lang/String;)(feature.get('markerID'))
+
             } else {
                 $(element).popover('destroy');
             }
         });
 
-
         // change mouse cursor when over marker
         map.on('pointermove', function (e) {
             if (e.dragging) {
-                $(element).popover('destroy');
+                //$(element).popover('destroy');
                 return;
             }
             var pixel = map.getEventPixel(e.originalEvent);
+
             var hit = map.hasFeatureAtPixel(pixel);
-            console.log(map.getTarget())
-            console.log(map.getTarget().style)
-            console.log(map.getTarget().cursor)
+            //if(!(typeof hit === "undefined" ) && hit){
+            //    var feature = map.forEachFeatureAtPixel(pixel,
+            //        function (feature, layer) {
+            //            return feature;
+            //        });
+            //    //console.log(feature.get('markerID'));
+            //
+            //}
+            //console.log(map.getTarget())
+            //console.log(map.getTarget().style)
+            //console.log(map.getTarget().cursor)
             //map.getTarget().style.cursor = hit ? 'pointer' : '';
         });
 
@@ -318,5 +347,13 @@ public class OfflineMapWidget extends GenericMapWidget {
 
     public JavaScriptObject getMarkerContainer() {
         return markerContainer;
+    }
+
+    public JavaScriptObject getMapPopupOverlay() {
+        return mapPopupOverlay;
+    }
+
+    public JavaScriptObject getMapPopupContainerElement() {
+        return mapPopupContainerElement;
     }
 }
