@@ -235,8 +235,9 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         infoWindowWidget.setVisible(true);
         final HTMLPanel panel = this.offlineMapWidget.getPopupElement();
         final Element popupElement = panel.getElement();
-        final int offsetWidth = infoWindowWidget.getOffsetWidth();
-        final int offsetHeight = infoWindowWidget.getOffsetHeight();
+        final int padding = 50;
+        final int offsetWidth = infoWindowWidget.getOffsetWidth() + padding;
+        final int offsetHeight = infoWindowWidget.getOffsetHeight() + padding;
         setDataAttribute(popupElement, "<div style='width:"+offsetWidth+"px;height:"+offsetHeight+"px;' id='" + markerID + "'></div>");
         displayPopup(this, mapPopupOverlay, mapPopupContainerElement, this.markerFeature, popupElement);
         /*
