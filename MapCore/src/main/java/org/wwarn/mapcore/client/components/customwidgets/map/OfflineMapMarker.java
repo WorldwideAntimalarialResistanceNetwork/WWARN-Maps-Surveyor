@@ -235,9 +235,10 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         infoWindowWidget.setVisible(true);
         final HTMLPanel panel = this.offlineMapWidget.getPopupElement();
         final Element popupElement = panel.getElement();
-        setDataAttribute(popupElement, "<div style='width:500px;height:500px;' id='"+markerID+"'></div>");
+        final int offsetWidth = infoWindowWidget.getOffsetWidth();
+        final int offsetHeight = infoWindowWidget.getOffsetHeight();
+        setDataAttribute(popupElement, "<div style='width:"+offsetWidth+"px;height:"+offsetHeight+"px;' id='" + markerID + "'></div>");
         displayPopup(this, mapPopupOverlay, mapPopupContainerElement, this.markerFeature, popupElement);
-        panel.getElement().removeClassName("popover");
         /*
         * Works around the horrors of HTMLPanel.wrap(DOM.getElementById("moo")),
         * which fails with "A widget that has an existing parent widget may not be added to the detach list",
@@ -269,12 +270,10 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
                 //,'content': popupHTMLContent // this gets overwritten later for dynamic popups content
             };
             var popover = $(element).popover(popOverSettings);
-                //.on('show.bs.popover'
-                //, function() {
-                //    popover.attr('data-content', popupHTMLContent);
-                //});
 
             $(element).popover('show');
+            $(".popover").css("max-width", "none");
+            //$(".popover").css("z-index", 500);
         }
     }-*/;
 
