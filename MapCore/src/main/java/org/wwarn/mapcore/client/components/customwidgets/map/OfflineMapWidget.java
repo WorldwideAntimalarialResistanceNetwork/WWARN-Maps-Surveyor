@@ -138,7 +138,7 @@ public class OfflineMapWidget extends GenericMapWidget {
         }
     }
 
-    private void dispatchClickEventToMarker(String markerID){
+    private void dispatchClickEventToMarker(String markerID, double x, double y){
         // find marker by id and delegate click
         if(StringUtils.isEmpty(markerID)){
             throw new IllegalArgumentException("markerID was empty");
@@ -147,7 +147,7 @@ public class OfflineMapWidget extends GenericMapWidget {
         for (GenericMarker marker : markers) {
             OfflineMapMarker offlineMapMarker = (OfflineMapMarker) marker;
             if(offlineMapMarker.getMarkerID().equals(markerID)){
-                offlineMapMarker.fireClickEvent();
+                offlineMapMarker.fireClickEvent(x, y);
             }
         }
     }
@@ -228,7 +228,8 @@ public class OfflineMapWidget extends GenericMapWidget {
             //only close popover if it is not in the popup region
             //i.e. check if event pixel intersects popup area
             var isClickWithinPopupArea = false;
-
+            var xPosition = pixel[0];
+            var yPosition = pixel[1];
             var popup = $(".popover");
             if(popup && popup.offset() && pixel){
                 var mapViewPortxAxistPixelLeftMost = olMapViewport.offset().left;
@@ -237,8 +238,6 @@ public class OfflineMapWidget extends GenericMapWidget {
                 var xAxisPixelRightMost = xAxisPixelLeftMost  + popup.width();
                 var yAxisPixelTopMost = popup.offset().top - mapViewPortyAxistPixelTopMost;
                 var yAxisPixelBottomMost = yAxisPixelTopMost  + popup.height();
-                var xPosition = pixel[0];
-                var yPosition = pixel[1];
                 //is xPosition intersecting popup
                 if(xPosition >= xAxisPixelLeftMost && xPosition <= xAxisPixelRightMost){
                     //is yPosition intersection popup
@@ -250,7 +249,7 @@ public class OfflineMapWidget extends GenericMapWidget {
 
             if (feature) {
                 if(!isClickWithinPopupArea) {
-                    offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::dispatchClickEventToMarker(Ljava/lang/String;)(feature.get('markerID'))
+                    offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::dispatchClickEventToMarker(Ljava/lang/String;DD)(feature.get('markerID'), xPosition, yPosition)
                 }
 
             } else {

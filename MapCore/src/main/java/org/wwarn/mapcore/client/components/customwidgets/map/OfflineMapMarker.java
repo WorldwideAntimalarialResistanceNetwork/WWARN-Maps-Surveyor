@@ -69,6 +69,8 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
     private MarkerCallBackEventHandler<GenericMarker> mouseOverCallback;
     private MarkerCallBackEventHandler<GenericMarker> mouseOutCallback;
     private List<MarkerCallBackEventHandler> clickCallbackHandlers = new ArrayList<>();
+    private double xPositionForClick;
+    private double yPositionForClick;
 
 
     public OfflineMapMarker(MapMarkerBuilder mapMarkerBuilder, T markerContext) {
@@ -129,7 +131,10 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         setupMarker(this, markerContainer);
     }
 
-    public void fireClickEvent(){
+    public void fireClickEvent(double x, double y){
+        xPositionForClick = x;
+        yPositionForClick = y;
+
         for (MarkerCallBackEventHandler clickCallbackHandler : clickCallbackHandlers) {
             clickCallbackHandler.run(this);
         }
@@ -260,9 +265,14 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         //var element = mapPopupContainerElement;
         var feature = markerFeature;
         var popup = mapPopupOverlay;
+        var xPositionForClick = (offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::xPositionForClick);
+        var yPositionForClick = (offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::yPositionForClick);
+
         if (feature) {
             var geometry = feature.getGeometry();
             var coord = geometry.getCoordinates();
+            //coord = ol.proj.transform(coord, 'EPSG:3857',   'EPSG:3857');
+            //popup.setPosition([yPositionForClick,xPositionForClick])
             popup.setPosition(coord);
 
             var popOverSettings = {
@@ -274,7 +284,6 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
 
             $(element).popover('show');
             $(".popover").css("max-width", "none");
-            //$(".popover").css("z-index", 500);
         }
     }-*/;
 
