@@ -138,7 +138,7 @@ public class OfflineMapWidget extends GenericMapWidget {
         }
     }
 
-    private void dispatchClickEventToMarker(String markerID){
+    private void dispatchClickEventToMarker(String markerID, double x, double y){
         // find marker by id and delegate click
         if(StringUtils.isEmpty(markerID)){
             throw new IllegalArgumentException("markerID was empty");
@@ -147,7 +147,7 @@ public class OfflineMapWidget extends GenericMapWidget {
         for (GenericMarker marker : markers) {
             OfflineMapMarker offlineMapMarker = (OfflineMapMarker) marker;
             if(offlineMapMarker.getMarkerID().equals(markerID)){
-                offlineMapMarker.fireClickEvent();
+                offlineMapMarker.fireClickEvent(x, y);
             }
         }
     }
@@ -216,6 +216,8 @@ public class OfflineMapWidget extends GenericMapWidget {
         offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::mapPopupOverlay = popup;
         offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::mapPopupContainerElement = element;
 
+        var olMapViewport = $(".ol-viewport");
+
         // display popup on click
         map.on('click', function (evt) {
             var pixel = map.getEventPixel(evt.originalEvent);
@@ -223,13 +225,41 @@ public class OfflineMapWidget extends GenericMapWidget {
                 function (featureFromClick, layer) {
                     return featureFromClick;
                 });
+            //only close popover if it is not in the popup region
+            //i.e. check if event pixel intersects popup area
+            var isClickWithinPopupArea = false;
+            var xPosition = pixel[0];
+            var yPosition = pixel[1];
+            var popup = $(".popover");
+            if(popup && popup.offset() && pixel){
+                var mapViewPortxAxistPixelLeftMost = olMapViewport.offset().left;
+                var mapViewPortyAxistPixelTopMost = olMapViewport.offset().top;
+                var xAxisPixelLeftMost = popup.offset().left - mapViewPortxAxistPixelLeftMost;
+                var xAxisPixelRightMost = xAxisPixelLeftMost  + popup.width();
+                var yAxisPixelTopMost = popup.offset().top - mapViewPortyAxistPixelTopMost;
+                var yAxisPixelBottomMost = yAxisPixelTopMost  + popup.height();
+                //is xPosition intersecting popup
+                if(xPosition >= xAxisPixelLeftMost && xPosition <= xAxisPixelRightMost){
+                    //is yPosition intersection popup
+                    if(yPosition >= yAxisPixelTopMost && yPosition <=yAxisPixelBottomMost){
+                        isClickWithinPopupArea = true;
+                    }
+                }
+            }
+
             if (feature) {
-                offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::dispatchClickEventToMarker(Ljava/lang/String;)(feature.get('markerID'))
+                if(!isClickWithinPopupArea) {
+                    offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::dispatchClickEventToMarker(Ljava/lang/String;DD)(feature.get('markerID'), xPosition, yPosition)
+                }
 
             } else {
-                $(element).popover('destroy');
+                if(!isClickWithinPopupArea){
+                    $(element).popover('destroy');
+                }
             }
         });
+
+        olMapViewport.css("overflow","visible");
 
         // change mouse cursor when over marker
         map.on('pointermove', function (e) {
