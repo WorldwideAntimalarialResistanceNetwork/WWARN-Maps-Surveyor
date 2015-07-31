@@ -69,6 +69,8 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
     private MarkerCallBackEventHandler<GenericMarker> mouseOverCallback;
     private MarkerCallBackEventHandler<GenericMarker> mouseOutCallback;
     private List<MarkerCallBackEventHandler> clickCallbackHandlers = new ArrayList<>();
+    private double xPositionForClick;
+    private double yPositionForClick;
 
 
     public OfflineMapMarker(MapMarkerBuilder mapMarkerBuilder, T markerContext) {
@@ -129,7 +131,10 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         setupMarker(this, markerContainer);
     }
 
-    public void fireClickEvent(){
+    public void fireClickEvent(double x, double y){
+        xPositionForClick = x;
+        yPositionForClick = y;
+
         for (MarkerCallBackEventHandler clickCallbackHandler : clickCallbackHandlers) {
             clickCallbackHandler.run(this);
         }
@@ -235,9 +240,11 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         infoWindowWidget.setVisible(true);
         final HTMLPanel panel = this.offlineMapWidget.getPopupElement();
         final Element popupElement = panel.getElement();
-        setDataAttribute(popupElement, "<div style='width:500px;height:500px;' id='"+markerID+"'></div>");
+        final int padding = 50;
+        final int offsetWidth = infoWindowWidget.getOffsetWidth() + padding;
+        final int offsetHeight = infoWindowWidget.getOffsetHeight() + padding;
+        setDataAttribute(popupElement, "<div style='width:"+offsetWidth+"px;height:"+offsetHeight+"px;' id='" + markerID + "'></div>");
         displayPopup(this, mapPopupOverlay, mapPopupContainerElement, this.markerFeature, popupElement);
-        panel.getElement().removeClassName("popover");
         /*
         * Works around the horrors of HTMLPanel.wrap(DOM.getElementById("moo")),
         * which fails with "A widget that has an existing parent widget may not be added to the detach list",
@@ -258,9 +265,14 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         //var element = mapPopupContainerElement;
         var feature = markerFeature;
         var popup = mapPopupOverlay;
+        var xPositionForClick = (offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::xPositionForClick);
+        var yPositionForClick = (offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::yPositionForClick);
+
         if (feature) {
             var geometry = feature.getGeometry();
             var coord = geometry.getCoordinates();
+            //coord = ol.proj.transform(coord, 'EPSG:3857',   'EPSG:3857');
+            //popup.setPosition([yPositionForClick,xPositionForClick])
             popup.setPosition(coord);
 
             var popOverSettings = {
@@ -269,12 +281,9 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
                 //,'content': popupHTMLContent // this gets overwritten later for dynamic popups content
             };
             var popover = $(element).popover(popOverSettings);
-                //.on('show.bs.popover'
-                //, function() {
-                //    popover.attr('data-content', popupHTMLContent);
-                //});
 
             $(element).popover('show');
+            $(".popover").css("max-width", "none");
         }
     }-*/;
 
