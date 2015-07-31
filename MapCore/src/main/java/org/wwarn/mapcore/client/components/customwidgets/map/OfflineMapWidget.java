@@ -37,6 +37,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.wwarn.mapcore.client.resources.OpenLayersV3Resources;
@@ -301,6 +302,11 @@ public class OfflineMapWidget extends GenericMapWidget {
     @Override
     public void setCenter(CoordinatesLatLon center) {
         centerCoordinatesLatLon = center;
+    }
+
+    @Override
+    public MapWidget getInternalGoogleMapWidget() {
+        throw new UnsupportedOperationException("Not yet implemented..");
     }
 
     @Override

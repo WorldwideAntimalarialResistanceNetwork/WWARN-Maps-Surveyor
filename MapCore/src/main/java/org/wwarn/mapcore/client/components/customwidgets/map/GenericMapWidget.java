@@ -34,6 +34,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  */
 
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
@@ -58,6 +59,8 @@ public abstract class GenericMapWidget extends Composite {
     public abstract CoordinatesLatLon getCenter();
 
     public abstract void setCenter(CoordinatesLatLon center);
+
+    public abstract MapWidget getInternalGoogleMapWidget();
 
     public void clearMarkers(){
         if(markers == null){return;}
