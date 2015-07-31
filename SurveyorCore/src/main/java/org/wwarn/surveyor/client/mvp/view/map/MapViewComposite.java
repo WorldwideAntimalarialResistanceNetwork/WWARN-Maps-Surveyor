@@ -83,6 +83,7 @@ public class MapViewComposite extends Composite {
     private GoogleV3Marker.MarkerHoverLabelBuilder markerHoverLabelBuilder;
     private GoogleV3Marker.MarkerClickInfoWindowBuilder markerClickInfoWindow;
     private MarkerLegendLoader markerLegendLoader;
+    private MarkerClusterer markerClusterer;
 
     // UI Binder boiler plate
     interface MapViewUIUiBinder extends UiBinder<FlowPanel, MapViewComposite> {}
@@ -177,20 +178,25 @@ public class MapViewComposite extends Composite {
         }
 
 
-        mapWidget.addMarkers(markers);
-
         if(viewConfig.isDoCluster()){
             buildMarkerClusterer(markers);
+        }else{
+            mapWidget.addMarkers(markers);
         }
 
     }
 
+
+
     private void buildMarkerClusterer(List<GenericMarker> markers){
+        if(markerClusterer != null)
+            markerClusterer.clearMarkers();
+
         List<Marker> googleMarkers = convertToGoogleMarker(markers);
         final MarkerClustererOptions clusterOptions = MarkerClustererOptions.newInstance();
         clusterOptions.setAverageCenter( true );
-        //clusterOptions.setGridSize(5);
-        MarkerClusterer.newInstance(mapWidget.getInternalGoogleMapWidget(), googleMarkers, clusterOptions);
+        clusterOptions.setGridSize(5);
+        markerClusterer = MarkerClusterer.newInstance(mapWidget.getInternalGoogleMapWidget(), googleMarkers, clusterOptions);
     }
 
     private List<Marker> convertToGoogleMarker(List<GenericMarker> markers){
