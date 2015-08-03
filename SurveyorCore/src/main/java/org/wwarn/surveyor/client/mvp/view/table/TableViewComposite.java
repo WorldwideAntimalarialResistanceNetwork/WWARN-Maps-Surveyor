@@ -279,11 +279,11 @@ public class TableViewComposite extends Composite {
         }
 
     }
-    private String addHyperLink(String valueString, String hyperLinkValue) {
+    static String addHyperLink(String valueString, String hyperLinkValue) {
         return "<a target=\"_blank\" href=\""+SafeHtmlUtils.htmlEscape(hyperLinkValue)+"\">"+SafeHtmlUtils.htmlEscapeAllowEntities(valueString)+"</a>";
     }
 
-    private String addSpanAttribute(String valueStringRaw, String valueString) {
+    static String addSpanAttribute(String valueStringRaw, String valueString) {
         return "<span class=\"tableContentHrefOrderHack\" title=\""+SafeHtmlUtils.htmlEscape(valueStringRaw)+"\">"+valueString+"</span>";
     }
 

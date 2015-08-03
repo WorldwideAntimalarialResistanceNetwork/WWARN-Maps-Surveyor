@@ -36,10 +36,12 @@ package org.wwarn.surveyor.client.core;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.event.DataUpdatedEvent;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
+import org.wwarn.surveyor.client.model.TableViewConfig;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 import org.wwarn.surveyor.client.util.OfflineStorageUtil;
 import com.google.gwt.user.client.Timer;
@@ -616,4 +618,5 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         final String paddedInteger = (new String(padArray)) + Integer.toString(i);
         return paddedInteger;
     }
+
 }
