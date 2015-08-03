@@ -52,7 +52,7 @@ import org.wwarn.surveyor.client.mvp.presenter.LoadStatusListener;
 import org.wwarn.surveyor.client.mvp.presenter.ResultPresenter;
 import org.wwarn.surveyor.client.mvp.view.map.MapViewComposite;
 import org.wwarn.surveyor.client.mvp.view.panel.PanelViewComposite;
-import org.wwarn.surveyor.client.mvp.view.table.CellTableServer;
+import org.wwarn.surveyor.client.mvp.view.table.CellTableViewComposite;
 import org.wwarn.surveyor.client.mvp.view.table.TableViewComposite;
 import org.wwarn.surveyor.client.mvp.view.template.TemplateViewComposite;
 
@@ -205,7 +205,7 @@ public class ResultViewUI extends Composite implements ResultView {
                     if(table == null){
                         TableViewConfig tableViewConfig = (TableViewConfig) viewConfig;
                         if (tableViewConfig.getType() == TableViewConfig.TableType.SERVER_TABLE){
-                            table = new CellTableServer(tableViewConfig);
+                            table = new CellTableViewComposite(tableViewConfig);
                         }else{
                             table = new TableViewComposite(tableViewConfig);
                         }
