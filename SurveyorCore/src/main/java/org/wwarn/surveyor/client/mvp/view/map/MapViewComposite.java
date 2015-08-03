@@ -195,7 +195,8 @@ public class MapViewComposite extends Composite {
         List<Marker> googleMarkers = convertToGoogleMarker(markers);
         final MarkerClustererOptions clusterOptions = MarkerClustererOptions.newInstance();
         clusterOptions.setAverageCenter( true );
-        clusterOptions.setGridSize(5);
+        //clusterOptions.setGridSize(5);
+        clusterOptions.setMaxZoom(11);
         markerClusterer = MarkerClusterer.newInstance(mapWidget.getInternalGoogleMapWidget(), googleMarkers, clusterOptions);
     }
 
