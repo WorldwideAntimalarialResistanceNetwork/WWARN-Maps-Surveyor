@@ -199,7 +199,7 @@ public class CellTableViewComposite extends Composite {
                             if (isHyperLinkField) {
                                 String hyperLinkValue = record.getValueByFieldName(column.getHyperLinkField());
                                 String valueString = record.getValueByFieldName(column.getFieldName());
-                                return  TableViewComposite.addHyperLink(valueString,hyperLinkValue);
+                                return  TableViewUtil.addHyperLink(valueString,hyperLinkValue);
                             } else {
                                 String value;
                                 if(isFunction(column.getFieldName())){
@@ -215,7 +215,7 @@ public class CellTableViewComposite extends Composite {
                                         final DateTimeFormat dateTimeFormat = DataType.ParseUtil.getDateFormatFrom(dateFormat);
                                         final String formattedDate = dateTimeFormat.format(date);
                                         if(!formattedDate.equals(DEFAULT_DATE)) {
-                                            value = TableViewComposite.addSpanAttribute(dateValue, formattedDate);
+                                            value = TableViewUtil.addSpanAttribute(dateValue, formattedDate);
                                         }else {
                                             value = record.getValueByFieldName(column.getFieldName());
                                         }
