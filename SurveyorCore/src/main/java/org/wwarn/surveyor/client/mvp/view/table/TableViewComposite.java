@@ -240,7 +240,7 @@ public class TableViewComposite extends Composite {
                             final DateTimeFormat formatter = DateTimeFormat.getFormat(tableColumn.getDateFormat());
                             final DateTimeFormat isoFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.ISO_8601);
                             final Date date = isoFormat.parse(cellValue);
-                            final String dateWithSpan = addSpanAttribute(isoFormat.format(date), formatter.format(date));
+                            final String dateWithSpan = TableViewUtil.addSpanAttribute(isoFormat.format(date), formatter.format(date));
                             table.setValue(rowIndex, tableColumnIndex, dateWithSpan);
                             break;
                         case Boolean:
@@ -262,11 +262,11 @@ public class TableViewComposite extends Composite {
                                     if(!StringUtils.isEmpty(hyperLinkValue)){
                                         //if the value is empty, set it to the hyperlink
                                         valueStringRaw=StringUtils.isEmpty(valueStringRaw)?hyperLinkValue:valueStringRaw;
-                                        valueStringFormatted = addHyperLink(valueStringRaw, hyperLinkValue);
+                                        valueStringFormatted = TableViewUtil.addHyperLink(valueStringRaw, hyperLinkValue);
                                     }
                                 }
                             }
-                            valueStringFormatted = addSpanAttribute(valueStringRaw, valueStringFormatted);
+                            valueStringFormatted = TableViewUtil.addSpanAttribute(valueStringRaw, valueStringFormatted);
                             table.setValue(rowIndex, tableColumnIndex, valueStringFormatted);
                             break;
                         default:
@@ -279,13 +279,7 @@ public class TableViewComposite extends Composite {
         }
 
     }
-    static String addHyperLink(String valueString, String hyperLinkValue) {
-        return "<a target=\"_blank\" href=\""+SafeHtmlUtils.htmlEscape(hyperLinkValue)+"\">"+SafeHtmlUtils.htmlEscapeAllowEntities(valueString)+"</a>";
-    }
 
-    static String addSpanAttribute(String valueStringRaw, String valueString) {
-        return "<span class=\"tableContentHrefOrderHack\" title=\""+SafeHtmlUtils.htmlEscape(valueStringRaw)+"\">"+valueString+"</span>";
-    }
 
     @EventHandler
     public void onResultChanged(ResultChangedEvent resultChangedEvent){
