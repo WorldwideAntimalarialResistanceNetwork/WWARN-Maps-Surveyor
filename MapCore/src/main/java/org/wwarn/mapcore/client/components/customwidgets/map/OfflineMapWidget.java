@@ -33,6 +33,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.StyleInjector;
@@ -138,9 +139,17 @@ public class OfflineMapWidget extends GenericMapWidget {
     private void drawMap() {
         if(!mapDrawCalled) {
             final boolean isOnline = offlineStatusObserver.isOnline();
-            drawBasicMap(this, currentId, popupElement, isOnline);
+            drawBasicMap(this, currentId, popupElement, isOnline, getModuleBaseName());
             mapDrawCalled = true;
         }
+    }
+
+    private String getModuleBaseName() {
+        String moduleBaseName = "org.wwarn.mapcore.Map";
+        if(GWT.isProdMode()){
+            moduleBaseName = GWT.getModuleName();
+        }
+        return moduleBaseName;
     }
 
     private void doReplacePopupContents(){
@@ -161,7 +170,7 @@ public class OfflineMapWidget extends GenericMapWidget {
         }
     }
 
-    private static native void drawBasicMap(OfflineMapWidget offlineMapWidget, String mapContainerId, HTMLPanel popupElement, boolean isOnline)/*-{
+    private static native void drawBasicMap(OfflineMapWidget offlineMapWidget, String mapContainerId, HTMLPanel popupElement, boolean isOnline, String moduleBaseName)/*-{
         var ol = $wnd.ol;
         var $ = $wnd.$;
         var map, mapSource, markerContainer, boolHasRendered, iconFeature, iconStyle, mapCentreLon, mapCentreLat, zoomLevel, popup, popupElement;
@@ -182,11 +191,11 @@ public class OfflineMapWidget extends GenericMapWidget {
             source: markerContainer
         });
 
-        if(isOnline){
+        if(isOnline && false){
             mapSource = new ol.source.MapQuest({layer: 'osm'});
         }else{
-            $wnd.alert("Drawing offline map")
-            mapSource = new ol.source.MapQuest({layer: 'osm', url: '/mapQuestOfflineTiles'+'/{z}/{x}/{y}.jpg'});
+            //$wnd.alert("Drawing offline map")
+            mapSource = new ol.source.MapQuest({layer: 'osm', url: moduleBaseName + '/mapQuestOfflineTileStore'+'/{z}/{x}/{y}.jpg'});
         }
         //mapSource = new ol.source.OSM();
 
