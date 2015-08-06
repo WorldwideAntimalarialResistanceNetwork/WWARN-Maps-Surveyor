@@ -157,7 +157,7 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
             markerGeom = ol.Projection.transformWithCodes(new ol.geom.Point(new ol.Coordinate(markerAnchorPoint.getX(), markerAnchorPoint.getY())), 'EPSG:4326',   'EPSG:3857');
         }else{
             // WGS84/EPSG:4326 used by Google Earth, and  Open Street Map database is stored in a gcs with units decimal degrees & datum, it also the Geographic coordinate http://en.wikipedia.org/wiki/Google_Earth#Imagery_and_coordination
-            // Web Mercator coordinate system EPSG: 3857, is a projected coordinate from sphere to flat surface, this is the same as EPSG:900913/'EPSG:3785'/'GOOGLE'/'EPSG:102113' and used by google maps, openstreetmap and bing
+            // Web Mercator coordinate system EPSG: 3857, is a projected coordinate from sphere to flat surface, this is the same as EPSG:900913/'EPSG:3785'/'GOOGLE'/'EPSG:102113' and used by ol.Source.OSM, google maps, openstreetmap and bing
             // geo coords if they were got from map, they might be  EPSG:27700 instead of EPSG:3857
             markerGeom = new ol.geom.Point(ol.proj.transform([markerLon, markerLat], 'EPSG:4326',   'EPSG:3857'));
         }

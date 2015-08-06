@@ -40,6 +40,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
 import org.wwarn.mapcore.client.resources.OpenLayersV3Resources;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
@@ -73,6 +74,7 @@ public class OfflineMapWidget extends GenericMapWidget {
     private double mapCentreLon;
     private int zoomLevel;
     private CoordinatesLatLon centerCoordinatesLatLon;
+    private static OfflineStatusObserver offlineStatusObserver;
 
     public HTMLPanel getPopupElement() {
         return popupElement;
@@ -84,6 +86,7 @@ public class OfflineMapWidget extends GenericMapWidget {
      * Loads the offline library.
      */
     public static void load() {
+        offlineStatusObserver = new OfflineStatusObserver();
         if (!isLoaded()) {
 //            ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.proj4js().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
             ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.js().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
@@ -134,9 +137,14 @@ public class OfflineMapWidget extends GenericMapWidget {
 
     private void drawMap() {
         if(!mapDrawCalled) {
-            drawBasicMap(this, currentId, popupElement);
+            final boolean isOnline = offlineStatusObserver.isOnline();
+            drawBasicMap(this, currentId, popupElement, isOnline);
             mapDrawCalled = true;
         }
+    }
+
+    private void doReplacePopupContents(){
+        getPopupElement().addAndReplaceElement(new HTMLPanel("<div style=\"width:500px;height:500px;\"><h1>Hello World</h1></div>"), "nigels" + currentId);
     }
 
     private void dispatchClickEventToMarker(String markerID, double x, double y){
@@ -153,10 +161,10 @@ public class OfflineMapWidget extends GenericMapWidget {
         }
     }
 
-    private static native void drawBasicMap(OfflineMapWidget offlineMapWidget, String mapContainerId, HTMLPanel popupElement)/*-{
+    private static native void drawBasicMap(OfflineMapWidget offlineMapWidget, String mapContainerId, HTMLPanel popupElement, boolean isOnline)/*-{
         var ol = $wnd.ol;
         var $ = $wnd.$;
-        var map, mapSource, markerContainer, boolHasRendered, iconFeature, iconStyle, mapCentreLon, mapCentreLat, zoomLevel;
+        var map, mapSource, markerContainer, boolHasRendered, iconFeature, iconStyle, mapCentreLon, mapCentreLat, zoomLevel, popup, popupElement;
 
         boolHasRendered = false;
         //markerContainer
@@ -174,7 +182,14 @@ public class OfflineMapWidget extends GenericMapWidget {
             source: markerContainer
         });
 
-        mapSource = new ol.source.MapQuest({layer: 'osm'});
+        if(isOnline){
+            mapSource = new ol.source.MapQuest({layer: 'osm'});
+        }else{
+            $wnd.alert("Drawing offline map")
+            mapSource = new ol.source.MapQuest({layer: 'osm', url: '/mapQuestOfflineTiles'+'/{z}/{x}/{y}.jpg'});
+        }
+        //mapSource = new ol.source.OSM();
+
         map = new ol.Map({
             target: mapContainerId,
             layers: [
@@ -207,7 +222,7 @@ public class OfflineMapWidget extends GenericMapWidget {
 
         //setup popup on click stuff
         var element = $wnd.document.getElementById(mapContainerId + 'Popup');
-        var popup = new ol.Overlay({
+        popup = new ol.Overlay({
             element: element,
             positioning: 'bottom-center',
             stopEvent: false
@@ -226,19 +241,20 @@ public class OfflineMapWidget extends GenericMapWidget {
                 function (featureFromClick, layer) {
                     return featureFromClick;
                 });
-            //only close popover if it is not in the popup region
-            //i.e. check if event pixel intersects popup area
+
+            ////only close popover if it is not in the popup region
+            ////i.e. check if event pixel intersects popup area
             var isClickWithinPopupArea = false;
             var xPosition = pixel[0];
             var yPosition = pixel[1];
-            var popup = $(".popover");
-            if(popup && popup.offset() && pixel){
+            popupElement = $(".popover");
+            if(popupElement && popupElement.offset() && pixel){
                 var mapViewPortxAxistPixelLeftMost = olMapViewport.offset().left;
                 var mapViewPortyAxistPixelTopMost = olMapViewport.offset().top;
-                var xAxisPixelLeftMost = popup.offset().left - mapViewPortxAxistPixelLeftMost;
-                var xAxisPixelRightMost = xAxisPixelLeftMost  + popup.width();
-                var yAxisPixelTopMost = popup.offset().top - mapViewPortyAxistPixelTopMost;
-                var yAxisPixelBottomMost = yAxisPixelTopMost  + popup.height();
+                var xAxisPixelLeftMost = popupElement.offset().left - mapViewPortxAxistPixelLeftMost;
+                var xAxisPixelRightMost = xAxisPixelLeftMost  + popupElement.width();
+                var yAxisPixelTopMost = popupElement.offset().top - mapViewPortyAxistPixelTopMost;
+                var yAxisPixelBottomMost = yAxisPixelTopMost  + popupElement.height();
                 //is xPosition intersecting popup
                 if(xPosition >= xAxisPixelLeftMost && xPosition <= xAxisPixelRightMost){
                     //is yPosition intersection popup
@@ -247,6 +263,38 @@ public class OfflineMapWidget extends GenericMapWidget {
                     }
                 }
             }
+
+            //todo play with sample to try get the position correct - start
+            //if (feature) {
+            //    var geometry = feature.getGeometry();
+            //    var coord = geometry.getCoordinates();
+            //    console.log("feature")
+            //    console.log(feature)
+            //    popup.setPosition(coord);
+            //    console.log('markerID2');
+            //    console.log(feature.get('markerID'));
+            //    var popOverSettings = {
+            //        'placement': 'top',
+            //        'html': true,
+            //        'content': function() {return '<div style="width:500;height:500px;" id="nigels'+mapContainerId+'"><h1>"'+feature.get('markerID')+'</h1></div>'}
+            //    };
+            //
+            //    $(element).popover(popOverSettings);
+            //
+            //    //$(element).popover({
+            //    //    'placement': 'top',
+            //    //    'html': true,
+            //    //    'content': feature.get('markerID')
+            //    //});
+            //    $(element).popover('show');
+            //    $(".popover").css("max-width", "none");
+            //    offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::doReplacePopupContents()();
+            //
+            //} else {
+            //    $(element).popover('destroy');
+            //}
+            //var isClickWithinPopupArea = false; var xPosition = 0; var yPosition = 0;
+            //todo play with sample - end
 
             if (feature) {
                 if(!isClickWithinPopupArea) {
@@ -260,7 +308,7 @@ public class OfflineMapWidget extends GenericMapWidget {
             }
         });
 
-        olMapViewport.css("overflow","visible");
+        //olMapViewport.css("overflow","visible");
 
         // change mouse cursor when over marker
         map.on('pointermove', function (e) {
