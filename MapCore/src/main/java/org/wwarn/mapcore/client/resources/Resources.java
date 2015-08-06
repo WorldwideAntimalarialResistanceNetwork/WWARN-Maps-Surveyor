@@ -46,4 +46,7 @@ import com.google.gwt.resources.client.TextResource;
  */
 public interface Resources extends ClientBundle {
     Resources IMPL = (Resources) GWT.create(Resources.class);
+
+    @Source("offline.min.0.7.13.js")
+    TextResource offlineStatusScript();
 }
