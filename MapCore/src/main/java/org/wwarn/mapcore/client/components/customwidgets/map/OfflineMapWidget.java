@@ -38,6 +38,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.maps.client.events.idle.IdleMapEvent;
+import com.google.gwt.maps.client.events.idle.IdleMapHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
@@ -58,10 +60,12 @@ public class OfflineMapWidget extends GenericMapWidget {
     private JavaScriptObject mapPopupOverlay;
     private JavaScriptObject mapPopupContainerElement;
     private JavaScriptObject markerContainer;
-    HTMLPanel htmlPanel = new HTMLPanel("");
+    private JavaScriptObject pfEndemicityTileLayer;
+
     private String currentId;
-    private Runnable loadCompleted;
     private boolean mapDrawCalled = false;
+    final private SimplePanel legendWidgetPlaceHolder = new SimplePanel();
+    AbsolutePanel absoluteMapContentOverlayPanel = new AbsolutePanel();
 
     static {
         if (!isLoaded()) {
@@ -75,6 +79,8 @@ public class OfflineMapWidget extends GenericMapWidget {
     private int zoomLevel;
     private CoordinatesLatLon centerCoordinatesLatLon;
     private static OfflineStatusObserver offlineStatusObserver;
+    private List<Runnable> loadCompleteCallbacks = new ArrayList<>();
+    private HTMLPanel mapWidgetHTMLPanel = new HTMLPanel("");
 
     public HTMLPanel getPopupElement() {
         return popupElement;
@@ -104,10 +110,11 @@ public class OfflineMapWidget extends GenericMapWidget {
         this.builder = mapBuilder;
         mapBuilderToLocalAttributes(mapBuilder);
         currentId = generateUID();
-        htmlPanel.getElement().setId(currentId);
-        htmlPanel.setHeight(mapBuilder.mapHeight + "px");
-        initializePopup(htmlPanel, currentId);
-        initWidget(htmlPanel);
+        absoluteMapContentOverlayPanel.add(mapWidgetHTMLPanel);
+        mapWidgetHTMLPanel.getElement().setId(currentId);
+        mapWidgetHTMLPanel.setHeight(mapBuilder.mapHeight + "px");
+        initializePopup(mapWidgetHTMLPanel, currentId);
+        initWidget(absoluteMapContentOverlayPanel);
     }
 
     public void removeMarker(GenericMarker m){
@@ -172,7 +179,7 @@ public class OfflineMapWidget extends GenericMapWidget {
     private static native void drawBasicMap(OfflineMapWidget offlineMapWidget, String mapContainerId, HTMLPanel popupElement, boolean isOnline, String moduleBaseName)/*-{
         var ol = $wnd.ol;
         var $ = $wnd.$;
-        var map, mapSource, markerContainer, boolHasRendered, iconFeature, iconStyle, mapCentreLon, mapCentreLat, zoomLevel, popup, popupElement;
+        var map, mapSource, markerContainer, boolHasRendered, iconFeature, iconStyle, mapCentreLon, mapCentreLat, zoomLevel, popup, popupElement, mapSourceTile, pfEndemicityTileLayer;
 
         boolHasRendered = false;
         //markerContainer
@@ -193,28 +200,100 @@ public class OfflineMapWidget extends GenericMapWidget {
         if(isOnline && false){
             mapSource = new ol.source.MapQuest({layer: 'osm'});
         }else{
-            //$wnd.alert("Drawing offline map")
             mapSource = new ol.source.MapQuest({layer: 'osm', url: moduleBaseName + '/mapQuestOfflineTileStore'+'/{z}/{x}/{y}.jpg'});
         }
+
         //mapSource = new ol.source.OSM();
+        //http://zoo-map02.zoo.ox.ac.uk/geoserver/wms?LAYERS=Explorer%3Apr_mean&TRANSPARENT=TRUE&TILED=true&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&FORMAT=image%2Fpng&SRS=EPSG%3A4326&BBOX=0,-90,90,0&WIDTH=256&HEIGHT=256
+        //1247348.5486233, -4263307.2348958, 4260801.9513187, -2448386.4355452
+        //pfEndemicitySource = new ol.source.TileWMS({
+        //    url: 'http://zoo-map02.zoo.ox.ac.uk/geoserver/wms',
+        //    serverType: "geoserver",
+        //    params: {
+        //        LAYERS: "Explorer:pr_mean",
+        //        TRANSPARENT: "TRUE",
+        //        //TILED: true,
+        //        SERVICE: "WMS",
+        //        VERSION: "1.1.1",
+        //        STYLES: "",
+        //        FORMAT: "image/png"
+        //        //,SRS:"EPSG:4326"
+        //    }
+        //});
+
+        new ol.source.MapQuest({layer: 'osm', url: 'http://localhost:8080/tms/1.0.0/osm/webmercator'+'/{z}/{x}/{y}.png'})
+
+        //pfEndemicitySource = new ol.source.MapQuest({layer: 'osm', url: moduleBaseName + '/plasmodiumFalciparumMalariaEndemicity/'+'/{z}/{x}/{y}.png'});
+        //pfEndemicitySource = new ol.source.MapQuest({layer: 'osm', url: 'http://localhost:8080/tms/1.0.0/osm/webmercator'+'/{z}/{x}/{y}.png'});
+        //var pfEndemicityTileLayer = new ol.layer.Tile({
+        //    source: pfEndemicitySource,
+        //    projection: 'EPSG:3857',
+        //});
+
+        //mapSource = new ol.source.TileWMS({
+        //    url: 'http://demo.boundlessgeo.com/geoserver/wms',
+        //    params: {
+        //        'LAYERS': 'ne:NE1_HR_LC_SR_W_DR'
+        //    }
+        //});
+
+        mapSourceTile = new ol.layer.Tile({
+            source: mapSource
+        });
+
+        // data sourced from mapproxy open layers section
+        var extent_mapSource = [-20037508.3428, -20037508.3428, 20037508.3428, 20037508.3428];
+        var tms_resolutions_2014 = [ 78271.516964,39135.758482,19567.879241,9783.9396205,4891.96981025,2445.98490513,1222.99245256,611.496226281,305.748113141,152.87405657,76.4370282852,38.2185141426,19.1092570713,9.55462853565,4.77731426782,2.38865713391,1.19432856696,0.597164283478,0.298582141739,0.149291070869];
+        var maxZoomIndex = 3; // only 4 layers of tiles available
+
+        pfEndemicityTileLayer = new ol.layer.Tile({
+            preload: 1,
+            minResolution: tms_resolutions_2014[maxZoomIndex],
+            source: new ol.source.TileImage({
+                crossOrigin: null,
+                extent: extent_mapSource,
+                projection: 'EPSG:3857',
+                tileGrid: new ol.tilegrid.TileGrid({
+                    extent: extent_mapSource,
+                    origin: [extent_mapSource[0], extent_mapSource[1]],
+                    resolutions: tms_resolutions_2014
+
+                }),
+                tileUrlFunction: function(coordinate) {
+
+                    if (coordinate === null) return undefined;
+
+                    // TMS Style URL
+                    var z = coordinate[0];
+                    var x = coordinate[1];
+                    var y = coordinate[2];
+                    var url = moduleBaseName + '/PFEndemicityOnlyTileStore/'+z+'/'+ x +'/'+y +'.png';
+                    return url;
+                }
+            })
+        });
+
+        offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::pfEndemicityTileLayer = pfEndemicityTileLayer;
 
         map = new ol.Map({
             target: mapContainerId,
             layers: [
-                new ol.layer.Tile({
-                    source: mapSource
-                }),
+                mapSourceTile,
+                pfEndemicityTileLayer,
                 vectorLayer
             ],
             view: new ol.View({
+                //projection: 'EPSG:4326',
                 projection: 'EPSG:3857',
+                //center: ol.proj.transform([mapCentreLon, mapCentreLat], 'EPSG:4326', 'EPSG:4326'),
                 center: ol.proj.transform([mapCentreLon, mapCentreLat], 'EPSG:4326', 'EPSG:3857'),
-                zoom: zoomLevel
+                zoom: zoomLevel,
+                maxZoom: maxZoomIndex + 1
             }),
             interactions: ol.interaction.defaults({mouseWheelZoom: false})
         });
-        offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::map = map;
 
+        offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::map = map;
 
         map.on("postrender", function () {
             if (!boolHasRendered) {
@@ -226,7 +305,6 @@ public class OfflineMapWidget extends GenericMapWidget {
         mapSource.once('tileloadend', function (e) {
             map.updateSize();
         });
-
 
         //setup popup on click stuff
         var element = $wnd.document.getElementById(mapContainerId + 'Popup');
@@ -350,8 +428,10 @@ public class OfflineMapWidget extends GenericMapWidget {
     }-*/;
 
     void onLoadCompleted(){
-        if(loadCompleted!=null) {
-            loadCompleted.run();
+        for (Runnable loadCompleted : loadCompleteCallbacks) {
+            if(loadCompleted!=null) {
+                loadCompleted.run();
+            }
         }
     }
 
@@ -392,11 +472,12 @@ public class OfflineMapWidget extends GenericMapWidget {
 
     @Override
     public HandlerRegistration onLoadComplete(Runnable onLoadComplete) {
-        loadCompleted = onLoadComplete;
+        this.loadCompleteCallbacks.add(onLoadComplete);
+        final int currentIndex = loadCompleteCallbacks.size() - 1;
         return new HandlerRegistration() {
             @Override
             public void removeHandler() {
-                loadCompleted = null;
+                loadCompleteCallbacks.remove(currentIndex);
             }
         };
     }
@@ -423,7 +504,55 @@ public class OfflineMapWidget extends GenericMapWidget {
 
     @Override
     public void setMapLegend(LegendOptions legendOptions) {
-//        throw new UnsupportedOperationException("Not yet implemented..");
+
+        int xPosition = 0;
+        int yPostion = 0;
+        LegendPosition screenPosition = legendOptions.screenPosition;
+        if(screenPosition ==null) screenPosition = LegendPosition.BOTTOM_LEFT;
+        final Widget legendWidget = legendOptions.legendWidget;
+        switch (screenPosition) {
+            case TOP_LEFT: // top left
+                xPosition = 3;
+                yPostion = 3;
+                break;
+            case TOP_RIGHT: // top right
+                xPosition = getXPositionWhenRight(legendWidget);
+                yPostion =  3;
+                break;
+            case BOTTOM_RIGHT: // bottom right
+                xPosition = getXPositionWhenRight(legendWidget);
+                yPostion = getYPostionWhenBottom(legendOptions);
+                break;
+            case BOTTOM_LEFT: // bottom left
+                xPosition = LEGEND_X_INDENT;
+                yPostion = getYPostionWhenBottom(legendOptions);
+                break;
+        }
+        //setup map legend position
+
+        absoluteMapContentOverlayPanel.add(legendWidgetPlaceHolder, xPosition, yPostion);
+        legendWidgetPlaceHolder.clear();
+        absoluteMapContentOverlayPanel.setWidgetPosition(legendWidgetPlaceHolder, xPosition, yPostion);
+        legendWidgetPlaceHolder.setWidget(legendWidget);
+
+        final int finalXPosition = xPosition;
+        final int finalYPostion = yPostion;
+        this.onLoadComplete(new Runnable() {
+            @Override
+            public void run() {
+                absoluteMapContentOverlayPanel.setWidgetPosition(legendWidgetPlaceHolder, finalXPosition, finalYPostion);
+            }
+        });
+    }
+
+    private int getYPostionWhenBottom(LegendOptions legendOptions) {
+        return mapWidgetHTMLPanel.getOffsetHeight() + (legendOptions.legendPixelsFromBottom) - 150;
+    }
+
+    private int getXPositionWhenRight(Widget legendWidget) {
+        absoluteMapContentOverlayPanel.getElement().getClientWidth();
+        final int offsetWidth = Math.max(legendWidget.getElement().getClientWidth(),legendWidget.getOffsetWidth());
+        return Math.max(absoluteMapContentOverlayPanel.getElement().getClientWidth(), absoluteMapContentOverlayPanel.getOffsetWidth()) - (200 + offsetWidth);
     }
 
 
@@ -443,4 +572,25 @@ public class OfflineMapWidget extends GenericMapWidget {
     public JavaScriptObject getMapPopupContainerElement() {
         return mapPopupContainerElement;
     }
+
+    private boolean hasPfLayer = true;
+
+    public void toggleLayer(String layerName) {
+        //todo need to make this layer bit generic, try to store a collection of layers indexed by name
+        if(layerName.equals(DefaultLayers.PLASMODIUM_FALCIPARUM_ENDEMICITY)){
+            togglePFLayer(this);
+            hasPfLayer = !hasPfLayer;
+        }else throw new IllegalArgumentException("Unsupported layer toggle requested");
+    }
+    private static native  void togglePFLayer(OfflineMapWidget offlineMapWidget)/*-{
+        var map = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::map;
+        var hasPfLayer = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::hasPfLayer;
+        var pfEndemicityTileLayer = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::pfEndemicityTileLayer;
+        if(hasPfLayer){
+            map.removeLayer(pfEndemicityTileLayer);
+        }else{
+            map.addLayer(pfEndemicityTileLayer);
+        }
+        map.renderSync();
+    }-*/;
 }

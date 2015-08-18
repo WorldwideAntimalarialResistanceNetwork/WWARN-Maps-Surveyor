@@ -37,6 +37,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -46,6 +47,7 @@ import org.wwarn.surveyor.client.core.DataSchema;
 import org.wwarn.surveyor.client.core.QueryResult;
 import org.wwarn.surveyor.client.core.RecordList;
 import org.wwarn.surveyor.client.event.InterfaceLoadCompleteEvent;
+import org.wwarn.surveyor.client.event.ToggleLayerEvent;
 import org.wwarn.surveyor.client.model.MapViewConfig;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
@@ -84,7 +86,7 @@ public class MapViewComposite extends Composite {
     private static MapViewUIUiBinder ourUiBinder = GWT.create(MapViewUIUiBinder.class);
 
     // Event Bus bindings
-    interface ResultChangedEventBinder extends EventBinder<MapViewComposite> {};
+    interface SomeEventBinder extends EventBinder<MapViewComposite> {};
 
     public MapViewComposite(final MapViewConfig viewConfig) {
         if(viewConfig == null){
@@ -93,7 +95,7 @@ public class MapViewComposite extends Composite {
         this.viewConfig = viewConfig;
         panel = ourUiBinder.createAndBindUi(this);
         initWidget(panel);
-        ResultChangedEventBinder eventBinder = GWT.create(ResultChangedEventBinder.class);
+        SomeEventBinder eventBinder = GWT.create(SomeEventBinder.class);
         eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
         setupDisplay();
     }
@@ -259,6 +261,14 @@ public class MapViewComposite extends Composite {
     @EventHandler
     public void onResultChanged(ResultChangedEvent resultChangedEvent){
         setMarkers(resultChangedEvent.getQueryResult());
+    }
+
+    @EventHandler
+    public void onToggleLayer(ToggleLayerEvent toggleLayerEvent){
+        if(mapWidget instanceof OfflineMapWidget){
+            final OfflineMapWidget offlineMapWidget = (OfflineMapWidget) ((OfflineMapWidget) mapWidget);
+            offlineMapWidget.toggleLayer(toggleLayerEvent.getLayerName());
+        }
     }
 
     private MarkerLegendLoader getMarkerLegendBuilder() {

@@ -171,7 +171,6 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         // assignments from local variables to java class attributes
         offlineMapMarker.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapMarker::markerFeature = iconFeature;
 
-
         styleProperties = {
             opacity: 0.75,
             src: markerIconPath
@@ -271,7 +270,7 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         if (feature) {
             var geometry = feature.getGeometry();
             var coord = geometry.getCoordinates();
-            //coord = ol.proj.transform(coord, 'EPSG:3857',   'EPSG:3857');
+            //coord = ol.proj.transform(coord, 'EPSG:3857',   'EPSG:4326');
             //popup.setPosition([yPositionForClick,xPositionForClick])
             popup.setPosition(coord);
 
