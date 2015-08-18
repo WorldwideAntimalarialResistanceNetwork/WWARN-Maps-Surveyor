@@ -34,14 +34,13 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  */
 
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by nigelthomas on 09/12/2014.
+ *
  */
 public abstract class GenericMapWidget extends Composite {
     int LEGEND_X_INDENT = 42; /*just to the right of the map zoom controls */
@@ -59,8 +58,6 @@ public abstract class GenericMapWidget extends Composite {
     public abstract CoordinatesLatLon getCenter();
 
     public abstract void setCenter(CoordinatesLatLon center);
-
-    public abstract MapWidget getInternalGoogleMapWidget();
 
     public void clearMarkers(){
         if(markers == null){return;}
