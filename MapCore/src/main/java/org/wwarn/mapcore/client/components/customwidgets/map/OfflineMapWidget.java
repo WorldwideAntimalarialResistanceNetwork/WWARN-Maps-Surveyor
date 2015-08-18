@@ -61,6 +61,7 @@ public class OfflineMapWidget extends GenericMapWidget {
     private JavaScriptObject mapPopupContainerElement;
     private JavaScriptObject markerContainer;
     private JavaScriptObject pfEndemicityTileLayer;
+    private JavaScriptObject vectorLayer;
 
     private String currentId;
     private boolean mapDrawCalled = false;
@@ -196,6 +197,8 @@ public class OfflineMapWidget extends GenericMapWidget {
         var vectorLayer = new ol.layer.Vector({
             source: markerContainer
         });
+
+        offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::vectorLayer = vectorLayer;
 
         if(isOnline && false){
             mapSource = new ol.source.MapQuest({layer: 'osm'});
@@ -586,10 +589,13 @@ public class OfflineMapWidget extends GenericMapWidget {
         var map = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::map;
         var hasPfLayer = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::hasPfLayer;
         var pfEndemicityTileLayer = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::pfEndemicityTileLayer;
+        var vectorLayer = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::vectorLayer;
         if(hasPfLayer){
             map.removeLayer(pfEndemicityTileLayer);
         }else{
+            map.removeLayer(vectorLayer)
             map.addLayer(pfEndemicityTileLayer);
+            map.addLayer(vectorLayer)
         }
         map.renderSync();
     }-*/;
