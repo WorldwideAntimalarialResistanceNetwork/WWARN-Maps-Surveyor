@@ -8,18 +8,18 @@ package org.wwarn.surveyor.client.core;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the University of Oxford nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -296,6 +296,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             String initialZoomLevelRaw = StringUtils.ifEmpty(getAttributeByName(mapNode, "initialZoomLevel"), "2");
             String initialMapCenterCoordsLatLonRaw = StringUtils.ifEmpty(getAttributeByName(mapNode, "initialMapCenterCoordsLatLon"), "1.0,1.0");
             final String[] coords = initialMapCenterCoordsLatLonRaw.split(",");
+            String doClusterRaw = StringUtils.ifEmpty(getAttributeByName(mapNode, "doCluster"), "false");
             if (coords.length < 2) {
                 throw new IllegalArgumentException("Coordinates should be of the format \"lat,lon\"");
             }
@@ -310,6 +311,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             String imageLegendPosition = null;
             NodeList childNodes = mapNode.getChildNodes();
             TemplateViewNodesConfig templateViewNodesConfig = null;
+            boolean doCluster = Boolean.parseBoolean(doClusterRaw);
             for (int i = 0; i < childNodes.getLength(); i++) {
                 try {
                     Node mapChildNode = childNodes.item(i);
@@ -347,7 +349,7 @@ public class XMLApplicationLoader implements ApplicationContext {
                 }
             }
 
-            final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPosition, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig, convertTotMapImplementation(implementation));
+            final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPosition, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig, convertTotMapImplementation(implementation), doCluster);
             String mapType = StringUtils.ifEmpty(getAttributeByName(mapNode, "mapType"), "TERRAIN");
             mapViewConfig.setMapType(resolveMapType(mapType));
             configs.put(MapViewConfig.class.getName(), mapViewConfig);

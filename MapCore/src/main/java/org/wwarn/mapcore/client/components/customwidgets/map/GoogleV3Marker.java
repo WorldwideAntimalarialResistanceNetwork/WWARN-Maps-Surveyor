@@ -127,7 +127,7 @@ public class GoogleV3Marker<T> extends GenericMarker<T> {
         this.marker = marker;
     }
 
-    private Marker getMarker() {
+    public Marker getMarker() {
         return this.marker;
     }
 

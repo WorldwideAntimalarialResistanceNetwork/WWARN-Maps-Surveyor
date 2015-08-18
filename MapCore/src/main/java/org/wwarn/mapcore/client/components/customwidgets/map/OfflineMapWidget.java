@@ -38,8 +38,6 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.maps.client.events.idle.IdleMapEvent;
-import com.google.gwt.maps.client.events.idle.IdleMapHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
