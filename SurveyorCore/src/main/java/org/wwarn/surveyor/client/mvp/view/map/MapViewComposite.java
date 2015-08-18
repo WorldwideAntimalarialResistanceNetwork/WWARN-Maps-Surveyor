@@ -8,18 +8,18 @@ package org.wwarn.surveyor.client.mvp.view.map;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- *
+ * 
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- *
+ * 
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *
+ * 
  * 3. Neither the name of the University of Oxford nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -35,11 +35,6 @@ package org.wwarn.surveyor.client.mvp.view.map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.maps.client.MapWidget;
-import com.google.gwt.maps.client.overlays.Marker;
-import com.google.gwt.maps.utility.markerclustererplus.client.ClusterIconStyle;
-import com.google.gwt.maps.utility.markerclustererplus.client.MarkerClusterer;
-import com.google.gwt.maps.utility.markerclustererplus.client.MarkerClustererOptions;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.Window;
@@ -85,7 +80,6 @@ public class MapViewComposite extends Composite {
     private GoogleV3Marker.MarkerHoverLabelBuilder markerHoverLabelBuilder;
     private GoogleV3Marker.MarkerClickInfoWindowBuilder markerClickInfoWindow;
     private MarkerLegendLoader markerLegendLoader;
-    private MarkerClusterer markerClusterer;
 
     // UI Binder boiler plate
     interface MapViewUIUiBinder extends UiBinder<FlowPanel, MapViewComposite> {}
@@ -179,38 +173,8 @@ public class MapViewComposite extends Composite {
             }
         }
 
-
-        if(viewConfig.isDoCluster()){
-            buildMarkerClusterer(markers);
-        }else{
-            mapWidget.addMarkers(markers);
+        mapWidget.addMarkers(markers);
         }
-
-    }
-
-
-
-    private void buildMarkerClusterer(List<GenericMarker> markers){
-        if(markerClusterer != null)
-            markerClusterer.clearMarkers();
-
-        List<Marker> googleMarkers = convertToGoogleMarker(markers);
-        final MarkerClustererOptions clusterOptions = MarkerClustererOptions.newInstance();
-        clusterOptions.setAverageCenter( true );
-        //clusterOptions.setGridSize(5);
-        clusterOptions.setMaxZoom(10);
-        markerClusterer = MarkerClusterer.newInstance(mapWidget.getInternalGoogleMapWidget(), googleMarkers, clusterOptions);
-    }
-
-    private List<Marker> convertToGoogleMarker(List<GenericMarker> markers){
-        List<Marker> googleMarkers = new ArrayList<>();
-        for(GenericMarker marker : markers){
-            if(marker instanceof GoogleV3Marker){
-                googleMarkers.add(((GoogleV3Marker) marker).getMarker());
-            }
-        }
-        return googleMarkers;
-    }
 
     private MarkerCoordinateSource getMarkerCoordinateSource() {
         if(markerCoordinateSource!=null) return markerCoordinateSource;

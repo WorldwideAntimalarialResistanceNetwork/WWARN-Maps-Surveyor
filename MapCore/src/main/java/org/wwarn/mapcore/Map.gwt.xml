@@ -38,7 +38,6 @@
     <inherits name="com.google.gwt.http.HTTP" />
 
     <inherits name='com.google.gwt.maps.Maps' />
-    <inherits name='com.google.gwt.maps.utility.markerclustererplus.MarkerClustererPlus' />
 
     <inherits name="com.google.gwt.xml.XML" />
     <inherits name="com.google.gwt.visualization.Visualization"/>
