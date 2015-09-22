@@ -213,6 +213,11 @@ public class GoogleV3MapWidget extends GenericMapWidget {
     }
 
     @Override
+    public void clusterMarkers() {
+
+    }
+
+    @Override
     public HandlerRegistration onLoadComplete(final Runnable onLoadComplete){
         mapWidget.triggerResize(); // Added to prevent only single tile showing : http://stackoverflow.com/a/16348551/192040
         return mapWidget.addIdleHandler(new IdleMapHandler() {

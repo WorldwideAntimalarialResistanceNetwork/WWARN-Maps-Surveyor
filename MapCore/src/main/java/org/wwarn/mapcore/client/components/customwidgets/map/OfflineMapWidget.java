@@ -35,6 +35,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -60,6 +61,7 @@ public class OfflineMapWidget extends GenericMapWidget {
     private JavaScriptObject markerContainer;
     private JavaScriptObject pfEndemicityTileLayer;
     private JavaScriptObject vectorLayer;
+    private JavaScriptObject clusterLayer;
 
     private String currentId;
     private boolean mapDrawCalled = false;
@@ -80,6 +82,7 @@ public class OfflineMapWidget extends GenericMapWidget {
     private static OfflineStatusObserver offlineStatusObserver;
     private List<Runnable> loadCompleteCallbacks = new ArrayList<>();
     private HTMLPanel mapWidgetHTMLPanel = new HTMLPanel("");
+    private boolean isClusteringEnabled = false;
 
     public HTMLPanel getPopupElement() {
         return popupElement;
@@ -105,6 +108,10 @@ public class OfflineMapWidget extends GenericMapWidget {
         return true;
     }-*/;
 
+    private void dispatchClickEventToMarkers(JsArrayString markerIDs){
+//        Window.alert(markerIDs.join());
+    }
+
     public OfflineMapWidget(MapBuilder mapBuilder) {
         this.builder = mapBuilder;
         mapBuilderToLocalAttributes(mapBuilder);
@@ -119,6 +126,7 @@ public class OfflineMapWidget extends GenericMapWidget {
     public void removeMarker(GenericMarker m){
         markers.remove(m);
     }
+
 
     void initializePopup(HTMLPanel htmlPanel, String currentId) {
         popupElement = new HTMLPanel("");
@@ -175,13 +183,83 @@ public class OfflineMapWidget extends GenericMapWidget {
         }
     }
 
+    @Override
+    public void clusterMarkers() {
+        if(isClusteringEnabled) {
+            setupClustering(this);
+        }
+    }
+
+
+    private static native void setupClustering(OfflineMapWidget offlineMapWidget)/*-{
+        var ol = $wnd.ol;
+        var map = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::map;
+        var markerContainer = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::markerContainer;
+
+        var styleCache = {};
+
+        var count = 20000;
+        var dummyClusterFeatures = new Array(count);
+        var e = 4500000;
+        for (var i = 0; i < count; ++i) {
+            var coordinates = [2 * e * Math.random() - e, 2 * e * Math.random() - e];
+            dummyClusterFeatures[i] = new ol.Feature(new ol.geom.Point(coordinates));
+        }
+        var dummyDataSource = new ol.source.Vector({
+            features: dummyClusterFeatures
+        });
+
+        var clusters;
+        clusters = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::clusterLayer;
+
+        map.removeLayer(clusters);
+
+        clusters = new ol.layer.Vector({
+            source: new ol.source.Cluster({
+                distance: 15,
+                source: markerContainer
+            }),
+            style: function(feature, resolution) {
+                var size = feature.get('features').length;
+                if(size < 2) {return;}
+                var style = styleCache[size];
+                if (!style) {
+                    style = [new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 10,
+                            stroke: new ol.style.Stroke({
+                                color: '#fff'
+                            }),
+                            fill: new ol.style.Fill({
+                                color: '#3399CC'
+                            })
+                        }),
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            fill: new ol.style.Fill({
+                                color: '#fff'
+                            })
+                        })
+                    })];
+                    styleCache[size] = style;
+                }
+                return style;
+            }
+        });
+
+        offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::clusterLayer = clusters;
+
+        map.addLayer(clusters)
+        map.renderSync();
+    }-*/;
+
     private static native void drawBasicMap(OfflineMapWidget offlineMapWidget, String mapContainerId, HTMLPanel popupElement, boolean isOnline, String moduleBaseName)/*-{
         var ol = $wnd.ol;
         var $ = $wnd.$;
         var map, mapSource, markerContainer, boolHasRendered, iconFeature, iconStyle, mapCentreLon, mapCentreLat, zoomLevel, popup, popupElement, mapSourceTile, pfEndemicityTileLayer;
 
         boolHasRendered = false;
-        //markerContainer
+        //markerContainer container of features
         markerContainer = new ol.source.Vector({
             //create empty vector
         });
@@ -249,6 +327,7 @@ public class OfflineMapWidget extends GenericMapWidget {
 
         pfEndemicityTileLayer = new ol.layer.Tile({
             preload: 1,
+            opacity: 0.5,
             minResolution: tms_resolutions_2014[maxZoomIndex],
             source: new ol.source.TileImage({
                 crossOrigin: null,
@@ -258,10 +337,8 @@ public class OfflineMapWidget extends GenericMapWidget {
                     extent: extent_mapSource,
                     origin: [extent_mapSource[0], extent_mapSource[1]],
                     resolutions: tms_resolutions_2014
-
                 }),
                 tileUrlFunction: function(coordinate) {
-
                     if (coordinate === null) return undefined;
 
                     // TMS Style URL
@@ -309,14 +386,14 @@ public class OfflineMapWidget extends GenericMapWidget {
 
         //setup popup on click stuff
         var element = $wnd.document.getElementById(mapContainerId + 'Popup');
-        popup = new ol.Overlay({
+        popupOverlay = new ol.Overlay({
             element: element,
             positioning: 'bottom-center',
             stopEvent: false
         });
-        map.addOverlay(popup);
+        map.addOverlay(popupOverlay);
 
-        offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::mapPopupOverlay = popup;
+        offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::mapPopupOverlay = popupOverlay;
         offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::mapPopupContainerElement = element;
 
         var olMapViewport = $(".ol-viewport");
@@ -385,6 +462,7 @@ public class OfflineMapWidget extends GenericMapWidget {
 
             if (feature) {
                 if(!isClickWithinPopupArea) {
+
                     offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::dispatchClickEventToMarker(Ljava/lang/String;DD)(feature.get('markerID'), xPosition, yPosition)
                 }
 
@@ -588,12 +666,14 @@ public class OfflineMapWidget extends GenericMapWidget {
         var hasPfLayer = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::hasPfLayer;
         var pfEndemicityTileLayer = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::pfEndemicityTileLayer;
         var vectorLayer = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::vectorLayer;
+        var clusters = offlineMapWidget.@org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget::clusterLayer;
         if(hasPfLayer){
             map.removeLayer(pfEndemicityTileLayer);
         }else{
             map.removeLayer(vectorLayer)
             map.addLayer(pfEndemicityTileLayer);
             map.addLayer(vectorLayer)
+            map.addLayer(clusters)
         }
         map.renderSync();
     }-*/;
