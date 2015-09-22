@@ -114,7 +114,7 @@ public class CellTableViewComposite extends Composite {
     @Override
     protected void onAttach() {
         super.onAttach();
-        clientFactory.getEventBus().fireEvent(new InterfaceLoadCompleteEvent());
+//        clientFactory.getEventBus().fireEvent(new InterfaceLoadCompleteEvent());
     }
 
     private FlowPanel setupPanel(){

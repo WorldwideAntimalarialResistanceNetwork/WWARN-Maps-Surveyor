@@ -33,11 +33,8 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -82,7 +79,6 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         this.referenceToOfflineMapMarker = this;
         this.markerTitle = mapMarkerBuilder.title;
         this.offlineMapWidget = (OfflineMapWidget) mapMarkerBuilder.map;
-//        this.offlineMapWidget.addMarkers();
         this.markerContainer = offlineMapWidget.getMarkerContainer();
         this.markerIconPathBuilder = mapMarkerBuilder.markerIconPathBuilder;
         this.markerLat = mapMarkerBuilder.markerLat;
@@ -270,6 +266,9 @@ public class OfflineMapMarker<T> extends GenericMarker<T> {
         if (feature) {
             var geometry = feature.getGeometry();
             var coord = geometry.getCoordinates();
+            // effectively a rendering bug in the system, the coordinate although constant,
+            // doesn't map to the correct pixel location for the popup
+
             //coord = ol.proj.transform(coord, 'EPSG:3857',   'EPSG:4326');
             //popup.setPosition([yPositionForClick,xPositionForClick])
             popup.setPosition(coord);

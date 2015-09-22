@@ -135,7 +135,7 @@
 //        mapWidget.clearOverlays();
 //    }
 //
-//    public void addMarkers(List<Marker> markers) {
+//    public void setMarkers(List<Marker> markers) {
 //        mapMessagePopup.hide();
 //        if (markers.size() > 0) {
 //
@@ -493,7 +493,7 @@
 //        mapWidget.clearOverlays();
 //    }
 //
-//    public void addMarkers(List<Marker> markers) {
+//    public void setMarkers(List<Marker> markers) {
 //        mapMessagePopup.hide();
 //        if (markers.size() > 0) {
 //

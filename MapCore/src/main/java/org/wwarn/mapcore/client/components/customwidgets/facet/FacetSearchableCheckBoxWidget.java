@@ -562,7 +562,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     }
 
     static class HeaderPopup extends Composite{
-                private static FacetLabelTemplateBinder facetLabelTemplateBinder = GWT.create(FacetLabelTemplateBinder.class);;
+        private static FacetLabelTemplateBinder facetLabelTemplateBinder = GWT.create(FacetLabelTemplateBinder.class);
         @UiField
         SpanElement facetLabel;
         @UiField
@@ -574,7 +574,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
             this.facetLabel.setInnerSafeHtml(SafeHtmlUtils.fromString(facetLabel));
         }
 
-@UiTemplate("FacetLabelTemplate.ui.xml")
+        @UiTemplate("FacetLabelTemplate.ui.xml")
         interface FacetLabelTemplateBinder extends UiBinder<Widget, HeaderPopup>{}
     }
 }

@@ -90,9 +90,9 @@ public class OfflineStatusObserver {
     }-*/
     ;
 
-    public static native boolean initialise(OfflineStatusObserver offlineStatusObserver, OfflineStatusOptions offlineStatusOptions)/*-{
-        $wnd.console.log("offlineStatusOptions");
-        $wnd.console.log(offlineStatusOptions);
+    public static native void initialise(OfflineStatusObserver offlineStatusObserver, OfflineStatusOptions offlineStatusOptions)/*-{
+        //$wnd.console.log("offlineStatusOptions");
+        //$wnd.console.log(offlineStatusOptions);
         $wnd.Offline.options = offlineStatusOptions;
         offlineStatusObserver.@org.wwarn.mapcore.client.offline.OfflineStatusObserver::offlineStatusObserver = $wnd.Offline;
     }-*/;

@@ -37,7 +37,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -173,7 +172,7 @@ public class MapViewComposite extends Composite {
             }
         }
 
-        mapWidget.addMarkers(markers);
+        mapWidget.setMarkers(markers);
         }
 
     private MarkerCoordinateSource getMarkerCoordinateSource() {

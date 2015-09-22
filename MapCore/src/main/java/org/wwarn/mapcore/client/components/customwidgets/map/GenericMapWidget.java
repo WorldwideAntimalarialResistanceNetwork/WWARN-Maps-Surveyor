@@ -34,6 +34,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  */
 
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
@@ -66,12 +67,20 @@ public abstract class GenericMapWidget extends Composite {
         }
     }
 
-    public void addMarkers(List<GenericMarker> m){
+    /**
+     * Set markers would be a better description of this method behaviour, effectively replaces the references to all markers
+     * @param m
+     */
+    public void setMarkers(List<GenericMarker> m){
         this.markers = m;
         for (GenericMarker marker : m) {
             marker.setMap(this);
         }
+        //setup any clustering options
+        clusterMarkers();
     }
+
+    public abstract void clusterMarkers();
 
     public abstract HandlerRegistration onLoadComplete(Runnable onLoadComplete);
 
