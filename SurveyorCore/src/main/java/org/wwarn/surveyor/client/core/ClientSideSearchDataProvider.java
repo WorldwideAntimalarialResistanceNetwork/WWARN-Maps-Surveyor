@@ -36,12 +36,10 @@ package org.wwarn.surveyor.client.core;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.i18n.shared.DateTimeFormat;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.event.DataUpdatedEvent;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
-import org.wwarn.surveyor.client.model.TableViewConfig;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 import org.wwarn.surveyor.client.util.OfflineStorageUtil;
 import com.google.gwt.user.client.Timer;
@@ -55,6 +53,10 @@ import java.util.*;
  */
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
     private boolean isTest = false;
+
+    /**
+     * Ordered list (implicitly ordered - TreeSet) of fields in schema order, each field hold a mapping of fields values (terms) to document positions
+     */
     private List<Map<String, BitSet>> fieldInvertedIndex;
     private RecordListCompressedWithInvertedIndexImpl recordListCompressedWithInvertedIndex;
     private FacetList facetList = new FacetList();
@@ -101,7 +103,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         if(isTest){
             fetchAllDataFromServers(callOnLoad);return;
         }
-        //todo move this into a better datasync abstraction or tidy up
+        //todo move this into a better data sync abstraction or tidy up
         offlineStorageCurrentKeyStore = new OfflineStorageUtil(String.class, getOfflineStoreUniqueKey());
         offlineStorageCurrentKeyStore.fetch(new OfflineStorageUtil.AsyncCommand<String>() {
             @Override
@@ -118,7 +120,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     @Override
                     public void success(QueryResult queryResult) {
                         if (Log.isDebugEnabled()) {
-                            Log.debug("Query result found for key\"" + key + "\", intialising app with offline data");
+                            Log.debug("Query result found for key\"" + key + "\", initialising app with offline data");
                         }
                         initialisedDataProvider(queryResult, callOnLoad);
                         // setup future calls to check for fresh data
@@ -128,7 +130,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     @Override
                     public void failure() {
                         if (Log.isDebugEnabled()) {
-                            Log.debug("failed to fetch data from store, queryresult not found");
+                            Log.debug("failed to fetch data from store, query result not found");
                         }
                         // failed to find query result in index, then fetch from server
                         fetchAllDataFromServers(callOnLoad);
@@ -160,7 +162,6 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 public void onNonTimedOutSuccess(final QueryResult queryResult) {
                     initialisedDataProvider(queryResult, callOnLoad);
                     scheduleStoreToOfflineDataStore(queryResult);
-
                 }
 
             });
@@ -253,9 +254,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                             offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (Log.isDebugEnabled()) {
-                                        Log.debug("removing previous key, now old key referenced data deleted");
-                                    }
+                                if (Log.isDebugEnabled()) {
+                                    Log.debug("removing previous key, now old key referenced data deleted");
+                                }
                                 }
                             });
                         }
@@ -279,12 +280,6 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 if (Log.isDebugEnabled()) Log.debug("Stored previous datasourcehash - successfully");
                 // send an event to inform users to refresh browser as data has been updated.
                 clientFactory.getEventBus().fireEvent(new DataUpdatedEvent());
-//  Remove surplus call to fetch data
-//                fetchAllDataFromServers(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                    }
-//                });
             }
 
             @Override
@@ -330,12 +325,11 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
             @Override
             public void failure() {
-                final String message = "Unable to store key in offlinestore";
+                final String message = "Unable to store key in offline store";
                 Log.warn(message);
                 throw new IllegalStateException(message);
             }
         });
-;
     }
 
     private void initialisedDataProvider(QueryResult queryResult, Runnable callOnLoad) {
@@ -360,7 +354,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
             public void execute() {
 
                 final Iterator<Scheduler.RepeatingCommand> iterator = listOfScheduledJobs.iterator();
-                Timer scheduleTaskExector = new Timer() {
+                Timer scheduleTaskExecutor = new Timer() {
                     @Override
                     public void run() {
                         Scheduler.get().scheduleIncremental(new Scheduler.RepeatingCommand() {
@@ -392,7 +386,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                         });
                     }
                 };
-                scheduleTaskExector.schedule(20 * 1000); // start 20 seconds after page load
+                scheduleTaskExecutor.schedule(20 * 1000); // start 20 seconds after page load
             }
         });
     }
@@ -452,21 +446,27 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
-                final BitSet bitSet = parseQuery(filterQuery, schema);
-                RecordList recordList = restrictRecordList(bitSet);
-                final FacetList calculateFacetFieldsAndDistinctValues = calculateFacetFieldsAndDistinctValues(schema, facetFields, fieldInvertedIndex);
+                final BitSet restrictedBitSetOfDocumentsAvailableAfterQuery = parseQuery(filterQuery, schema);
+                System.out.println(restrictedBitSetOfDocumentsAvailableAfterQuery);
+                RecordList recordList = restrictRecordList(restrictedBitSetOfDocumentsAvailableAfterQuery);
+                System.out.println(restrictedBitSetOfDocumentsAvailableAfterQuery);
+                final FacetList calculateFacetFieldsAndDistinctValues = calculateFacetFieldsAndDistinctValues(schema, facetFields, fieldInvertedIndex, restrictedBitSetOfDocumentsAvailableAfterQuery);
                 queryResultCallBack.onSuccess(new QueryResult(recordList, calculateFacetFieldsAndDistinctValues));
             }
         });
     }
-
-
 
     private RecordList restrictRecordList(BitSet bitSet) {
         // filter recordListCompressedWith
         return new RecordListView(recordListCompressedWithInvertedIndex, bitSet);
     }
 
+    /**
+     * Calculates which documents are available given the current FilterQuery selection
+     * @param filterQuery
+     * @param schema
+     * @return a restrictedBitSetOfDocumentsAvailableAfterQuery document order is preserved
+     */
     private BitSet parseQuery(FilterQuery filterQuery, DataSchema schema) {
         BitSet queryBitSet = new BitSet();
         if(filterQuery instanceof MatchAllQuery || filterQuery.getFilterQueries().size() < 1) return queryBitSet;
@@ -518,15 +518,19 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         return queryBitSet;
     }
 
-    private FacetList calculateFacetFieldsAndDistinctValues(DataSchema schema, String[] facetFields, List<Map<String, BitSet>> fieldInvertedIndex) {
+    private FacetList calculateFacetFieldsAndDistinctValues(DataSchema schema, String[] facetFields, List<Map<String, BitSet>> fieldInvertedIndex, BitSet restrictedBitSetOfDocumentsAvailableAfterQuery) {
         for (String facetField : facetFields) {
             final int columnIndex = schema.getColumnIndex(facetField);
             final Map<String, BitSet> map = fieldInvertedIndex.get(columnIndex);
             String facetName = facetField;
             Set<String> uniqueFacetValues = new TreeSet<>();
+//            System.out.println(">"+facetField);
             for (String fieldValue : map.keySet()) {
                 final BitSet bitSet = map.get(fieldValue);
+                bitSet.and(restrictedBitSetOfDocumentsAvailableAfterQuery); //todo is this is most efficeint way of doing this, consider storing this from previous run in query parsing?
                 if(bitSet.cardinality() > 0){
+                    final int cardinality = bitSet.cardinality();
+//                    System.out.println(">>"+fieldValue + cardinality);
                     uniqueFacetValues.add(fieldValue);
                 }
             }
@@ -534,7 +538,6 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         }
         return facetList;
     }
-
 
     private BitSet processRangeQueryIntegerTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {
         String minValue = leftPaddedInteger(Integer.parseInt(((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue()));
@@ -597,15 +600,6 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         return ((FilterQuery.FilterFieldValue) filterQueryElement).getFieldsValue();
     }
 
-    private Date parseDateFrom(String fieldValue, final String pattern) {
-        final DateTimeFormat isoFormat = getDateFormatFrom(pattern);
-        return isoFormat.parse(fieldValue);
-    }
-
-    private DateTimeFormat getDateFormatFrom(final String pattern) {
-        return DataType.ParseUtil.getDateFormatFrom(pattern);
-    }
-
     static String leftPaddedInteger(int i) {
         if(i < 0){
             throw new IllegalArgumentException("Natural numbers only, does not support negative integers");
@@ -615,8 +609,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         final int length = maxSize - Integer.toString(i).length();
         char[] padArray = new char[length];
         Arrays.fill(padArray, '0');
-        final String paddedInteger = (new String(padArray)) + Integer.toString(i);
-        return paddedInteger;
+        return (new String(padArray)) + Integer.toString(i);
     }
 
 }
