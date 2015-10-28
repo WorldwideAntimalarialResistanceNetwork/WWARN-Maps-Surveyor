@@ -45,24 +45,15 @@ import java.util.List;
 public class RecordListView extends RecordList{
     private static UnsupportedOperationException unsupportedOperationException = new UnsupportedOperationException();
 
-    public RecordListView(RecordList recordList, BitSet bitSet) {
-        final List<Record> records = recordList.getRecords();
-        if(bitSet.length() < 1){
-            super.records = recordList.records;
-        }else {
-            for (int i = 0; i < records.size(); i++) {
-                if (bitSet.get(i)) {
-                    super.records.add(records.get(i));
-                }
-            }
-        }
-    }
-
     public RecordListView() {
     }
 
     public RecordListView(DataSchema schema) {
         throw getUnsupportedOperationException();
+    }
+
+    public RecordListView(List<Record> restrictedRecordList) {
+        super.addAll(restrictedRecordList);
     }
 
     @NotNull

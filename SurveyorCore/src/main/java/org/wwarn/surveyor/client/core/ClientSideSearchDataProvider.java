@@ -74,7 +74,6 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     protected ClientSideSearchDataProvider(GenericDataSource dataSource, DataSchema dataSchema, String[] fieldList, boolean isTest) {
         this(dataSource, dataSchema, fieldList);
-
         if(dataSource.getDataSourceProvider()!= DataSourceProvider.ClientSideSearchDataProvider){
             throw new IllegalArgumentException("Expected data source provider client side data provider");
         }
@@ -144,7 +143,6 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 fetchAllDataFromServers(callOnLoad);
             }
         });
-
 
     }
 
@@ -447,18 +445,87 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
             @Override
             public void execute() {
                 final BitSet restrictedBitSetOfDocumentsAvailableAfterQuery = parseQuery(filterQuery, schema);
-                System.out.println(restrictedBitSetOfDocumentsAvailableAfterQuery);
-                RecordList recordList = restrictRecordList(restrictedBitSetOfDocumentsAvailableAfterQuery);
-                System.out.println(restrictedBitSetOfDocumentsAvailableAfterQuery);
-                final FacetList calculateFacetFieldsAndDistinctValues = calculateFacetFieldsAndDistinctValues(schema, facetFields, fieldInvertedIndex, restrictedBitSetOfDocumentsAvailableAfterQuery);
-                queryResultCallBack.onSuccess(new QueryResult(recordList, calculateFacetFieldsAndDistinctValues));
+                RestrictedRecordResults restrictedRecordResults = restrictRecordList(restrictedBitSetOfDocumentsAvailableAfterQuery, facetFields);
+//                final FacetList calculatedFacetFieldsAndDistinctValues = calculateFacetFieldsAndDistinctValues(schema, facetFields, fieldInvertedIndex, restrictedBitSetOfDocumentsAvailableAfterQuery);
+                queryResultCallBack.onSuccess(new QueryResult(restrictedRecordResults.getRecordList(), restrictedRecordResults.getFacetFields()));
             }
         });
     }
 
-    private RecordList restrictRecordList(BitSet bitSet) {
+    class RestrictedRecordResults {
+        private final RecordList recordList;
+        private final FacetList facetFields;
+
+        public RestrictedRecordResults(RecordList recordList, FacetList facetFields) {
+            this.recordList = recordList;
+            this.facetFields = facetFields;
+        }
+
+        public RecordList getRecordList() {
+            return recordList;
+        }
+
+        public FacetList getFacetFields() {
+            return facetFields;
+        }
+    }
+
+    private RestrictedRecordResults restrictRecordList(BitSet bitSet, String[] facetFields) {
         // filter recordListCompressedWith
-        return new RecordListView(recordListCompressedWithInvertedIndex, bitSet);
+        final List<RecordList.Record> records = recordListCompressedWithInvertedIndex.getRecords();
+        List<RecordList.Record> restrictedRecordList = new ArrayList<>();
+        facetList = new FacetList();
+
+        TreeSet<String>[] facetFieldToUniqueFacteFieldValues = new TreeSet[schema.size()];
+        // array to store all unique facet field values, ordered by index
+        // initialise all elements to an empty set, in place of nulls
+        for (int i = 0; i < records.size(); i++) {
+            if (bitSet.length() < 1 || bitSet.get(i)) {
+                final RecordList.Record record = records.get(i);
+                restrictedRecordList.add(record);
+                // for each facet field in this record, add
+                for (String facetField : facetFields) {
+                    final int columnSchemaIndexForCurrentField = schema.getColumnIndex(facetField);
+                    String uniqueFacetFieldValueAtIndexPosition = record.getValueByFieldName(facetField);
+                    if(facetFieldToUniqueFacteFieldValues[columnSchemaIndexForCurrentField] == null){
+                        facetFieldToUniqueFacteFieldValues[columnSchemaIndexForCurrentField] = new TreeSet<>();
+                    }
+                    facetFieldToUniqueFacteFieldValues[columnSchemaIndexForCurrentField].add(uniqueFacetFieldValueAtIndexPosition);
+                }
+            }
+        }
+
+        for (int i = 0; i < facetFields.length; i++) {
+            String facetField = facetFields[i];
+            final int facetFieldColumnIndex = schema.getColumnIndex(facetField);
+            facetList.addFacetField(facetField, facetFieldToUniqueFacteFieldValues[facetFieldColumnIndex]);
+        }
+
+        return new RestrictedRecordResults(new RecordListView(restrictedRecordList), facetList);
+    }
+
+    private FacetList calculateFacetFieldsAndDistinctValues(DataSchema schema, String[] facetFields, List<Map<String, BitSet>> fieldInvertedIndex, BitSet restrictedBitSetOfDocumentsAvailableAfterQuery) {
+        //for each field
+        for (String facetField : facetFields) {
+            final int columnIndex = schema.getColumnIndex(facetField);
+            final Map<String, BitSet> fieldValuesToPostingList = fieldInvertedIndex.get(columnIndex);
+            String facetName = facetField;
+            Set<String> uniqueFacetValues = new TreeSet<>();
+            //for each field value
+            for (String fieldValue : fieldValuesToPostingList.keySet()) {
+                // get postings list
+                final BitSet bitSetPostingList = fieldValuesToPostingList.get(fieldValue);
+                // this code doesn't work when deployed
+//                final BitSet bitSet1 = new BitSet();
+//                bitSet1.or(bitSet);
+//                bitSet1.and(restrictedBitSetOfDocumentsAvailableAfterQuery); //todo is this is most efficient way of doing this, consider storing this from previous run in query parsing?
+                if(bitSetPostingList.cardinality() > 0){
+                    uniqueFacetValues.add(fieldValue);
+                }
+            }
+            facetList.addFacetField(facetName, uniqueFacetValues);
+        }
+        return facetList;
     }
 
     /**
@@ -516,27 +583,6 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
         }
         return queryBitSet;
-    }
-
-    private FacetList calculateFacetFieldsAndDistinctValues(DataSchema schema, String[] facetFields, List<Map<String, BitSet>> fieldInvertedIndex, BitSet restrictedBitSetOfDocumentsAvailableAfterQuery) {
-        for (String facetField : facetFields) {
-            final int columnIndex = schema.getColumnIndex(facetField);
-            final Map<String, BitSet> map = fieldInvertedIndex.get(columnIndex);
-            String facetName = facetField;
-            Set<String> uniqueFacetValues = new TreeSet<>();
-//            System.out.println(">"+facetField);
-            for (String fieldValue : map.keySet()) {
-                final BitSet bitSet = map.get(fieldValue);
-                bitSet.and(restrictedBitSetOfDocumentsAvailableAfterQuery); //todo is this is most efficeint way of doing this, consider storing this from previous run in query parsing?
-                if(bitSet.cardinality() > 0){
-                    final int cardinality = bitSet.cardinality();
-//                    System.out.println(">>"+fieldValue + cardinality);
-                    uniqueFacetValues.add(fieldValue);
-                }
-            }
-            facetList.addFacetField(facetName, uniqueFacetValues);
-        }
-        return facetList;
     }
 
     private BitSet processRangeQueryIntegerTypes(BitSet queryBitSet, Map<String, BitSet> map, FilterQuery.FilterQueryElement filterQueryElement, DataType type) {

@@ -102,6 +102,133 @@ public class GwtTestClientSideSearchDataProvider extends GwtTestServerSideSearch
     }
 
     @Test
+    public void testFilteringExhaustive() throws Exception {
+        delayTestFinish(10*1000);
+        dataProvider.onLoad(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // start with match all query
+                    dataProvider.query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>() {
+                        @Override
+                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                            this.onFailure(caught);
+                        }
+
+                        @Override
+                        public void onNonTimedOutSuccess(QueryResult result) {
+                            this.onSuccess(result);
+                        }
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            throw new IllegalStateException(throwable);
+                        }
+
+                        @Override
+                        public void onSuccess(QueryResult queryResult) {
+                            assertNotNull(queryResult);
+                            assertNotNull(queryResult.getRecordList());
+                            assertNotNull(queryResult.getFacetFields());
+                            assertEquals("Expected at least these many facets", EXPECTED_FACET_FOR_NIGERIA, queryResult.getFacetFields().size());
+                            for (FacetList.FacetField facetField : queryResult.getFacetFields()) {
+                                assertNotNull(facetField);
+                                assertNotNull(facetField.getDistinctFacetValues());
+                                assertNotNull(facetField.getFacetField());
+                            }
+                            // add a some filter for instance range query
+                            runTestWithDefaultDataSetup(new Runnable() {
+                                @Override
+                                public void run() {
+                                FilterQuery filterQuery = new FilterQuery();
+                                filterQuery.addRangeFilter("PY", "2001", "2002");
+                                try {
+                                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                                        @Override
+                                        public void onTimeOutOrOtherFailure(Throwable caught) {
+                                            this.onFailure(caught);
+                                        }
+
+                                        @Override
+                                        public void onNonTimedOutSuccess(QueryResult result) {
+                                            this.onSuccess(result);
+                                        }
+
+                                        @Override
+                                        public void onFailure(Throwable throwable) {
+                                            throw new IllegalStateException(throwable);
+                                        }
+
+                                        @Override
+                                        public void onSuccess(QueryResult query) {
+                                            assertNotNull(query);
+                                            assertNotNull(query.getRecordList());
+                                            assertNotNull(query.getFacetFields());
+                                            assertEquals("Expected only 3 results", 3, query.getRecordList().size());
+                                            assertEquals("Expected at least these many facets", EXPECTED_FACET_FOR_NIGERIA, query.getFacetFields().size());
+                                            for (FacetList.FacetField facetField : query.getFacetFields()) {
+                                                assertNotNull(facetField);
+                                                assertNotNull(facetField.getDistinctFacetValues());
+                                                assertNotNull(facetField.getFacetField());
+                                            }
+                                            runTestWithDefaultDataSetup(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    try {
+                                                        dataProvider.query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>() {
+                                                            @Override
+                                                            public void onTimeOutOrOtherFailure(Throwable caught) {
+                                                                this.onFailure(caught);
+                                                            }
+
+                                                            @Override
+                                                            public void onNonTimedOutSuccess(QueryResult result) {
+                                                                this.onSuccess(result);
+                                                            }
+
+                                                            @Override
+                                                            public void onFailure(Throwable throwable) {
+                                                                throw new IllegalStateException(throwable);
+                                                            }
+
+                                                            @Override
+                                                            public void onSuccess(QueryResult queryResult) {
+                                                                assertNotNull(queryResult);
+                                                                assertNotNull(queryResult.getRecordList());
+                                                                assertNotNull(queryResult.getFacetFields());
+                                                                assertEquals("Expected at least these many facets", EXPECTED_FACET_FOR_NIGERIA, queryResult.getFacetFields().size());
+                                                                for (FacetList.FacetField facetField : queryResult.getFacetFields()) {
+                                                                    assertNotNull(facetField);
+                                                                    assertNotNull(facetField.getDistinctFacetValues());
+                                                                    assertNotNull(facetField.getFacetField());
+                                                                }
+                                                                finishTest();
+                                                            }
+                                                        });
+                                                    } catch (SearchException e) {
+                                                        throw new IllegalStateException(e);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                } catch (SearchException e) {
+                                    throw new IllegalStateException(e);
+                                }
+                                }
+                            });
+                        }
+                    });
+                } catch (SearchException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        });
+
+
+    }
+
+    @Test
     public void testRecordListView() throws Exception {
         delayTestFinish(10*1000);
         dataProvider.onLoad(new Runnable() {

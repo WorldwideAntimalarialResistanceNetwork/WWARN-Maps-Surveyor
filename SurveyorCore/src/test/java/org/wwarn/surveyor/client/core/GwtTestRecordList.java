@@ -154,7 +154,7 @@ public class GwtTestRecordList extends VisualizationTest {
             // test adding records
             recordListBuilder = new RecordListBuilder(RecordListBuilder.CompressionMode.CANONICAL_WITH_INVERTED_INDEX, dataProviderTestUtility.fetchSampleDataSchema());
             for (int i = 0; i < 7; i++) {
-                recordListBuilder.addRecord("200"+i,"2b","3c","4d","5e","6f","7g", "180"+i);
+                recordListBuilder.addRecord("200"+i,"2b","3c","4d","5e","6f","7g", "180"+i, "8h");
             }
             recordList = recordListBuilder.createRecordList(dataSourceHash);
             assertNotNull(recordList);
