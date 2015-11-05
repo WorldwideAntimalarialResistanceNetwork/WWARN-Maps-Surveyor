@@ -43,17 +43,24 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
 import org.wwarn.mapcore.client.common.types.FilterConfigVisualization;
 import org.wwarn.mapcore.client.component.MainSectionPanel;
 import org.wwarn.mapcore.client.component.UiHelpToolTip;
 import org.wwarn.mapcore.client.components.customwidgets.facet.*;
+import org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget;
 import org.wwarn.surveyor.client.core.FacetList;
+import org.wwarn.surveyor.client.event.ResetFilterActionEvent;
+import org.wwarn.surveyor.client.event.ToggleLayerEvent;
 import org.wwarn.surveyor.client.i18nstatic.TextConstants;
 import org.wwarn.surveyor.client.model.FilterByDateRangeSettings;
 import org.wwarn.surveyor.client.model.FilterConfig;
 import org.wwarn.mapcore.client.utils.EventLogger;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.model.FilterSetting;
+import org.wwarn.surveyor.client.mvp.ClientFactory;
+import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.mvp.presenter.FilterPresenter;
 
 import java.util.*;
@@ -67,11 +74,14 @@ public class FilterViewUI extends Composite implements  FilterView {
     protected final Panel panel;
     private LinkedFilterSelectionState linkedFilterSelectionState = new LinkedFilterSelectionState();
 
+    // Event Bus bindings
+    interface SomeEventBinder extends EventBinder<FilterViewUI> {};
+
     @UiField(provided = true)
     public Anchor resetAnchor = new Anchor();
     protected final List<FacetWidget> filterList = new ArrayList<FacetWidget>();
     private String lastSelectedFilterField;
-
+    private ClientFactory clientFactory = SimpleClientFactory.getInstance();
     interface FilterViewUIUiBinder extends UiBinder<Panel, FilterViewUI> {
     }
 
@@ -84,6 +94,8 @@ public class FilterViewUI extends Composite implements  FilterView {
     public FilterViewUI() {
         panel = ourUiBinder.createAndBindUi(this);
         initWidget(panel);
+        SomeEventBinder eventBinder = GWT.create(SomeEventBinder.class);
+        eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
     }
 
     public void setupFilterDisplay(final FacetList facetList, FilterConfig filterConfig){
@@ -127,7 +139,10 @@ public class FilterViewUI extends Composite implements  FilterView {
         return mainSectionPanel;
     }
 
-
+    @EventHandler
+    public void onResetFilterActionEvent(ResetFilterActionEvent resetFilterActionEvent){
+        resetAllFilters();
+    }
     protected FacetWidget createFacetWidget(final FilterSetting filterSetting,
                                             final FacetList.FacetField facetField,
                                             final FacetList facetList){
