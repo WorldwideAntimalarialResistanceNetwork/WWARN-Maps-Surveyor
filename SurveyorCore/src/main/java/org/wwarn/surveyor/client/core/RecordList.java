@@ -129,7 +129,6 @@ public class RecordList implements IsSerializable, Serializable{
         if (!schema.equals(that.schema)) return false;
         if (!records.equals(that.records)) return false;
         return dataSourceHash.equals(that.dataSourceHash);
-
     }
 
     @Override
@@ -140,11 +139,41 @@ public class RecordList implements IsSerializable, Serializable{
         return result;
     }
 
+
+
     public static class Record implements IsSerializable, Serializable{
+        public interface RecordEqualsComparator {
+            /**
+             * Does record a equals record b, same semantics as a standard object equals
+             * @param a
+             * @param b
+             * @return
+             */
+            public boolean compare(Record a, Record b);
+
+            /**
+             * Set hashcode as well
+             * @param record
+             * @return
+             */
+            int calculateHashCode(Record record);
+        }
+        public class DefaultRecordEqualsComparator implements RecordEqualsComparator{
+            @Override
+            public boolean compare(Record a, Record b) {
+                return (Arrays.equals(a.fields, b.fields));
+            }
+
+            @Override
+            public int calculateHashCode(Record record) {
+                return record.hashCode();
+            }
+        }
         //array of fields
         // map of column names to fields
         private String[] fields;
         DataSchema schema = new DataSchema();
+        private transient RecordEqualsComparator recordEqualsComparator = new DefaultRecordEqualsComparator();
 
         public Record() {
             this.fields = new String[schema.size()];
@@ -156,6 +185,10 @@ public class RecordList implements IsSerializable, Serializable{
             }
             normaliseFields(fields, schema);
             this.fields = fields;
+        }
+
+        public void setComparator(RecordEqualsComparator recordEqualsComparator){
+            this.recordEqualsComparator = recordEqualsComparator;
         }
 
         protected void normaliseFields(String[] fieldValues, DataSchema schema) {
@@ -208,19 +241,24 @@ public class RecordList implements IsSerializable, Serializable{
         }
 
         @Override
+        public int hashCode() {
+            return recordEqualsComparator.calculateHashCode(this);
+        }
+
+
+        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-
             Record that = (Record) o;
-            return (Arrays.equals(this.fields, that.fields));
-
+            return recordEqualsComparator.compare(this, that);
+//            return (Arrays.equals(this.fields, that.fields));
         }
 
-            @Override
+        @Override
         public String toString() {
             return "Record{" +
-                    "fields=" + Arrays.toString(fields) +
+                        "fields=" + Arrays.toString(fields) +
                     '}';
         }
 

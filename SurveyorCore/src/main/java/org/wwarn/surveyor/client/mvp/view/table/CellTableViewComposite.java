@@ -108,13 +108,12 @@ public class CellTableViewComposite extends Composite {
         initWidget(setupPanel());
         buildTable();
         createWithAsyncDataProvider();
-
+        clientFactory.getEventBus().fireEvent(new InterfaceLoadCompleteEvent());
     }
 
     @Override
     protected void onAttach() {
         super.onAttach();
-//        clientFactory.getEventBus().fireEvent(new InterfaceLoadCompleteEvent());
     }
 
     private FlowPanel setupPanel(){
