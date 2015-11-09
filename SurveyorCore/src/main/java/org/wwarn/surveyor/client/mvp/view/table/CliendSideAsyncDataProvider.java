@@ -36,6 +36,7 @@ package org.wwarn.surveyor.client.mvp.view.table;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -44,7 +45,6 @@ import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.*;
-import org.wwarn.surveyor.client.event.InterfaceLoadCompleteEvent;
 import org.wwarn.surveyor.client.event.ResultChangedEvent;
 import org.wwarn.surveyor.client.model.TableViewConfig;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
@@ -96,7 +96,7 @@ public class CliendSideAsyncDataProvider extends AsyncDataProvider<RecordList.Re
     }
 
 
-    private void queryTable(ClientSideSearchDataProvider clientSideSearchDataProvider, final FilterQuery filterQuery, String[] facetFields, final int start, final int length, final TableViewConfig tableViewConfig, final AsyncCallback<List<RecordList.Record>> asyncCallback) throws SearchException {
+    private void queryTable(ClientSideSearchDataProvider clientSideSearchDataProvider, final FilterQuery filterQuery, final String[] facetFields, final int start, final int length, final TableViewConfig tableViewConfig, final AsyncCallback<List<RecordList.Record>> asyncCallback) throws SearchException {
         try{
             clientSideSearchDataProvider.query(filterQuery, facetFields, new AsyncCallbackWithTimeout<QueryResult>() {
                 @Override
@@ -109,7 +109,12 @@ public class CliendSideAsyncDataProvider extends AsyncDataProvider<RecordList.Re
                     RecordList recordList = queryResult.getRecordList();
                     List<RecordList.Record>  searchedRecords = recordList.getRecords();
                     List<RecordList.Record> orderRecords = orderRecords(searchedRecords, tableViewConfig);
-                    List<RecordList.Record> uniqueRecords = subsetUniqueRecords(filterQuery, orderRecords);
+                    //wrong we need to subset by fields in tableview config
+                    HashSet<String> filterFields = new HashSet<String>(Arrays.asList(tableViewConfig.getFilterBy().split(",")));
+//                    filterFields = new HashSet<String>();
+//                    filterFields.addAll(filterQuery.getFields());
+                    List<RecordList.Record> uniqueRecords = fetchJustUniqueRecords(orderRecords, filterFields);
+//                    Window.alert(String.valueOf(filterFields));
                     final List<RecordList.Record> pageRecords = getPageRecords(uniqueRecords, start, length);
                     asyncCallback.onSuccess(pageRecords);
                 }
@@ -129,7 +134,6 @@ public class CliendSideAsyncDataProvider extends AsyncDataProvider<RecordList.Re
 
         List<RecordList.Record> orderList = new ArrayList<>(records.size());
         orderList.addAll(records);
-
         Collections.sort(orderList,new Comparator<RecordList.Record>() {
             @Override
             public int compare(RecordList.Record o1, RecordList.Record o2) {
@@ -163,38 +167,42 @@ public class CliendSideAsyncDataProvider extends AsyncDataProvider<RecordList.Re
         return pageRecords;
     }
 
-    private List<RecordList.Record> subsetUniqueRecords(FilterQuery filterQuery, List<RecordList.Record> searchedRecords) throws IllegalArgumentException {
-
-        if(filterQuery.getFields() == null){
+    private List<RecordList.Record> fetchJustUniqueRecords(List<RecordList.Record> searchedRecords, final Set<String> uniqueFields) throws IllegalArgumentException {
+        if(uniqueFields == null){
             throw new IllegalArgumentException("Table fields cannot be null. Please see them into the FilterQuery");
         }
+        Set<RecordList.Record> uniqueRecords = new HashSet<>();
+        final RecordList.Record.RecordEqualsComparator recordEqualsComparator = new RecordList.Record.RecordEqualsComparator() {
+            @Override
+            public boolean compare(RecordList.Record a, RecordList.Record b) {
+                boolean allEqualCount = true;
+                for (String uniqueField : uniqueFields) {
+                    final String fieldAValueByFieldName = a.getValueByFieldName(uniqueField);
+                    final String fieldBValueByFieldName = b.getValueByFieldName(uniqueField);
+                    allEqualCount = allEqualCount && fieldAValueByFieldName!=null && fieldAValueByFieldName.equals(fieldBValueByFieldName);
+                }
+                return true;
+            }
 
-        List<RecordList.Record> pageRecords = new ArrayList<>();
-        int schemaSize = dataSchema.size();
+            @Override
+            public int calculateHashCode(RecordList.Record a) {
+                int hashCode =  0;
+                for (String uniqueField : uniqueFields) {
+                    final String fieldAValueByFieldName = a.getValueByFieldName(uniqueField);
+                    hashCode =  31 * hashCode + fieldAValueByFieldName.hashCode();
+                }
+                return hashCode;
+            }
+        };
 
         for (RecordList.Record searchedRecord : searchedRecords){
-            String[] fields = new String[schemaSize];
-            for(String field : filterQuery.getFields()){
-                String columnValue = searchedRecord.getValueByFieldName(field);
-                int columnIndex = dataSchema.getColumnIndex(field);
-                fields[columnIndex] = columnValue;
-            }
-
-            RecordList.Record record = new RecordList.Record(fields, dataSchema);
-            if(!pageRecords.contains(record)){
-//                if(uniqueRecordsCount >= start){
-                pageRecords.add(record);
-//                }
-//                uniqueRecordsCount++;
-            }
-
-//            if(pageRecords.size() > (length+start)){
-//                break;
-//            }
+            searchedRecord.setComparator(recordEqualsComparator);
+            uniqueRecords.add(searchedRecord);
         }
 
-        return pageRecords;
+        return new ArrayList<>(uniqueRecords);
     }
+
     private void updateResults(final int rangeStart, final int rangeLength){
         FilterQuery filterQuery = clientFactory.getLastFilterQuery();
         filterQuery.setFields(getFields());
@@ -229,7 +237,7 @@ public class CliendSideAsyncDataProvider extends AsyncDataProvider<RecordList.Re
             }
 
             if(isFunction(column.getFieldName())){
-                for(String param : getParameters(column.getFieldName())){
+                for(String param : DataAsyncDataProvider.getParameters(column.getFieldName())){
                     int columnIndex = dataSchema.getColumnIndex(param);
                     if (columnIndex > -1){
                         fields.add(param);
@@ -248,10 +256,5 @@ public class CliendSideAsyncDataProvider extends AsyncDataProvider<RecordList.Re
         return fieldName.startsWith("func");
     }
 
-    //Get parameters from functions
-    //functions are usually as func(CONCAT_DATE(sf,sTo)) or func(ARITH(pre,tes,%))
-    public static String[] getParameters(String function){
-        function = function.substring(function.indexOf("(",5)+1, function.indexOf(")",1));
-        return function.split(",");
-    }
+
 }

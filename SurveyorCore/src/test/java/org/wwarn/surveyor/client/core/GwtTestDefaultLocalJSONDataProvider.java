@@ -407,7 +407,6 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                             assertNotNull(queryResult);
                             assertNotNull(queryResult.getRecordList());
                             assertNotNull(queryResult.getFacetFields());
-                            System.out.println((queryResult.getFacetFields()));
                             assertEquals("Expected at least these many facets", EXPECTED_FACET_FOR_NIGERIA, queryResult.getFacetFields().size());
                             for (FacetList.FacetField facetField : queryResult.getFacetFields()) {
                                 assertNotNull(facetField);

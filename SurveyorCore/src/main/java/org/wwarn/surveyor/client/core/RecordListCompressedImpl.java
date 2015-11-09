@@ -139,7 +139,7 @@ public class RecordListCompressedImpl extends RecordList {
         public RecordCompressedImpl(String[] fieldValues, DataSchema schema, RecordListCompressedImpl recordListCompressed) {
             this.schema = schema;
             if(fieldValues.length != schema.size()){
-                throw new IllegalArgumentException("Schema length should be same as field length");
+                throw new IllegalArgumentException("Schema length should be same as field length + "+schema.size()+", "+fieldValues.length);
             }
             if(recordListCompressed == null){
                 throw new IllegalArgumentException("RecordListCompressed cannot be null");

@@ -1,10 +1,10 @@
-package org.wwarn.surveyor.client.core;
+package org.wwarn.surveyor.client.event;
 
 /*
  * #%L
  * SurveyorCore
  * %%
- * Copyright (C) 2013 - 2014 University of Oxford
+ * Copyright (C) 2013 - 2015 University of Oxford
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,51 +33,14 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.web.bindery.event.shared.binder.GenericEvent;
 
 /**
- * This is a restricted view of a RecordListCompressedWithInvertedIndexImpl,
- * intended to be a light weight (in terms of memory) representation of the record list
+ * Request rest of filters
  */
-public class RecordListView extends RecordList{
-    private static UnsupportedOperationException unsupportedOperationException = new UnsupportedOperationException();
+public class ResetFilterActionEvent extends GenericEvent {
 
-    public RecordListView() {
+    public ResetFilterActionEvent() {
     }
 
-    public RecordListView(DataSchema schema) {
-        throw getUnsupportedOperationException();
-    }
-
-    public RecordListView(List<Record> restrictedRecordList) {
-        super.addAll(restrictedRecordList);
-    }
-
-    @NotNull
-    private UnsupportedOperationException getUnsupportedOperationException() {
-        return unsupportedOperationException;
-    }
-
-    @Override
-    public void add(Record record) {
-        throw getUnsupportedOperationException();
-    }
-
-    @Override
-    public void addRecord(String... fields) {
-        throw getUnsupportedOperationException();
-    }
-
-    @Override
-    public int size() {
-        return super.size();
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
 }
