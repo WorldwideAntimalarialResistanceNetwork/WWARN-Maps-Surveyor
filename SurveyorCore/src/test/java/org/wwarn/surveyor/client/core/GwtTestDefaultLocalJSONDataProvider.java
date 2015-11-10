@@ -52,6 +52,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
 
     public static final int QUERY_SIZE = 28;
     public static final int FINISH_TEST_DELAY_TIMEOUT_MILLIS = 1500;
+    public static final int EXPECTED_FACET_FOR_NIGERIA = 4;
     private DataProviderTestUtility.DataProviderSource dataProviderSource;
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
     protected JSONArray jsonArray;
@@ -406,8 +407,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                             assertNotNull(queryResult);
                             assertNotNull(queryResult.getRecordList());
                             assertNotNull(queryResult.getFacetFields());
-                            System.out.println((queryResult.getFacetFields()));
-                            assertEquals("Expected at least 3 facets", 3, queryResult.getFacetFields().size());
+                            assertEquals("Expected at least these many facets", EXPECTED_FACET_FOR_NIGERIA, queryResult.getFacetFields().size());
                             for (FacetList.FacetField facetField : queryResult.getFacetFields()) {
                                 assertNotNull(facetField);
                                 assertNotNull(facetField.getDistinctFacetValues());
@@ -452,7 +452,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                             assertNotNull(query.getRecordList());
                             assertNotNull(query.getFacetFields());
                             assertEquals("Expected only 3 results", 3, query.getRecordList().size());
-                            assertEquals("Expected at least 3 facets", 3, query.getFacetFields().size());
+                            assertEquals("Expected at least these many facets", EXPECTED_FACET_FOR_NIGERIA, query.getFacetFields().size());
                             for (FacetList.FacetField facetField : query.getFacetFields()) {
                                 assertNotNull(facetField);
                                 assertNotNull(facetField.getDistinctFacetValues());
@@ -502,7 +502,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                                 assertNotNull(facetField.getDistinctFacetValues());
                                 assertNotNull(facetField.getFacetField());
                             }
-                            assertEquals("Expected at least 3 facets", 3 , query.getFacetFields().size());
+                            assertEquals("Expected at least these many facets", EXPECTED_FACET_FOR_NIGERIA , query.getFacetFields().size());
                             finishTest();
                         }
                     });
@@ -547,7 +547,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                                 assertNotNull(facetField.getDistinctFacetValues());
                                 assertNotNull(facetField.getFacetField());
                             }
-                            assertEquals("Expected at least 3 facets", 3, query.getFacetFields().size());
+                            assertEquals("Expected at least these many facets", EXPECTED_FACET_FOR_NIGERIA, query.getFacetFields().size());
                             finishTest();
                         }
                     });

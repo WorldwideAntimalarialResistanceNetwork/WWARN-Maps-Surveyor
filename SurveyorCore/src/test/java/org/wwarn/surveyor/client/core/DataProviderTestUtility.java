@@ -46,7 +46,7 @@ public class DataProviderTestUtility {
     }
 
     public String[] getSelectorList() {
-        return new String[]{"PUB", "PTN", "QI"};
+        return new String[]{"PUB", "PTN", "QI", "TTL"};
     }
 
     public DataSchema fetchSampleDataSchema() {
@@ -61,6 +61,7 @@ public class DataProviderTestUtility {
         schema.addField("PID", DataType.Integer);
         schema.addField("QI", DataType.String);
         schema.addField("SD", DataType.Date);
+        schema.addField("TTL", DataType.String);
         return schema;
     }
 

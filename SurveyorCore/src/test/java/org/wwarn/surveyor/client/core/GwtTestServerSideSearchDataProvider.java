@@ -35,6 +35,7 @@ package org.wwarn.surveyor.client.core;
 
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.wwarn.surveyor.client.event.FilterChangedEvent;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
@@ -125,42 +126,74 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
     }
 
 
+    /**
+     *
+     * @throws Exception
+     */
+    @Test
+    @Ignore
+    public void testOnlyAvailableRecordsAreShown() throws Exception {
+        runTestWithDefaultDataSetup(new Runnable() {
+            @Override
+            public void run() {
+                FilterQuery filterQuery = new FilterQuery();
+                filterQuery.addFilter("PUB", "Nigerian Tribune");
+                try {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                                @Override
+                                public void onTimeOutOrOtherFailure(Throwable caught) {
+                                    this.onFailure(caught);
+                                }
+
+                                @Override
+                                public void onNonTimedOutSuccess(QueryResult result) {
+                                    this.onSuccess(result);
+                                }
+
+                                @Override
+                                public void onFailure(Throwable throwable) {
+                                    throw new IllegalStateException(throwable);
+                                }
+
+                                @Override
+                                public void onSuccess(QueryResult queryResult) {
+                                    assertEquals(5, queryResult.getRecordList().size());
+                                    final FacetList facetFields = queryResult.getFacetFields();
+
+                                    int countOfTestRun = 3;
+                                    for (FacetList.FacetField facetField : facetFields) {
+                                        switch (facetField.getFacetField()) {
+                                            case "TTL":
+                                                assertEquals(3, facetField.getDistinctFacetValues().size());
+                                                countOfTestRun--;
+                                                break;
+                                            case "QI":
+//                                                assertEquals("Expected one element but found:" + facetField.getDistinctFacetValues(), 1, facetField.getDistinctFacetValues().size());
+//                                                assertEquals("Falsified", facetField.getDistinctFacetValues().iterator().next());
+                                                countOfTestRun--;
+                                                break;
+                                        }
+                                        System.out.println(facetField.getFacetField()+">>"+facetField.getDistinctFacetValues());
+                                    }
+                                    assertEquals("Check tests have run", 1, countOfTestRun); // ensure tests have done
+                                    finishTest();
+                                }
+                            }
+
+                        );
+                    }catch(SearchException e){
+                        throw new IllegalStateException(e);
+                    }
+                }
+            }
+
+            );
+    }
+
     @Test
     public void testQuery() throws Exception {
 
-        delayTestFinish(10*1000);
-        final AsyncCallbackWithTimeout<QueryResult> callback = new AsyncCallbackWithTimeout<QueryResult>() {
-            @Override
-            public void onTimeOutOrOtherFailure(Throwable caught) {
-                this.onFailure(caught);
-            }
-
-            @Override
-            public void onNonTimedOutSuccess(QueryResult result) {
-                this.onSuccess(result);
-            }
-            @Override
-            public void onFailure(Throwable throwable) {
-                fail();
-            }
-
-            @Override
-            public void onSuccess(QueryResult queryResult) {
-                assertNotNull(queryResult);
-                assertNotNull(queryResult.getFacetFields());
-                final RecordList recordList = queryResult.getRecordList();
-                assertNotNull(recordList);
-                assertTrue(recordList.size()>1);
-                assertEquals(3, recordList.size());
-                for (RecordList.Record record : recordList.getRecords()) {
-                    final String publicationYear = record.getValueByFieldName(DataProviderTestUtility.FIELD_PUBLICATION_YEAR);
-                    assertDateFormatIsISO(publicationYear, DataType.ISO_DATE_FORMAT);
-                }
-                System.out.println("testQuery complete");
-                finishTest();
-            }
-        };
-
+        delayTestFinish(10 * 1000);
 
 
         runTestWithDefaultDataSetup(new Runnable() {
@@ -190,7 +223,37 @@ public class GwtTestServerSideSearchDataProvider extends GwtTestDefaultLocalJSON
                         public void onSuccess(QueryResult queryresult) {
 
                             try {
-                                dataProvider.query(filterQuery, callback);
+                                dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                                    @Override
+                                    public void onTimeOutOrOtherFailure(Throwable caught) {
+                                        this.onFailure(caught);
+                                    }
+
+                                    @Override
+                                    public void onNonTimedOutSuccess(QueryResult result) {
+                                        this.onSuccess(result);
+                                    }
+                                    @Override
+                                    public void onFailure(Throwable throwable) {
+                                        fail();
+                                    }
+
+                                    @Override
+                                    public void onSuccess(QueryResult queryResult) {
+                                        assertNotNull(queryResult);
+                                        assertNotNull(queryResult.getFacetFields());
+                                        final RecordList recordList = queryResult.getRecordList();
+                                        assertNotNull(recordList);
+                                        assertTrue(recordList.size()>1);
+                                        assertEquals(3, recordList.size());
+                                        for (RecordList.Record record : recordList.getRecords()) {
+                                            final String publicationYear = record.getValueByFieldName(DataProviderTestUtility.FIELD_PUBLICATION_YEAR);
+                                            assertDateFormatIsISO(publicationYear, DataType.ISO_DATE_FORMAT);
+                                        }
+                                        System.out.println("testQuery complete");
+                                        finishTest();
+                                    }
+                                });
                             } catch (SearchException e) {
                                 throw new IllegalStateException(e);
                             }

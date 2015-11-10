@@ -156,9 +156,14 @@ public class DataAsyncDataProvider extends AsyncDataProvider<RecordList.Record> 
         return fieldName.startsWith("func");
     }
 
-    //Get parameters from functions
-    //functions are usually as func(CONCAT_DATE(sf,sTo)) or func(ARITH(pre,tes,%))
+    /**
+     *Get parameters from functions
+     *functions are usually as func(CONCAT_DATE(sf,sTo)) or func(ARITH(pre,tes,%))
+     * @param function
+     * @return
+     */
     public static String[] getParameters(String function){
+        if(function==null){return new String[]{};}
         function = function.substring(function.indexOf("(",5)+1, function.indexOf(")",1));
         return function.split(",");
     }
