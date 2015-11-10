@@ -203,13 +203,13 @@ public class YearRangeSliderComposite extends Composite{
                     }
                     if(StringUtils.isEmpty(filterByDateRangeSettings.getFieldFrom()) ||
                             StringUtils.isEmpty(filterByDateRangeSettings.getFieldTo())){
-                        filterChangedEvent.addFilter(parseDateYearOnly(currentMinYear), parseDateYearOnly(currentMaxYear));
+                        filterChangedEvent.addFilter(parseDateStartYearOnly(currentMinYear), parseDateEndYearOnly(currentMaxYear));
                     }else{
                         filterChangedEvent.addFilter(filterByDateRangeSettings.getFieldFrom(), filterByDateRangeSettings.getFieldTo(),
-                                parseDateYearOnly(currentMinYear), parseDateYearOnly(currentMaxYear));
+                                parseDateStartYearOnly(currentMinYear), parseDateEndYearOnly(currentMaxYear));
                     }
 
-                    filterChangedEvent.addFilter(parseDateYearOnly(currentMinYear), parseDateYearOnly(currentMaxYear));
+                    filterChangedEvent.addFilter(parseDateStartYearOnly(currentMinYear), parseDateEndYearOnly(currentMaxYear));
                 } else {
                     // if filter is set to default values then reset filter options
                     filterChangedEvent.resetField();
@@ -217,15 +217,16 @@ public class YearRangeSliderComposite extends Composite{
                 clientFactory.getEventBus().fireEvent(filterChangedEvent);
             }
 
-            private Date parseDateYearOnly(Integer yearOnly) {
-                return DataType.ParseUtil.parseDateYearOnly(yearOnly.toString());
+            private Date parseDateStartYearOnly(Integer yearOnly) {
+                return DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("01/01" + yearOnly.toString());
+            }
+            private Date parseDateEndYearOnly(Integer yearOnly) {
+                return DataType.ParseUtil.parseDateYearOnly("31/12/"+yearOnly.toString());
             }
         };
 
         dateSliderYuiWidgetImpl.addValueChangeHandler(valueChangeHandler);
         dateSliderYuiWidgetImpl.addShowRangeHandler(showRangeChangeHandler);
-
-
 
         return dateSliderYuiWidgetImpl;
     }

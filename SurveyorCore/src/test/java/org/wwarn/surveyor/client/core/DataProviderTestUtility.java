@@ -38,12 +38,17 @@ import com.google.gwt.json.client.JSONParser;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.DatasourceConfig;
 
+import java.util.Date;
+
 public class DataProviderTestUtility {
 
     public static final String FIELD_PUBLICATION_YEAR = "PY";
 
     public DataProviderTestUtility() {
     }
+
+    public static final Date DATE_START_2001 = DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("01/01/2001");
+    public static final Date DATE_END_2003 = DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("31/12/2003");
 
     public String[] getSelectorList() {
         return new String[]{"PUB", "PTN", "QI", "TTL"};
