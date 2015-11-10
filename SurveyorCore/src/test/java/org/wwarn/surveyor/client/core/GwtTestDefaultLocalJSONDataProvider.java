@@ -474,7 +474,9 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             @Override
             public void run() {
                 FilterQuery filterQuery = new FilterQuery();
-                filterQuery.addRangeFilter("SD", parseDateFromYearOnly("2001"), parseDateFromYearOnly("2002"));
+                //DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("01/01/2001")
+                //DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("31/12/2003")
+                filterQuery.addRangeFilter("SD", DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("01/01/2001"), DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("31/12/2003"));
                 try {
                     dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
                         @Override
@@ -558,10 +560,6 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
         });
 
 
-    }
-
-    private Date parseDateFromYearOnly(String rawDate){
-        return  DataType.ParseUtil.parseDateYearOnly(rawDate);
     }
 
     public String getModuleName() {

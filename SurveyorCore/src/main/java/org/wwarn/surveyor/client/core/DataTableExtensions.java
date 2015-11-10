@@ -155,7 +155,7 @@ public class DataTableExtensions {
                         Date maxValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMaxValue();
                         javaScriptObject = JSFilterRangeObject.create(columnIndex, parseDoubleFromDate(minValue), parseDoubleFromDate(maxValue));
                     } else{
-                        javaScriptObject = JSFilterObject.create(columnIndex, parseDoubleFromDate(DataType.ParseUtil.parseDateYearOnly(((FilterQuery.FilterFieldValue) filterQueryElement).getFieldValue())));
+                        javaScriptObject = JSFilterObject.create(columnIndex, parseDoubleFromDate(DataType.ParseUtil.parseDateStartYearOnly(Integer.valueOf(((FilterQuery.FilterFieldValue) filterQueryElement).getFieldValue()))));
                     }
                     break;
                 case Integer:
@@ -176,10 +176,10 @@ public class DataTableExtensions {
                     if(filterQueryElement instanceof FilterQuery.FilterFieldRange){
                         String minValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue();
                         String maxValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue();
-                        javaScriptObject = JSFilterRangeObject.create(columnIndex, parseDoubleFromDate(DataType.ParseUtil.parseDateYearOnly(minValue)), parseDoubleFromDate(DataType.ParseUtil.parseDateYearOnly(maxValue)));
+                        javaScriptObject = JSFilterRangeObject.create(columnIndex, parseDoubleFromDate(DataType.ParseUtil.parseDateStartYearOnly(Integer.valueOf(minValue))), parseDoubleFromDate(DataType.ParseUtil.parseDateEndYearOnly(Integer.valueOf(maxValue))));
 
                     }else{
-                        javaScriptObject = JSFilterObject.create(columnIndex, parseDoubleFromDate(DataType.ParseUtil.parseDateYearOnly(((FilterQuery.FilterFieldValue) filterQueryElement).getFieldValue())));
+                        javaScriptObject = JSFilterObject.create(columnIndex, parseDoubleFromDate(DataType.ParseUtil.parseDateStartYearOnly(Integer.valueOf(((FilterQuery.FilterFieldValue) filterQueryElement).getFieldValue()))));
                     }
                     break;
                 default:
