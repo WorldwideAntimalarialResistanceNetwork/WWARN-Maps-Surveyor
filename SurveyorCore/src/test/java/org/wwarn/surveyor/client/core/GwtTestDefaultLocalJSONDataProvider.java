@@ -562,10 +562,6 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
 
     }
 
-    private Date parseDateFromYearOnly(String rawDate){
-        return  DataType.ParseUtil.parseDateYearOnly(rawDate);
-    }
-
     public String getModuleName() {
         return "org.wwarn.surveyor.surveyorJUnit";
     }

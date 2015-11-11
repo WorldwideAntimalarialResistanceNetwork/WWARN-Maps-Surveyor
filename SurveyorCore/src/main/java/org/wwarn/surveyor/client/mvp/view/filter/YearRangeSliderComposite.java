@@ -203,13 +203,13 @@ public class YearRangeSliderComposite extends Composite{
                     }
                     if(StringUtils.isEmpty(filterByDateRangeSettings.getFieldFrom()) ||
                             StringUtils.isEmpty(filterByDateRangeSettings.getFieldTo())){
-                        filterChangedEvent.addFilter(parseDateStartYearOnly(currentMinYear), parseDateEndYearOnly(currentMaxYear));
+                        filterChangedEvent.addFilter(DataType.ParseUtil.parseDateStartYearOnly(currentMinYear), DataType.ParseUtil.parseDateEndYearOnly(currentMaxYear));
                     }else{
                         filterChangedEvent.addFilter(filterByDateRangeSettings.getFieldFrom(), filterByDateRangeSettings.getFieldTo(),
-                                parseDateStartYearOnly(currentMinYear), parseDateEndYearOnly(currentMaxYear));
+                                DataType.ParseUtil.parseDateStartYearOnly(currentMinYear), DataType.ParseUtil.parseDateEndYearOnly(currentMaxYear));
                     }
 
-                    filterChangedEvent.addFilter(parseDateStartYearOnly(currentMinYear), parseDateEndYearOnly(currentMaxYear));
+                    filterChangedEvent.addFilter(DataType.ParseUtil.parseDateStartYearOnly(currentMinYear), DataType.ParseUtil.parseDateEndYearOnly(currentMaxYear));
                 } else {
                     // if filter is set to default values then reset filter options
                     filterChangedEvent.resetField();
@@ -217,17 +217,11 @@ public class YearRangeSliderComposite extends Composite{
                 clientFactory.getEventBus().fireEvent(filterChangedEvent);
             }
 
-            private Date parseDateStartYearOnly(Integer yearOnly) {
-                return DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("01/01" + yearOnly.toString());
-            }
-            private Date parseDateEndYearOnly(Integer yearOnly) {
-                return DataType.ParseUtil.parseDateYearOnly("31/12/"+yearOnly.toString());
-            }
+
         };
 
         dateSliderYuiWidgetImpl.addValueChangeHandler(valueChangeHandler);
         dateSliderYuiWidgetImpl.addShowRangeHandler(showRangeChangeHandler);
-
         return dateSliderYuiWidgetImpl;
     }
 
@@ -254,10 +248,10 @@ public class YearRangeSliderComposite extends Composite{
                     String facetField = filterByDateRangeSettings.filterFieldName;
                     FilterChangedEvent filterChangedEvent = new FilterChangedEvent(facetField);
 
-                    Date maxDate = DataType.ParseUtil.parseDateYearOnly("2014");
+                    Date maxDate = DataType.ParseUtil.parseDateEndYearOnly(2014);
 
                     yuiDualSliderGwtWidget.setRange(minYear, 2014);
-                    Date minDate = DataType.ParseUtil.parseDateYearOnly(Integer.toString(minYear));
+                    Date minDate = DataType.ParseUtil.parseDateStartYearOnly(minYear);
                     filterChangedEvent.addFilter(minDate, maxDate);
                     clientFactory.getEventBus().fireEvent(filterChangedEvent);
                     minYear = minYear + 3;

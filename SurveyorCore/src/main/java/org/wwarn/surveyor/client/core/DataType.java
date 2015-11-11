@@ -73,11 +73,18 @@ public enum DataType implements IsSerializable {
             return getDateFormatFrom(DATE_FORMAT_DAY_MONTH_YEAR).parse(value);
         }
 
+        @Deprecated
         public static Date parseDateYearOnly(String value) {
             return getDateFormatFrom(DATE_FORMAT_YEAR_ONLY).parse(value);
         }
 
+        public static Date parseDateStartYearOnly(Integer yearOnly) {
+            return DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("01/01/" + yearOnly.toString());
+        }
 
+        public static Date parseDateEndYearOnly(Integer yearOnly) {
+            return DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("31/12/"+yearOnly.toString());
+        }
 
         /**
          * Attempt to parse dates, based on all supported formats
