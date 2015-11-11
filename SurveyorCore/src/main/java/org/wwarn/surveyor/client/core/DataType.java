@@ -69,9 +69,15 @@ public enum DataType implements IsSerializable {
 
         private static DefaultDateTimeFormatInfo info = new DefaultDateTimeFormatInfo();
 
+        public static Date parseDateInEnglishDayMonthYearFormat(String value) {
+            return getDateFormatFrom(DATE_FORMAT_DAY_MONTH_YEAR).parse(value);
+        }
+
         public static Date parseDateYearOnly(String value) {
             return getDateFormatFrom(DATE_FORMAT_YEAR_ONLY).parse(value);
         }
+
+
 
         /**
          * Attempt to parse dates, based on all supported formats
@@ -113,6 +119,7 @@ public enum DataType implements IsSerializable {
         }
 
         static Map<String, DateTimeFormat> cacheOfDateTimeFormat = new HashMap<>();
+
         public static DateTimeFormat getDateFormatFrom(final String pattern) {
 
             DateTimeFormat dateTimeFormat = cacheOfDateTimeFormat.get(pattern);
