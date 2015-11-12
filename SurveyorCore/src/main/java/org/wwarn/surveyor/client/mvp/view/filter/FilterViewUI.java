@@ -286,8 +286,7 @@ public class FilterViewUI extends Composite implements  FilterView {
                 if (Log.isDebugEnabled()) {
                     Log.debug("Resetting app to default state.");
                 }
-                linkedFilterSelectionState.clear();
-                resetFilters(facetWidgetList);
+                clientFactory.getEventBus().fireEvent(new ResetFilterActionEvent());
             }
         });
 
