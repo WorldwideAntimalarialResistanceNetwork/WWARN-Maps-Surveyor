@@ -68,6 +68,8 @@ public class TableFunctionsCellTable {
             result = arith();
         }else if(functionType == TableFunctions.FunctionType.GET_YEAR){
             result = getYear();
+        }else if(functionType == TableFunctions.FunctionType.IF_NULL){
+            result = ifNull();
         }
         return result;
     }
@@ -154,6 +156,26 @@ public class TableFunctionsCellTable {
         String yearString = yearFormat.format(dateFrom);
         return yearString;
     }
+    /**
+     * Given 2 fields, if the first is null then return the second field
+     * In the config file use:
+     * fieldName="func(IFNULL(field1,field2))"
+     */
+    private String ifNull(){
+
+        if(params.length != 2){
+            throw new IllegalArgumentException("Wrong number of Parameters for if null expression");
+        }
+
+        final String field1 = record.getValueByFieldName(params[0]);
+        if (!field1.isEmpty()){
+            return field1;
+        }
+        final String field2 = record.getValueByFieldName(params[1]);
+        return field2;
+    }
+
+
 
 
 }

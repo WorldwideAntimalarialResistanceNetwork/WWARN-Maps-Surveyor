@@ -108,6 +108,8 @@ public class TableFunctions {
             table.setValue(rowIndex, tableColumnIndex, concatDate(rowIndex));
         }else if(functionType == FunctionType.ARITH){
             table.setValue(rowIndex, tableColumnIndex, arith(rowIndex));
+        }else if(functionType == FunctionType.IF_NULL){
+            table.setValue(rowIndex, tableColumnIndex, ifNull(rowIndex));
         }
     }
 
@@ -181,6 +183,27 @@ public class TableFunctions {
 
     }
 
+    /**
+     * Given 2 fields, if the first is null then return the second field
+     * In the config file use:
+     * fieldName="func(IFNULL(field1,field2))"
+     */
+    private String ifNull(int rowIndex){
+
+        if(params.length != 2){
+            throw new IllegalArgumentException("Wrong number of Parameters for if null expression");
+        }
+
+        final RecordList.Record currentRecord = recordList.getRecords().get(rowIndex);
+        final String field1 = currentRecord.getValueByFieldName(params[0]);
+
+        if (!field1.isEmpty()){
+            return field1;
+        }
+        final String field2 = currentRecord.getValueByFieldName(params[1]);
+        return field2;
+    }
+
 
 
     public static String[] getParameters(FunctionType functionType, String function){
@@ -191,6 +214,6 @@ public class TableFunctions {
     }
 
     public enum FunctionType{
-        CONCAT_DATE, ARITH, GET_YEAR;
+        CONCAT_DATE, ARITH, GET_YEAR, IF_NULL;
     }
 }
