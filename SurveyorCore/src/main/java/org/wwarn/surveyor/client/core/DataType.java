@@ -69,8 +69,21 @@ public enum DataType implements IsSerializable {
 
         private static DefaultDateTimeFormatInfo info = new DefaultDateTimeFormatInfo();
 
+        public static Date parseDateInEnglishDayMonthYearFormat(String value) {
+            return getDateFormatFrom(DATE_FORMAT_DAY_MONTH_YEAR).parse(value);
+        }
+
+        @Deprecated
         public static Date parseDateYearOnly(String value) {
             return getDateFormatFrom(DATE_FORMAT_YEAR_ONLY).parse(value);
+        }
+
+        public static Date parseDateStartYearOnly(Integer yearOnly) {
+            return DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("01/01/" + yearOnly.toString());
+        }
+
+        public static Date parseDateEndYearOnly(Integer yearOnly) {
+            return DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("31/12/"+yearOnly.toString());
         }
 
         /**
@@ -113,6 +126,7 @@ public enum DataType implements IsSerializable {
         }
 
         static Map<String, DateTimeFormat> cacheOfDateTimeFormat = new HashMap<>();
+
         public static DateTimeFormat getDateFormatFrom(final String pattern) {
 
             DateTimeFormat dateTimeFormat = cacheOfDateTimeFormat.get(pattern);

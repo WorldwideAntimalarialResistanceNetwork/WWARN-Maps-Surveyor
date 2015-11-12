@@ -51,8 +51,11 @@ public class ParseUtilTest{
 
     @Test
     public void testParseDateYearOnly() throws Exception {
-        final Date date = DataType.ParseUtil.parseDateYearOnly("2002");
-        final DateTimeFormat dateTimeFormat = DataType.ParseUtil.getDateFormatFrom(DataType.DATE_FORMAT_YEAR_ONLY);
+        Date date = DataType.ParseUtil.parseDateStartYearOnly(2002);
+        DateTimeFormat dateTimeFormat = DataType.ParseUtil.getDateFormatFrom(DataType.DATE_FORMAT_YEAR_ONLY);
+        assertEquals("2002", dateTimeFormat.format(date));
+        date = DataType.ParseUtil.parseDateEndYearOnly(2002);
+        dateTimeFormat = DataType.ParseUtil.getDateFormatFrom(DataType.DATE_FORMAT_YEAR_ONLY);
         assertEquals("2002", dateTimeFormat.format(date));
     }
 

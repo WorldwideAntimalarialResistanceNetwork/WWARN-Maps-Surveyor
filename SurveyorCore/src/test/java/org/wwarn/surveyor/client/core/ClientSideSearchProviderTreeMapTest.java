@@ -37,10 +37,7 @@ import com.google.gwt.i18n.shared.DateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -68,11 +65,14 @@ public class ClientSideSearchProviderTreeMapTest {
         return ClientSideSearchDataProvider.leftPaddedInteger(i);
     }
 
+
+
     @Test
     public void testDateRange() throws Exception {
+
         final String[] dummyDateData = {
                 "1970-01-01T00:00:00.000+01:00",
-                "2001-11-08T00:00:00.000+00:00",
+                "2001-01-08T00:00:00.000+00:00",
                 "2002-02-17T00:00:00.000+00:00",
                 "2008-10-01T00:00:00.000+01:00",
                 "2009-01-01T00:00:00.000+00:00",
@@ -90,12 +90,37 @@ public class ClientSideSearchProviderTreeMapTest {
             dateMap.put(date, null);
         }
         final DateTimeFormat dateTimeFormat = DataType.ParseUtil.getDateFormatFrom(DataType.ISO_DATE_FORMAT);
-        final String startDate = dateTimeFormat.format(DataType.ParseUtil.parseDateYearOnly("2001"));
-        final String endDate = dateTimeFormat.format(DataType.ParseUtil.parseDateYearOnly("2002"));
+        final String startDate = dateTimeFormat.format(DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("01/01/2001"));
+        final String endDate = dateTimeFormat.format(DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("31/12/2003"));
         final NavigableMap navigableMap = dateMap.subMap(startDate, true, endDate, true);
         assertNotNull(navigableMap);
         assertTrue(navigableMap.size() > 0);
         assertEquals(2, navigableMap.size());
+    }
+
+    @Test
+    public void testDateYearOnlyRange() throws Exception {
+
+        final String[] dummyDateData = {
+                "00000002001",
+                "00000002002",
+                "00000002007",
+                "00000002008",
+                "00000002009",
+                "00000002010",
+                "00000002011",
+                "00000002012"};
+        assertEquals(8, dummyDateData.length);
+        for (String date : dummyDateData) {
+            dateMap.put(date, null);
+        }
+        final DateTimeFormat dateTimeFormat = DataType.ParseUtil.getDateFormatFrom(DataType.ISO_DATE_FORMAT);
+        final String startDate = ClientSideSearchDataProvider.leftPaddedInteger(2001);
+        final String endDate = ClientSideSearchDataProvider.leftPaddedInteger(2007);
+        final NavigableMap navigableMap = dateMap.subMap(startDate, true, endDate, true);
+        assertNotNull(navigableMap);
+        assertTrue(navigableMap.size() > 0);
+        assertEquals(3, navigableMap.size());
     }
 
     @Test

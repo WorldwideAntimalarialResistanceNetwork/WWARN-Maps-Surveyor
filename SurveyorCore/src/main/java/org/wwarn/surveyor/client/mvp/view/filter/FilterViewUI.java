@@ -143,6 +143,7 @@ public class FilterViewUI extends Composite implements  FilterView {
     public void onResetFilterActionEvent(ResetFilterActionEvent resetFilterActionEvent){
         resetAllFilters();
     }
+
     protected FacetWidget createFacetWidget(final FilterSetting filterSetting,
                                             final FacetList.FacetField facetField,
                                             final FacetList facetList){

@@ -646,7 +646,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         return ((FilterQuery.FilterFieldValue) filterQueryElement).getFieldsValue();
     }
 
-    static String leftPaddedInteger(int i) {
+    public static String leftPaddedInteger(int i) {
         if(i < 0){
             throw new IllegalArgumentException("Natural numbers only, does not support negative integers");
         }
