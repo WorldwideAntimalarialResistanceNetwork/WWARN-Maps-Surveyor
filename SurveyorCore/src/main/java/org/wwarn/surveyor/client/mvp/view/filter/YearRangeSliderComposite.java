@@ -47,10 +47,13 @@ import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
+import com.google.web.bindery.event.shared.binder.EventBinder;
+import com.google.web.bindery.event.shared.binder.EventHandler;
 import org.wwarn.mapcore.client.common.types.Range;
 import org.wwarn.mapcore.client.components.customwidgets.YuiDualSliderGwtWidget;
 import org.wwarn.mapcore.client.components.customwidgets.YuiDualSliderGwtWidgetImplWithLabelMarkers;
 import org.wwarn.surveyor.client.core.DataType;
+import org.wwarn.surveyor.client.event.ResetFilterActionEvent;
 import org.wwarn.surveyor.client.model.FilterByDateRangeSettings;
 import org.wwarn.surveyor.client.model.FilterConfig;
 import org.wwarn.mapcore.client.utils.StringUtils;
@@ -105,7 +108,8 @@ public class YearRangeSliderComposite extends Composite{
     @UiField(provided = true)
     final Label yearRangeLabel = new Label();
 
-
+    // Event Bus bindings
+    interface SomeEventBinder extends EventBinder<YearRangeSliderComposite> {};
 
     YuiDualSliderGwtWidget yuiDualSliderGwtWidget;
 
@@ -121,7 +125,11 @@ public class YearRangeSliderComposite extends Composite{
         this.dateFormat = StringUtils.ifEmpty(dateFormat, DEFAULT_YEAR_VALUE);
 
         flowPanel = ourUiBinder.createAndBindUi(this);
+
+
         initWidget(flowPanel);
+        SomeEventBinder eventBinder = GWT.create(SomeEventBinder.class);
+        eventBinder.bindEventHandlers(this, clientFactory.getEventBus());
         this.filterConfig = clientFactory.getApplicationContext().getConfig(FilterConfig.class);
         List<FilterSetting> filterSettings = filterConfig.getFilterConfigBy(fieldName);
 
@@ -174,6 +182,21 @@ public class YearRangeSliderComposite extends Composite{
             yearRangeDescriptionPanel.add(playButton);
         }
     }
+
+
+    @EventHandler
+    public void onResetFilterActionEvent(ResetFilterActionEvent resetFilterActionEvent){
+        resetAllFilters();
+    }
+
+    private void resetAllFilters() {
+        updateRangeLabels(startYear, endYear);
+        yearRangeSliderPanel.clear();
+        yuiDualSliderGwtWidget = setupYearRangeWidget();
+        yearRangeSliderPanel.add((Widget) yuiDualSliderGwtWidget);
+
+    }
+
 
     private YuiDualSliderGwtWidget setupYearRangeWidget() {
         YuiDualSliderGwtWidget dateSliderYuiWidgetImpl = new YuiDualSliderGwtWidgetImplWithLabelMarkers(456, 48, startYear, Integer.valueOf(endYear), 5, 1);
@@ -262,8 +285,8 @@ public class YearRangeSliderComposite extends Composite{
             }
         };
 
-        // Execute the timer to expire 1.5 seconds in the future
-        timer.scheduleRepeating(2000);
+        // Execute the timer to expire some seconds in the future
+        timer.scheduleRepeating(5000);
 
     }
 
