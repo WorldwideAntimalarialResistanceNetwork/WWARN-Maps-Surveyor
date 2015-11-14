@@ -43,13 +43,23 @@ import us.storee.gwt.libs.localforage.client.LocalForageCallback;
 import java.util.Objects;
 
 /**
- * Created by nigelthomas on 02/07/2015.
+ * Utility class for offline storage, only works in recent browser, that support GetRandomValues, see isRecentBrowser check.
  */
 public class OfflineStorageUtil<T> {
     private final String uniqueKey;
     private final Class<T> clazz;
     private static LocalForage offlineDataStore = new LocalForage();
     private SerializationUtil serializationUtil = new SerializationUtil();
+
+    public static native boolean isRecentBrowser()/*-{
+        // We know that serialisation is slow in ie10 or below, too slow to be usable, so we disable this
+        // We use GetRandomValues http://caniuse.com/#feat=getrandomvalues to determine if browser is recent,
+        // as it is only support in IE 11 and above
+        if (typeof $wnd.crypto === "undefined" || $wnd.crypto === null || typeof $wnd.crypto.getRandomValues === "undefined") {
+            return false;
+        }
+        return true;
+    }-*/;
 
     public OfflineStorageUtil(Class<T> clazz,String uniqueKey) {
         if(StringUtils.isEmpty(uniqueKey)){
@@ -71,6 +81,7 @@ public class OfflineStorageUtil<T> {
     }
 
     public void fetch(final AsyncCommand asyncCommand) {
+        if(!isRecentBrowser()){  asyncCommand.failure(); return; }
         // using schema uniqueID to fetch queryResult
         offlineDataStore.getItem(uniqueKey, new LocalForageCallback<String>() {
             @Override
@@ -81,12 +92,13 @@ public class OfflineStorageUtil<T> {
                         asyncCommand.success(queryResult); return;
                     }
                 }
-                asyncCommand.failure();
+                asyncCommand.failure(); return;
             }
         });
     }
 
     public void store(@NotNull final T object, final AsyncCommand asyncCommand) {
+        if(!isRecentBrowser()) return;
         // using schema uniqueID to fetch queryResult
         Objects.requireNonNull(object);
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
