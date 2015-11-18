@@ -54,7 +54,11 @@ import java.util.*;
  */
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
     private boolean isTest = false;
-    private OfflineStatusObserver offlineStatusObserver = new OfflineStatusObserver();
+    private static OfflineStatusObserver offlineStatusObserver = new OfflineStatusObserver();
+    static{
+        offlineStatusObserver.check();
+    }
+
     /**
      * Ordered list (implicitly ordered - TreeSet) of fields in schema order, each field hold a mapping of fields values (terms) to document positions
      */
