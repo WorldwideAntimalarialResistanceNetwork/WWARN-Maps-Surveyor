@@ -37,6 +37,7 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import org.jetbrains.annotations.NotNull;
+import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.event.DataUpdatedEvent;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
@@ -53,7 +54,7 @@ import java.util.*;
  */
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
     private boolean isTest = false;
-
+    private OfflineStatusObserver offlineStatusObserver = new OfflineStatusObserver();
     /**
      * Ordered list (implicitly ordered - TreeSet) of fields in schema order, each field hold a mapping of fields values (terms) to document positions
      */
@@ -147,6 +148,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private void fetchAllDataFromServers(final Runnable callOnLoad) {
+        if(!offlineStatusObserver.isOnline()){ // if offline, skip this step
+            return;
+        }
         try {
             final FilterQuery filterQuery = new MatchAllQuery(); // fetch everything
             clientFactory.setLastFilterQuery(filterQuery);
@@ -185,6 +189,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private void scheduleCheckForDataUpdates() {
+        if(!offlineStatusObserver.isOnline()){return;}
 //        //checks server for data updates
         final DataSchema schema = this.schema;
         final GenericDataSource dataSource = this.dataSource;
