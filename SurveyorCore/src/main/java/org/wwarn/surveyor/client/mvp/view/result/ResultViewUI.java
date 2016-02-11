@@ -84,46 +84,62 @@ public class ResultViewUI extends Composite implements ResultView {
     }
 
     public void setup(final ResultsViewConfig viewConfigs) {
-        viewConfigCount = 0;
-        for (final ViewConfig viewConfig : viewConfigs) {
-            viewConfigCount++;
-            String tabName = viewConfig.getViewName();
-            final HTMLPanel htmlPanel = getTabMarkup(tabName);
-            final FocusPanel focusPanel = new FocusPanel(htmlPanel);
-            final String viewLabel = viewConfig.getViewLabel();
-            if(!StringUtils.isEmpty(viewLabel)){
-                focusPanel.addMouseOverHandler(new MouseOverHandler() {
-                    @Override
-                    public void onMouseOver(MouseOverEvent mouseOverEvent) {
-                    toolTipPopup.setWidth("400px");
-                    int left = focusPanel.getAbsoluteLeft();
-                    int top = focusPanel.getAbsoluteTop() + focusPanel.getOffsetHeight();
-                    toolTipPopup.setPopupPosition(left, top);
-                    toolTipPopup.setWidget(new HTMLPanel(viewLabel));
-                    toolTipPopup.show();
-                    toolTipPopup.setAutoHideEnabled(true);
-                    }
-                });
-                focusPanel.addMouseOutHandler(new MouseOutHandler() {
-                    @Override
-                    public void onMouseOut(MouseOutEvent mouseOutEvent) {
-                        toolTipPopup.hide();
-                    }
-                });
-            }
-            vTabBar.addTab(focusPanel);
-        }
         loadedDisplays = new Widget[viewConfigCount];
+        setupViews(viewConfigs);
+        setupTabBar(viewConfigs);
+        tabContentHolder.getElement().setId("surveyorTabContentHolder");
+    }
+
+    private void setupTabBar(final ResultsViewConfig viewConfigs) {
         vTabBar.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 // Determine the tab that has been selected by interrogating the event object.
                 Integer tabSelected = event.getSelectedItem();
                 presenter.onTabChange(tabSelected);
-
                 initializeWidget(viewConfigs, tabSelected);
             }
         });
-        tabContentHolder.getElement().setId("surveyorTabContentHolder");
+    }
+
+    private void setupViews(ResultsViewConfig viewConfigs) {
+        viewConfigCount = 0;
+        for (final ViewConfig viewConfig : viewConfigs) {
+            viewConfigCount++;
+            vTabBar.addTab(setupFocusPanel(viewConfig));
+        }
+    }
+
+
+    private FocusPanel setupFocusPanel(ViewConfig viewConfig) {
+        String tabName = viewConfig.getViewName();
+        final HTMLPanel htmlPanel = getTabMarkup(tabName);
+        final FocusPanel focusPanel = new FocusPanel(htmlPanel);
+        final String viewLabel = viewConfig.getViewLabel();
+        if(!StringUtils.isEmpty(viewLabel)){
+            focusPanel.addMouseOverHandler(new MouseOverHandler() {
+                @Override
+                public void onMouseOver(MouseOverEvent mouseOverEvent) {
+                    setupToolTipPopUp(focusPanel, viewLabel);
+                }
+            });
+            focusPanel.addMouseOutHandler(new MouseOutHandler() {
+                @Override
+                public void onMouseOut(MouseOutEvent mouseOutEvent) {
+                    toolTipPopup.hide();
+                }
+            });
+        }
+        return focusPanel;
+    }
+
+    private void setupToolTipPopUp(FocusPanel focusPanel, String viewLabel) {
+        toolTipPopup.setWidth("400px");
+        int left = focusPanel.getAbsoluteLeft();
+        int top = focusPanel.getAbsoluteTop() + focusPanel.getOffsetHeight();
+        toolTipPopup.setPopupPosition(left, top);
+        toolTipPopup.setWidget(new HTMLPanel(viewLabel));
+        toolTipPopup.show();
+        toolTipPopup.setAutoHideEnabled(true);
     }
 
     protected HTMLPanel getTabMarkup(String tabName) {
