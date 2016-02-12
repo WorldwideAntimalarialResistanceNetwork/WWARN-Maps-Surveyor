@@ -62,7 +62,7 @@ import java.util.*;
  * Responsible for taking the view elements and creating tabs corresponding to each view
  */
 public class ResultViewUI extends Composite implements ResultView {
-    private ResultPresenter presenter;
+    protected ResultPresenter presenter;
     private static final PopupPanel toolTipPopup = new PopupPanel(true);
 
     @UiField(provided = true)
@@ -70,10 +70,10 @@ public class ResultViewUI extends Composite implements ResultView {
 
     @UiField(provided = true)
     final FlowPanel tabContentHolder = new FlowPanel();
-    private Widget[] loadedDisplays;
+    protected Widget[] loadedDisplays;
     private PopupPanel loadingPopup = new PopupPanel(false);
     private Map<Integer, RegisterNewTabEvent> registeredTabs = new HashMap<>();
-    private int viewConfigCount;
+    protected int viewConfigCount;
 
     public void setPresenter(ResultPresenter presenter) {
         this.presenter = presenter;
@@ -84,13 +84,17 @@ public class ResultViewUI extends Composite implements ResultView {
     }
 
     public void setup(final ResultsViewConfig viewConfigs) {
-        loadedDisplays = new Widget[viewConfigCount];
+        setupLoadDisplays();
         setupViews(viewConfigs);
         setupTabBar(viewConfigs);
         tabContentHolder.getElement().setId("surveyorTabContentHolder");
     }
 
-    private void setupTabBar(final ResultsViewConfig viewConfigs) {
+    protected void setupLoadDisplays() {
+        loadedDisplays = new Widget[viewConfigCount];
+    }
+
+    protected void setupTabBar(final ResultsViewConfig viewConfigs) {
         vTabBar.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 // Determine the tab that has been selected by interrogating the event object.
@@ -101,7 +105,7 @@ public class ResultViewUI extends Composite implements ResultView {
         });
     }
 
-    private void setupViews(ResultsViewConfig viewConfigs) {
+    protected void setupViews(ResultsViewConfig viewConfigs) {
         viewConfigCount = 0;
         for (final ViewConfig viewConfig : viewConfigs) {
             viewConfigCount++;
@@ -110,7 +114,7 @@ public class ResultViewUI extends Composite implements ResultView {
     }
 
 
-    private FocusPanel setupFocusPanel(ViewConfig viewConfig) {
+    protected FocusPanel setupFocusPanel(ViewConfig viewConfig) {
         String tabName = viewConfig.getViewName();
         final HTMLPanel htmlPanel = getTabMarkup(tabName);
         final FocusPanel focusPanel = new FocusPanel(htmlPanel);
@@ -179,7 +183,7 @@ public class ResultViewUI extends Composite implements ResultView {
         return index;
     }
 
-    private Widget initializeWidget(ResultsViewConfig viewConfigs, Integer tabSelected){
+    protected Widget initializeWidget(ResultsViewConfig viewConfigs, Integer tabSelected){
         //todo add logic to find widget from externally added tabs
         int indexOfViewConfigs = 0; boolean hasFoundInViewConfig = false;
         for (ViewConfig viewConfig : viewConfigs) {
