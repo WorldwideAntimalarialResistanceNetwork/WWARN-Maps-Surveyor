@@ -33,6 +33,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * #L%
  */
 
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.base.LatLng;
 import com.google.gwt.maps.client.base.Point;
@@ -401,13 +402,21 @@ public class GoogleV3Marker<T> extends GenericMarker<T> {
         }
 
         private Integer getMarkerPositionFrom(LatLng markerCoordinates){
-            final String markerCoordinatesKey = markerCoordinates.getToString();
+            final String markerCoordinatesKey = getMarkerCoordinatesKey(markerCoordinates);
             return locationPosition.get(markerCoordinatesKey);
         }
 
         private Integer storeMarkerAndPosition(LatLng markerCoordinates, int position){
-            final String markerCoordinatesKey = markerCoordinates.getToString();
+            final String markerCoordinatesKey = getMarkerCoordinatesKey(markerCoordinates);
             return locationPosition.put(markerCoordinatesKey, position);
+        }
+
+        private String getMarkerCoordinatesKey(LatLng markerCoordinates){
+            // Round lon and lat so if 2 positins are too close it will be considered as the same location
+            String lon = NumberFormat.getFormat("000000.00").format(markerCoordinates.getLongitude());
+            String lat = NumberFormat.getFormat("000000.00").format(markerCoordinates.getLatitude());
+            final String markerCoordinatesKey = lon + lat;
+            return  markerCoordinatesKey;
         }
 
         /**
