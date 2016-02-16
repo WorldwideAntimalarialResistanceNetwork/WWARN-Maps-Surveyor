@@ -47,6 +47,7 @@ public class MapViewConfig implements ViewConfig {
     private double initialLon = 1.0;
     private int initialZoomLevel = 2;
     private Integer imageLegendPositionFromTopInPixels;
+    String legendToTab;
     String viewName = "";
     String markerLongitudeField = "";
     String markerLatitudeField = "";
@@ -133,6 +134,14 @@ public class MapViewConfig implements ViewConfig {
 
     public boolean isDoCluster() {
         return doCluster;
+    }
+
+    public String getLegendToTab() {
+        return legendToTab;
+    }
+
+    public void setLegendToTab(String legendToTab) {
+        this.legendToTab = legendToTab;
     }
 
     @Override

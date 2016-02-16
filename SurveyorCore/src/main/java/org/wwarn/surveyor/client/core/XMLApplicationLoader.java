@@ -309,6 +309,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             String imageLegendRelativePath = "";
             Integer imageLegendPositionFromTopInPixels = null;
             String imageLegendPosition = null;
+            String legendToTab = null;
             NodeList childNodes = mapNode.getChildNodes();
             TemplateViewNodesConfig templateViewNodesConfig = null;
             boolean doCluster = Boolean.parseBoolean(doClusterRaw);
@@ -320,6 +321,7 @@ public class XMLApplicationLoader implements ApplicationContext {
                         imageLegendRelativePath = getAttributeByName(mapLegendNode, "relativeImagePath");
                         imageLegendPositionFromTopInPixels = Integer.valueOf(StringUtils.ifEmpty(getAttributeByName(mapLegendNode, "positionFromTopInPixels"),"0"));
                         imageLegendPosition = (StringUtils.ifEmpty(getAttributeByName(mapLegendNode, "imageLegendPosition"),"BOTTOM_LEFT"));
+                        legendToTab = getAttributeByName(mapLegendNode, "legendToTab");
                     }
                     if (mapChildNode.getNodeName().equals("marker")) {
                         Node markerNode = mapChildNode;
@@ -350,6 +352,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             }
 
             final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPosition, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig, convertTotMapImplementation(implementation), doCluster);
+            mapViewConfig.setLegendToTab(legendToTab);
             String mapType = StringUtils.ifEmpty(getAttributeByName(mapNode, "mapType"), "TERRAIN");
             mapViewConfig.setMapType(resolveMapType(mapType));
             configs.put(MapViewConfig.class.getName(), mapViewConfig);
