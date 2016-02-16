@@ -301,7 +301,7 @@ public class MapViewComposite extends Composite {
                 final int legendPixelsFromTop = (imageLegendPositionFromTopInPixels == null) ? 250 : imageLegendPositionFromTopInPixels;
                 final String imageLegendPosition = StringUtils.ifEmpty(viewConfig.getImageLegendPosition(), "BOTTOM_LEFT");
                 GenericMapWidget.LegendPosition position = GenericMapWidget.LegendPosition.valueOf(imageLegendPosition);
-                final LegendButton legendWidget = new LegendButton(relativeImagePath);
+                final LegendButton legendWidget = new LegendButton(relativeImagePath, viewConfig.getLegendToTab());
                 legendOptions = GenericMapWidget.LegendOptions.createLegendOptions(legendWidget, legendPixelsFromTop, position, true);
             }
             return  legendOptions;
