@@ -467,7 +467,8 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
             Log.error("", new IllegalStateException("Visible item count " + visibleItemCount));
             visibleItemCount = 1;
         }
-        int indItemHeight = scrollpanel.getOffsetHeight()/ visibleItemCount;
+        int offset = 80;
+        int indItemHeight = (scrollpanel.getOffsetHeight()+offset)/ visibleItemCount;
         final int index = Math.round(mousePos / indItemHeight);
         return index;
     }
