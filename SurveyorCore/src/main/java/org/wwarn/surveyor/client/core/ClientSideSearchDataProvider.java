@@ -60,7 +60,12 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     static{
         try {
             final String check = offlineStatusObserver.check();
-        }catch (Exception e){ Window.alert(String.valueOf(e));
+        }catch (Exception e){
+            // do nothing but log exception
+            if (Log.isDebugEnabled()) {
+                Log.debug("Failed in online/offline check using offlineStatusObserver");
+            }
+
         }
     }
 
