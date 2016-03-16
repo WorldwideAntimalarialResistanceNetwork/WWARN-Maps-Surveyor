@@ -35,7 +35,9 @@ package org.wwarn.surveyor.client.core;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
 import org.wwarn.mapcore.client.utils.StringUtils;
@@ -56,7 +58,10 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     private boolean isTest = false;
     private static OfflineStatusObserver offlineStatusObserver = new OfflineStatusObserver();
     static{
-        offlineStatusObserver.check();
+        try {
+            final String check = offlineStatusObserver.check();
+        }catch (Exception e){ Window.alert(String.valueOf(e));
+        }
     }
 
     /**
@@ -151,8 +156,13 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     }
 
+    boolean isDevelopmentMode() {
+        return !GWT.isProdMode() && GWT.isClient();
+    }
+
     private void fetchAllDataFromServers(final Runnable callOnLoad) {
-        if(!offlineStatusObserver.isOnline()){ // if offline, skip this step
+
+        if(!isDevelopmentMode() && !offlineStatusObserver.isOnline()){ // if offline, skip this step if this fails in debug mode
             return;
         }
         try {
