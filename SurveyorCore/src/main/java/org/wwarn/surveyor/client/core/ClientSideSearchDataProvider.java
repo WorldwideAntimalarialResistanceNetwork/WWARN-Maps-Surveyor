@@ -191,7 +191,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private boolean isOffline() {
-        return !isDevelopmentMode() && !offlineStatusObserver.isOnline();
+        return false && !isDevelopmentMode() && !offlineStatusObserver.isOnline();
     }
 
     private void scheduleStoreToOfflineDataStore(final QueryResult queryResult) {
