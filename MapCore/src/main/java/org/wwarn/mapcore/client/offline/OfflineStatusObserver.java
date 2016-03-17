@@ -45,6 +45,7 @@ import org.wwarn.mapcore.client.resources.Resources;
 public class OfflineStatusObserver {
 
     public static final String STATUS_ONLINE = "up";
+    public static boolean hasInitialised = false;
 
     static{
         if (!isLoaded()) {
@@ -64,9 +65,18 @@ public class OfflineStatusObserver {
     private JavaScriptObject offlineStatusObserver;
 
     public OfflineStatusObserver() {
-
         OfflineStatusOptions offlineStatusOptions = (OfflineStatusOptions) OfflineStatusOptions.createObject();
-        initialise(this, offlineStatusOptions);
+        boolean hasError = false;
+        if (!hasInitialised) { //only run if not initiliased before
+            try {
+                initialise(this, offlineStatusOptions);
+            } catch (Exception e) {
+                hasError = true;
+            }
+        }
+        if (!hasError) {
+            hasInitialised = true;
+        }
     }
 
     public OfflineStatusObserver(OfflineStatusOptions offlineStatusOptions) {

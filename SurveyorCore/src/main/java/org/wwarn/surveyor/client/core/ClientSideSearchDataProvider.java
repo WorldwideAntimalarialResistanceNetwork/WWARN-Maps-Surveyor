@@ -35,8 +35,10 @@ package org.wwarn.surveyor.client.core;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import org.jetbrains.annotations.NotNull;
+import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.event.DataUpdatedEvent;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
@@ -53,6 +55,18 @@ import java.util.*;
  */
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
     private boolean isTest = false;
+    private OfflineStatusObserver offlineStatusObserver = new OfflineStatusObserver();
+    {
+        try {
+            final String check = offlineStatusObserver.check();
+        }catch (Exception e){
+            // do nothing but log exception
+            if (Log.isDebugEnabled()) {
+                Log.debug("Failed in online/offline check using offlineStatusObserver");
+            }
+
+        }
+    }
 
     /**
      * Ordered list (implicitly ordered - TreeSet) of fields in schema order, each field hold a mapping of fields values (terms) to document positions
@@ -146,7 +160,15 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     }
 
+    boolean isDevelopmentMode() {
+        return !GWT.isProdMode() && GWT.isClient();
+    }
+
     private void fetchAllDataFromServers(final Runnable callOnLoad) {
+
+        if(isOffline()){ // if offline, skip this step if this fails in debug mode
+            return;
+        }
         try {
             final FilterQuery filterQuery = new MatchAllQuery(); // fetch everything
             clientFactory.setLastFilterQuery(filterQuery);
@@ -168,6 +190,10 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         }
     }
 
+    private boolean isOffline() {
+        return !isDevelopmentMode() && !offlineStatusObserver.isOnline();
+    }
+
     private void scheduleStoreToOfflineDataStore(final QueryResult queryResult) {
         // attempt to store in 7 seconds after fetching from server, should help reduce initial load time.
         listOfScheduledJobs.add(new Scheduler.RepeatingCommand() {
@@ -185,6 +211,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private void scheduleCheckForDataUpdates() {
+        if(isOffline()){return;}
 //        //checks server for data updates
         final DataSchema schema = this.schema;
         final GenericDataSource dataSource = this.dataSource;
