@@ -110,7 +110,11 @@ public enum DataType implements IsSerializable {
                 }
             }
             if(date == null) {
-                date = getDateFormatFrom(DataType.DATE_FORMAT_DAY_MONTH_YEAR).parseStrict(fieldValue);
+                try {
+                    date = getDateFormatFrom(DataType.DATE_FORMAT_DAY_MONTH_YEAR).parseStrict(fieldValue);
+                } catch (IllegalArgumentException e){
+                    date = getDateFormatFrom(DataType.DATE_FORMAT_DAY_MONTH_YEAR).parseStrict(defaultDate);
+                }
             }
             return date;
         }
