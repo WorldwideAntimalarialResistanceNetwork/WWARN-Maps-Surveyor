@@ -55,8 +55,8 @@ import java.util.*;
  */
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
     private boolean isTest = false;
-    private static OfflineStatusObserver offlineStatusObserver = new OfflineStatusObserver();
-    static{
+    private OfflineStatusObserver offlineStatusObserver = new OfflineStatusObserver();
+    {
         try {
             final String check = offlineStatusObserver.check();
         }catch (Exception e){
@@ -167,7 +167,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     private void fetchAllDataFromServers(final Runnable callOnLoad) {
 
         if(isOffline()){ // if offline, skip this step if this fails in debug mode
-//            return;
+            return;
         }
         try {
             final FilterQuery filterQuery = new MatchAllQuery(); // fetch everything
