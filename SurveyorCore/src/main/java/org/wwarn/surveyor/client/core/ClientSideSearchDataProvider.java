@@ -37,7 +37,6 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.i18n.shared.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
 import org.wwarn.mapcore.client.utils.StringUtils;
@@ -167,8 +166,8 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     private void fetchAllDataFromServers(final Runnable callOnLoad) {
 
-        if(!isDevelopmentMode() && !offlineStatusObserver.isOnline()){ // if offline, skip this step if this fails in debug mode
-            return;
+        if(isOffline()){ // if offline, skip this step if this fails in debug mode
+//            return;
         }
         try {
             final FilterQuery filterQuery = new MatchAllQuery(); // fetch everything
@@ -191,6 +190,10 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         }
     }
 
+    private boolean isOffline() {
+        return !isDevelopmentMode() && !offlineStatusObserver.isOnline();
+    }
+
     private void scheduleStoreToOfflineDataStore(final QueryResult queryResult) {
         // attempt to store in 7 seconds after fetching from server, should help reduce initial load time.
         listOfScheduledJobs.add(new Scheduler.RepeatingCommand() {
@@ -208,7 +211,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private void scheduleCheckForDataUpdates() {
-        if(!offlineStatusObserver.isOnline()){return;}
+        if(isOffline()){return;}
 //        //checks server for data updates
         final DataSchema schema = this.schema;
         final GenericDataSource dataSource = this.dataSource;
