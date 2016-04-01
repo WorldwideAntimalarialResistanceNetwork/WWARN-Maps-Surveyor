@@ -146,7 +146,7 @@ public class FilterPresenter implements Presenter {
      */
     static public class FilterChangeHandler{
 
-        public static final Date START_DATE = DateTimeFormat.getFormat("yyyy").parse("1975");
+        public static final Date START_DATE = DateTimeFormat.getFormat("yyyy").parse("1900");
         public static final int DELAY_MILLIS_BEFORE_QUERYING = 800;
         private Queue<FilterChangedEvent> updateQueue = new LinkedList<FilterChangedEvent>();
         /*stores all previous field selections, this must be kept for filters to work correctly*/
