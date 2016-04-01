@@ -41,10 +41,12 @@ import org.wwarn.mapcore.client.resources.Resources;
  * A wrapper around https://github.com/HubSpot/offline to check for offline status
  * Would use http://caniuse.com/#feat=online-status, however, "online" does not always mean connection to the internet, it can also just mean connection to some network.
  * Need to determine access to our server, not just some network..
+ * Depends on AppCache plugin to detect
  */
 public class OfflineStatusObserver {
 
     public static final String STATUS_ONLINE = "up";
+    public static boolean hasInitialised = false;
 
     static{
         if (!isLoaded()) {
@@ -64,9 +66,18 @@ public class OfflineStatusObserver {
     private JavaScriptObject offlineStatusObserver;
 
     public OfflineStatusObserver() {
-
         OfflineStatusOptions offlineStatusOptions = (OfflineStatusOptions) OfflineStatusOptions.createObject();
-        initialise(this, offlineStatusOptions);
+        boolean hasError = false;
+        if (!hasInitialised) { //only run if not initiliased before
+            try {
+                initialise(this, offlineStatusOptions);
+            } catch (Exception e) {
+                hasError = true;
+            }
+        }
+        if (!hasError) {
+            hasInitialised = true;
+        }
     }
 
     public OfflineStatusObserver(OfflineStatusOptions offlineStatusOptions) {

@@ -115,8 +115,8 @@ public class ClientSideSearchProviderTreeMapTest {
             dateMap.put(date, null);
         }
         final DateTimeFormat dateTimeFormat = DataType.ParseUtil.getDateFormatFrom(DataType.ISO_DATE_FORMAT);
-        final String startDate = ClientSideSearchDataProvider.leftPaddedInteger(2001);
-        final String endDate = ClientSideSearchDataProvider.leftPaddedInteger(2007);
+        final String startDate = leftPaddedInteger(2001);
+        final String endDate = leftPaddedInteger(2007);
         final NavigableMap navigableMap = dateMap.subMap(startDate, true, endDate, true);
         assertNotNull(navigableMap);
         assertTrue(navigableMap.size() > 0);

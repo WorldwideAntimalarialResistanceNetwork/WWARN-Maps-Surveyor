@@ -40,6 +40,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <map.core.version>${pom.version}</map.core.version>
         <javaVersion>1.7</javaVersion>
+        <!--<gwt.style>DETAILED</gwt.style>-->
+        <gwt.style>OBF</gwt.style>
     </properties>
 
     <repositories>
@@ -90,6 +92,7 @@
                 <configuration>
                     <module>org.wwarn.surveyor.SurveyorCore</module>
                     <mode>htmlunit</mode>
+                    <style>${gwt.style}</style>
                     <includes>**/Gwt*Suite.java</includes>
                 </configuration>
             </plugin>
