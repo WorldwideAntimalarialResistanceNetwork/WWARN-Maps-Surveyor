@@ -53,12 +53,17 @@ public class OfflineStorageUtil<T> {
 
     public static native boolean isRecentBrowser()/*-{
         // ios version 7 seems to use a buggy or slow localStorage implementation works fine in 6, 5.1, 8
-        if (/iP(hone|od|ad)/.test(navigator.platform)) {
+        if (/iP(hone|od|ad)/.test($wnd.navigator.platform)) {
             // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
-            var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-            return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
-            if (ver[0] == 7) {
+            if($wnd.MSStream){
+                // may detect some windows phones as well
+                // https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
                 return false;
+            }
+            var v = ($wnd.navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+            var test = [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+            if (test[0] == 7) {
+                return true;
             }
         }
 
