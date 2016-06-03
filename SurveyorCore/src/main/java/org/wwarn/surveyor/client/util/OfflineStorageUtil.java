@@ -52,6 +52,21 @@ public class OfflineStorageUtil<T> {
     private SerializationUtil serializationUtil = new SerializationUtil();
 
     public static native boolean isRecentBrowser()/*-{
+        // ios version 7 seems to use a buggy or slow localStorage implementation works fine in 6, 5.1, 8
+        if (/iP(hone|od|ad)/.test($wnd.navigator.platform)) {
+            // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
+            if($wnd.MSStream){
+                // may detect some windows phones as well
+                // https://msdn.microsoft.com/en-us/library/hh869301(v=vs.85).aspx
+                return false;
+            }
+            var v = ($wnd.navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+            var test = [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+            if (test[0] == 7) {
+                return true;
+            }
+        }
+
         // We know that serialisation is slow in ie10 or below, too slow to be usable, so we disable this
         // We use GetRandomValues http://caniuse.com/#feat=getrandomvalues to determine if browser is recent,
         // as it is only support in IE 11 and above
