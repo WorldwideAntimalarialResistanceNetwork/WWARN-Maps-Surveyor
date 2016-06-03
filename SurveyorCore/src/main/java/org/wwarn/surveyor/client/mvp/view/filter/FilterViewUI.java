@@ -8,18 +8,18 @@ package org.wwarn.surveyor.client.mvp.view.filter;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the University of Oxford nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -42,6 +42,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -52,6 +53,7 @@ import org.wwarn.mapcore.client.components.customwidgets.facet.*;
 import org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget;
 import org.wwarn.surveyor.client.core.FacetList;
 import org.wwarn.surveyor.client.event.ResetFilterActionEvent;
+import org.wwarn.surveyor.client.event.SelectFilterEvent;
 import org.wwarn.surveyor.client.event.ToggleLayerEvent;
 import org.wwarn.surveyor.client.i18nstatic.TextConstants;
 import org.wwarn.surveyor.client.model.FilterByDateRangeSettings;
@@ -143,6 +145,8 @@ public class FilterViewUI extends Composite implements  FilterView {
     public void onResetFilterActionEvent(ResetFilterActionEvent resetFilterActionEvent){
         resetAllFilters();
     }
+
+
 
     protected FacetWidget createFacetWidget(final FilterSetting filterSetting,
                                             final FacetList.FacetField facetField,
@@ -393,5 +397,20 @@ public class FilterViewUI extends Composite implements  FilterView {
                 }
             }
         }
+    }
+
+    //When a SelectFilterEvent is triggered, this method will look for the filter and value and will select it.
+    @EventHandler
+    public void onSelectFilter(SelectFilterEvent selectFilterEvent){
+        for (FacetWidget facetWidget : filterList) {
+            if(facetWidget.getFacetField().equals(selectFilterEvent.getFilterName())){
+                for (FacetWidgetItem facetWidgetItem : facetWidget.getFacetWidgetItems()) {
+                    if(facetWidgetItem.getValue().equals(selectFilterEvent.getFilterValue())){
+                        facetWidget.selectItems(Arrays.asList(facetWidgetItem));
+                    }
+                }
+            }
+        }
+
     }
 }
