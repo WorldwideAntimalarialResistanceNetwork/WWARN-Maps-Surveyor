@@ -34,6 +34,15 @@ Limitations:
     
 ## Demos and implementations
 
+The offline capable surveyor is available at:
+[http://www.wwarn.org/surveyor/NMFI/](http://www.wwarn.org/surveyor/NMFI/) and uses [http://offlinefirst.org](http://offlinefirst.org) principles and a demo of the offline capability is here : [https://vimeo.com/135569913](https://vimeo.com/135569913)
+
+There are several other implementations of the surveyor:
+* Kelch13 resistance markers: [http://www.wwarn.org/molecular/surveyor/k13/](http://www.wwarn.org/molecular/surveyor/k13/)
+* Mapping resistance markers with the molecular surveyor:  [http://www.wwarn.org/molecular/surveyor](http://www.wwarn.org/molecular/surveyor)
+* Pharmaceutical crimes with Interpol: [http://pharmacrimelaws.org](http://pharmacrimelaws.org)
+* WWARN Explorer: [http://www.wwarn.org/explorer/app/](http://www.wwarn.org/explorer/app/) , this explores antimalarial drug resistance in 4 areas - 
+clinical trials, pharmacology, in vitro drug testing, and molecular markers of resistance. This is although not strictly completely on surveyor codebase, the core mapping components are from the same code base.
 * [Live demonstrator](http://wwarn-maps-surveyor-demo.appspot.com) based on [SurveyorSimpleDemoApp](https://github.com/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor/tree/master/SurveyorSimpleDemoApp)
 * [AQ Surveyor](http://www.wwarn.org/aqsurveyor/) - Custom views of published poor-quality antimalarial medicine reports
 * [Molecular Surveyor](http://www.wwarn.org/surveyor/) - Visualise data from publications  examining molecular markers of antimalarial resistance in malaria-endemic countries
