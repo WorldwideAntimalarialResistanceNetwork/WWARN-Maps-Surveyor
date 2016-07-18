@@ -49,6 +49,7 @@ import com.google.gwt.maps.client.events.mouseover.MouseOverMapEvent;
 import com.google.gwt.maps.client.events.mouseover.MouseOverMapHandler;
 import com.google.gwt.maps.client.maptypes.Projection;
 import com.google.gwt.maps.client.overlays.*;
+import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -427,6 +428,8 @@ public class GoogleV3Marker<T> extends GenericMarker<T> {
         public int registerMarkerPosition(LatLng markerCoordinates) {
             Integer positionCount = getMarkerPositionFrom(markerCoordinates);
             if(positionCount == null){
+                positionCount = 0;
+            }else if(positionCount >45){ // if it is bigger than the dispersionLookupAssign 0
                 positionCount = 0;
             }
             storeMarkerAndPosition(markerCoordinates, ++positionCount);
