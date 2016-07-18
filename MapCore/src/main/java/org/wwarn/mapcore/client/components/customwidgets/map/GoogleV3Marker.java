@@ -429,7 +429,7 @@ public class GoogleV3Marker<T> extends GenericMarker<T> {
             Integer positionCount = getMarkerPositionFrom(markerCoordinates);
             if(positionCount == null){
                 positionCount = 0;
-            }else if(positionCount >45){ // if it is bigger than the dispersionLookupAssign 0
+            }else if(positionCount > dispersionLookup.size()){ // if it is bigger than the dispersionLookup Assign 0
                 positionCount = 0;
             }
             storeMarkerAndPosition(markerCoordinates, ++positionCount);
