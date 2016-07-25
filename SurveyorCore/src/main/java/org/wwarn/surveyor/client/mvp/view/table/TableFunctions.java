@@ -112,6 +112,8 @@ public class TableFunctions {
             table.setValue(rowIndex, tableColumnIndex, ifNull(rowIndex));
         }else if(functionType == FunctionType.LIMIT_STRING){
             table.setValue(rowIndex, tableColumnIndex, limitString(rowIndex));
+        }else if(functionType == FunctionType.PUBMED_URL){
+            table.setValue(rowIndex, tableColumnIndex, pubMedURL(rowIndex));
         }
     }
 
@@ -229,6 +231,29 @@ public class TableFunctions {
         return result;
     }
 
+       /**
+     * Create an anchor with the title and the pubMedId
+     * In the config file use:
+     * fieldName="func(PUBMED_URL(title,pubMedID))"
+     */
+    private String pubMedURL(int rowIndex){
+
+        if(params.length != 2){
+            throw new IllegalArgumentException("Wrong number of Parameters for limit string expression");
+        }
+
+        final RecordList.Record currentRecord = recordList.getRecords().get(rowIndex);
+        final String title = currentRecord.getValueByFieldName(params[0]);
+        String pubMedId = currentRecord.getValueByFieldName(params[1]);
+
+        if (pubMedId.isEmpty()){
+            return title;
+        }
+
+        String result = "<a href=" + "http://www.ncbi.nlm.nih.gov/pubmed/"+pubMedId+" target=_blank>"+title+"</a>";
+        return result;
+    }
+
     public static String[] getParameters(FunctionType functionType, String function){
         //remove function type
         String regex = functionType.name();
@@ -237,6 +262,6 @@ public class TableFunctions {
     }
 
     public enum FunctionType{
-        CONCAT_DATE, ARITH, GET_YEAR, IF_NULL, LIMIT_STRING;
+        CONCAT_DATE, ARITH, GET_YEAR, IF_NULL, LIMIT_STRING, PUBMED_URL;
     }
 }

@@ -72,6 +72,8 @@ public class TableFunctionsCellTable {
             result = ifNull();
         }else if(functionType == TableFunctions.FunctionType.LIMIT_STRING){
             result = limitString();
+        }else if(functionType == TableFunctions.FunctionType.PUBMED_URL){
+            result = pubMedURL();
         }
         return result;
     }
@@ -198,8 +200,31 @@ public class TableFunctionsCellTable {
 
         String result = field.substring(0, limit) + "...";
         return result;
-
     }
+
+    /**
+     * Create an anchor with the title and the pubMedId
+     * In the config file use:
+     * fieldName="func(PUBMED_URL(title,pubMedID))"
+     */
+    private String pubMedURL(){
+
+        if(params.length != 2){
+            throw new IllegalArgumentException("Wrong number of Parameters for limit string expression");
+        }
+
+        final String title = record.getValueByFieldName(params[0]);
+        String pubMedId = record.getValueByFieldName(params[1]);
+
+        if (pubMedId.isEmpty()){
+            return title;
+        }
+
+        String result = "<a href=" + "http://www.ncbi.nlm.nih.gov/pubmed/"+pubMedId+" target=_blank>"+title+"</a>";
+        return result;
+    }
+
+
 
 
 
