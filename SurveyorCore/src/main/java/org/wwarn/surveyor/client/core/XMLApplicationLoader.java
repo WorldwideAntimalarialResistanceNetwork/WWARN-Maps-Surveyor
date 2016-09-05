@@ -58,6 +58,9 @@ public class XMLApplicationLoader implements ApplicationContext {
 
     Map<String, Config> configs = new HashMap<String, Config>();
 
+    public XMLApplicationLoader() throws XMLUtils.ParseException {
+    }
+
     public XMLApplicationLoader(String xmlConfig) throws XMLUtils.ParseException {
         parseXML(xmlConfig);
     }
@@ -552,13 +555,16 @@ public class XMLApplicationLoader implements ApplicationContext {
                         }
                         FacetType facetType = getFilterType(filterNode);
 
-                        if(filterNode.getNodeName().equals("filterByDateRange")){
-                            parseFilterByDateRange(filterConfig,filterNode);
-
-                        }else if(filterNode.getNodeName().equals("filterBySampleSize")){
+                        if(filterNode.getNodeName().equals("filterByEnrolment")){
+                            parseFilterByEnrolment(filterConfig,filterNode);
+                        }
+                        else if(filterNode.getNodeName().equals("filterBySampleSize")){
                             parseFilterBySampleSize(filterConfig,filterNode);
-
-                        }else{
+                        }
+                        else if(filterNode.getNodeName().equals("filterByDateRange")){
+                            parseFilterByDateRange(filterConfig,filterNode);
+                        }
+                        else{
                             final HashMap<String, String> filterFieldValueToLabelMap = new HashMap<String, String>();
 
                             final Node filterValueLabelMap = getNodeByName(filterNode, "filterValueLabelMap");
@@ -633,9 +639,17 @@ public class XMLApplicationLoader implements ApplicationContext {
 
         private void parseFilterBySampleSize(FilterConfig filterConfig, Node filterNode){
             int start = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "start"), "0"));
-            int end = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "end"), "400"));
+            int end = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "end"), "2000"));
             int initialValue = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "initialValue"), "0"));
             filterConfig.addSampleSizeFilter(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue);
+        }
+
+        private void parseFilterByEnrolment(FilterConfig filterConfig, Node filterNode){
+            int start = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "start"), "0"));
+            int end = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "end"), "2000"));
+            int initialValue = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "initialValue"), "0"));
+            filterConfig.addSampleSizeFilter(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue);
+            System.out.println("");
         }
 
     }

@@ -389,6 +389,11 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                             String minValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue();
                             String maxValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue();
                             query.add(filterField, TermRangeQuery.newStringRange(filterField, minValue, maxValue, true, true));
+                        }
+                        else if(filterQueryElement instanceof FilterQuery.FilterFieldRangeInteger) {
+                            String minValue = ((FilterQuery.FilterFieldRangeInteger) filterQueryElement).getMinValue();
+                            String maxValue = ((FilterQuery.FilterFieldRangeInteger) filterQueryElement).getMaxValue();
+                            query.add(filterField, NumericRangeQuery.newIntRange(filterField, Integer.parseInt(minValue), Integer.parseInt(maxValue), true, true));
                         }else if(filterQueryElement instanceof FilterQuery.FilterFieldGreaterThanInteger) {
                             int minValue = ((FilterQuery.FilterFieldGreaterThanInteger) filterQueryElement).getFieldValue();
                             query.add(filterField, NumericRangeFilter.newIntRange(filterField, minValue, Integer.MAX_VALUE, true, true));
@@ -442,8 +447,6 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         int maxYear = calendar.get(Calendar.YEAR);
         return NumericRangeQuery.newIntRange(filterField, minYear, maxYear, true, true);
     }
-
-
 
     private Set<String> getFieldValues(FilterQuery.FilterQueryElement filterQueryElement) {
         return ((FilterQuery.FilterFieldValue) filterQueryElement).getFieldsValue();

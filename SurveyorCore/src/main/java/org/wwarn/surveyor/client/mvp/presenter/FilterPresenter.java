@@ -235,6 +235,9 @@ public class FilterPresenter implements Presenter {
                     }else if(valueToFilter instanceof FilterChangedEvent.DateRangeAndFields){
                         filterDateRangeAndFields(filterQuery, valueToFilter);
                     }else if(valueToFilter instanceof FilterChangedEvent.FilterGreater){
+                        if(((FilterChangedEvent.FilterGreater) valueToFilter).getMax() != null)
+                            filterGreaterSmaller(filterQuery, valueToFilter);
+                        else
                         filterGreater(filterQuery, valueToFilter);
                     }else if(valueToFilter instanceof FilterChangedEvent.MultipleFilterValue){
                         final FilterChangedEvent.MultipleFilterValue multipleFilterValue = (FilterChangedEvent.MultipleFilterValue) valueToFilter;
@@ -284,11 +287,14 @@ public class FilterPresenter implements Presenter {
             filterQuery.addRangeFilter(dateRange.getFieldFrom(), START_DATE, dateRange.getEnd());
         }
 
-
-
         private void filterGreater(FilterQuery filterQuery, FilterChangedEvent.FilterElement valueToFilter){
             FilterChangedEvent.FilterGreater minimumSize = (FilterChangedEvent.FilterGreater) valueToFilter;
             filterQuery.addFilterGreater(valueToFilter.getFacetField(), minimumSize.getFacetFieldValue());
+        }
+
+        private void filterGreaterSmaller(FilterQuery filterQuery, FilterChangedEvent.FilterElement valueToFilter){
+            FilterChangedEvent.FilterGreater minimumSize = (FilterChangedEvent.FilterGreater) valueToFilter;
+            filterQuery.addRangeFilterInteger(valueToFilter.getFacetField(), Integer.toString(minimumSize.getFacetFieldValue()), Integer.toString(minimumSize.getMax()));
         }
 
         private void filterMultipleValues(FilterQuery filterQuery, FilterChangedEvent.FilterElement valueToFilter){
