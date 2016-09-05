@@ -555,8 +555,8 @@ public class XMLApplicationLoader implements ApplicationContext {
                         }
                         FacetType facetType = getFilterType(filterNode);
 
-                        if(filterNode.getNodeName().equals("filterByEnrolment")){
-                            parseFilterByEnrolment(filterConfig,filterNode);
+                        if(filterNode.getNodeName().equals("filterByIntegerRange")){
+                            parseFilterByIntegerRange(filterConfig,filterNode);
                         }
                         else if(filterNode.getNodeName().equals("filterBySampleSize")){
                             parseFilterBySampleSize(filterConfig,filterNode);
@@ -644,7 +644,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             filterConfig.addSampleSizeFilter(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue);
         }
 
-        private void parseFilterByEnrolment(FilterConfig filterConfig, Node filterNode){
+        private void parseFilterByIntegerRange(FilterConfig filterConfig, Node filterNode){
             int start = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "start"), "0"));
             int end = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "end"), "2000"));
             int initialValue = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "initialValue"), "0"));

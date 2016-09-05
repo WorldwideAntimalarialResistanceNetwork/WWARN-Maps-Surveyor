@@ -125,17 +125,9 @@ public class FilterQuery implements IsSerializable{
         }else if (minValue instanceof Date){
             filterQueries.put(field, new FilterFieldRangeDate(field, (Date)minValue, (Date)maxValue));
         }
-    }
-
-    public <T> void addRangeFilterInteger(String field, T minValue, T maxValue){
-        if(minValue instanceof String) {
-            if (StringUtils.isEmpty(field) || StringUtils.isEmpty((String) minValue) || StringUtils.isEmpty((String) maxValue)) {
-                throw new IllegalArgumentException("Expected all attributes to be non empty");
-            }
-            filterQueries.put(field, new FilterFieldRangeInteger(field, (String) minValue, (String) maxValue));
+        else if (minValue instanceof Integer){
+            filterQueries.put(field, new FilterFieldRange.FilterFieldRangeInteger(field, (Integer)minValue, (Integer)maxValue));
         }
-        else
-            throw new IllegalArgumentException("Expected a String argument");
     }
 
     public void addFilterGreater(String field, int valueToFilter){
@@ -213,6 +205,7 @@ public class FilterQuery implements IsSerializable{
 
         private String field, minValue, maxValue;
 
+
         FilterFieldRange(String field, String minValue, String maxValue) {
             if(StringUtils.isEmpty(field, minValue, maxValue)) {
                 throw new IllegalArgumentException("All parameters must be set.");
@@ -220,6 +213,29 @@ public class FilterQuery implements IsSerializable{
             this.field = field;
             this.minValue = minValue;
             this.maxValue = maxValue;
+
+        }
+
+        public static class FilterFieldRangeInteger extends FilterFieldRange implements IsSerializable{
+
+            private String field;
+            private Integer minValueInteger, maxValueInteger;
+
+            FilterFieldRangeInteger(){
+                super();
+            }
+
+            FilterFieldRangeInteger(String field, Integer minValueInteger, Integer maxValueInteger) {
+                this.field = field;
+                this.minValueInteger = minValueInteger;
+                this.maxValueInteger = maxValueInteger;
+            }
+
+            public Integer getMinValueInteger() {return minValueInteger;}
+
+            public Integer getMaxValueInteger() {
+                return maxValueInteger;
+            }
 
         }
 
@@ -242,58 +258,6 @@ public class FilterQuery implements IsSerializable{
             if (!(o instanceof FilterFieldRange)) return false;
 
             FilterFieldRange that = (FilterFieldRange) o;
-
-            if (field != null ? !field.equals(that.field) : that.field != null) return false;
-            if (maxValue != null ? !maxValue.equals(that.maxValue) : that.maxValue != null) return false;
-            if (minValue != null ? !minValue.equals(that.minValue) : that.minValue != null) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = field != null ? field.hashCode() : 0;
-            result = 31 * result + (minValue != null ? minValue.hashCode() : 0);
-            result = 31 * result + (maxValue != null ? maxValue.hashCode() : 0);
-            return result;
-        }
-    }
-
-    public static class FilterFieldRangeInteger implements FilterQueryElement, IsSerializable{
-        FilterFieldRangeInteger() {
-        }
-
-        private String field, minValue, maxValue;
-
-        FilterFieldRangeInteger(String field, String minValue, String maxValue) {
-            if(StringUtils.isEmpty(field, minValue, maxValue)) {
-                throw new IllegalArgumentException("All parameters must be set.");
-            }
-            this.field = field;
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-
-        }
-
-        public String getMinValue() {
-            return minValue;
-        }
-
-        public String getMaxValue() {
-            return maxValue;
-        }
-
-        @Override
-        public String getFilterField() {
-            return field;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof FilterFieldRange)) return false;
-
-            FilterFieldRangeInteger that = (FilterFieldRangeInteger) o;
 
             if (field != null ? !field.equals(that.field) : that.field != null) return false;
             if (maxValue != null ? !maxValue.equals(that.maxValue) : that.maxValue != null) return false;
@@ -367,7 +331,6 @@ public class FilterQuery implements IsSerializable{
     public static class FilterFieldGreaterThanInteger implements FilterQueryElement, IsSerializable{
         private String field;
         private int fieldValue;
-        private Integer maximumValue;
 
         FilterFieldGreaterThanInteger() {
         }
@@ -377,15 +340,7 @@ public class FilterQuery implements IsSerializable{
             this.fieldValue = fieldValue;
         }
 
-        FilterFieldGreaterThanInteger(String field, int fieldValue, Integer maximumValue) {
-            this.field = field;
-            this.fieldValue = fieldValue;
-            this.maximumValue = maximumValue;
-        }
-
         public int getFieldValue() {return fieldValue;}
-
-        public Integer getMaximumValue() { return maximumValue;}
 
         @Override
         public String getFilterField() {

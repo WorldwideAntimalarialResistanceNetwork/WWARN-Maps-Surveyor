@@ -104,9 +104,9 @@ public class FilterChangedEvent extends GenericEvent {
         selectedListItems.add(new FilterGreater(minimumValue));
     }
 
-    public void addFilter(int minimumValue, int maximumValue){
+    public void addFilter(Integer minimumValue, Integer maximumValue){
         enforceLengthLimit(selectedListItems);
-        selectedListItems.add(new FilterGreater(minimumValue, maximumValue));
+        selectedListItems.add(new FilterRangeInteger(minimumValue, maximumValue));
     }
 
     public void resetField() {
@@ -162,13 +162,28 @@ public class FilterChangedEvent extends GenericEvent {
 
     public class FilterGreater extends FilterElement{
         int facetFieldValue;
-        Integer max;
+        //Integer max;
 
         public FilterGreater(int facetFieldValue) {
             this.facetFieldValue = facetFieldValue;
         }
 
-        public FilterGreater(int facetFieldValue, int max) {
+        /*public FilterGreater(int facetFieldValue, int max) {
+            this.facetFieldValue = facetFieldValue;
+            this.max = (Integer)max;
+        }*/
+
+        public int getFacetFieldValue() {
+            return facetFieldValue;
+        }
+        //public Integer getMax() { return max;}
+    }
+
+    public class FilterRangeInteger extends FilterElement{
+        int facetFieldValue;
+        Integer max;
+
+        public FilterRangeInteger(int facetFieldValue, int max) {
             this.facetFieldValue = facetFieldValue;
             this.max = (Integer)max;
         }
