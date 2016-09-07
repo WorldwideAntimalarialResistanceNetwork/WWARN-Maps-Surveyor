@@ -117,7 +117,8 @@ public class FilterViewUI extends Composite implements  FilterView {
             final FilterSetting filterSetting = filterSettings.get(0);
 
             if(filterSettings.size() > 0 && !(filterSetting instanceof FilterByDateRangeSettings)
-                    && !(filterSetting instanceof FilterConfig.FilterBySampleSizeSettings)  ){
+                    && !(filterSetting instanceof FilterConfig.FilterBySampleSizeSettings)
+                    && !(filterSetting instanceof FilterConfig.FilterByIntegerRangeSettings) ){
                 final FacetWidget facetWidget = createFacetWidget(filterSetting,facetField,facetList);
                 filterList.add(facetWidget);
                 facetWidgetsPanel.add((IsWidget) facetWidget);
