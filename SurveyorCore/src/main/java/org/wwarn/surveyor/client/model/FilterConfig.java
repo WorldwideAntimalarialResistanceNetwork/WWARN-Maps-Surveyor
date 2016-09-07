@@ -8,18 +8,18 @@ package org.wwarn.surveyor.client.model;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the University of Oxford nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -178,5 +178,50 @@ public class FilterConfig implements Config {
     public void addSampleSizeFilter(String filterColumn, String filterFieldName, String filterFieldLabel, int start,
                                    int end, int initialValue) {
         addFilterSetting(new FilterBySampleSizeSettings(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue));
+    }
+
+    /**
+     * Class created for the purpose of filtering results
+     * between a minimum and a maximum value of one of their fields
+     */
+    public class FilterByIntegerRangeSettings extends FilterSetting{
+        int start;
+        int end;
+        int initialValue;
+        int increment;
+
+        private FilterByIntegerRangeSettings(String filterFieldName, String filterTitle, String filterFieldLabel) {
+            super(filterFieldName, filterTitle, filterFieldLabel, null);
+        }
+
+        FilterByIntegerRangeSettings(String filterFieldName, String filterTitle, String filterFieldLabel, int start,
+                                   int end, int initialValue, int increment) {
+            super(filterFieldName, filterTitle, filterFieldLabel, null);
+
+            this.start = start;
+            this.end = end;
+            this.initialValue = initialValue;
+            this.increment = increment;
+        }
+
+        public int getStart() {
+            return start;
+        }
+
+        public int getEnd() {
+            return end;
+        }
+
+        public int getInitialValue() {
+            return initialValue;
+        }
+
+        public int getIncrement() {return increment;}
+
+    }
+
+    public void addIntegerRangeFilter(String filterColumn, String filterFieldName, String filterFieldLabel, int start,
+                                    int end, int initialValue, int increment) {
+        addFilterSetting(new FilterByIntegerRangeSettings(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue, increment));
     }
 }

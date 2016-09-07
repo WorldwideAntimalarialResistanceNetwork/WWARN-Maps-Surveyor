@@ -386,9 +386,16 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                     case Integer:
                         // if range query
                         if(filterQueryElement instanceof FilterQuery.FilterFieldRange){
-                            String minValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue();
-                            String maxValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue();
-                            query.add(filterField, TermRangeQuery.newStringRange(filterField, minValue, maxValue, true, true));
+                            if(filterQueryElement instanceof FilterQuery.FilterFieldRange.FilterFieldRangeInteger){
+                                Integer minValue = ((FilterQuery.FilterFieldRange.FilterFieldRangeInteger) filterQueryElement).getMinValueInteger();
+                                Integer maxValue = ((FilterQuery.FilterFieldRange.FilterFieldRangeInteger) filterQueryElement).getMaxValueInteger();
+                                query.add(filterField, NumericRangeQuery.newIntRange(filterField, minValue, maxValue, true, true));
+                            }
+                            else{
+                                String minValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMinValue();
+                                String maxValue = ((FilterQuery.FilterFieldRange) filterQueryElement).getMaxValue();
+                                query.add(filterField, TermRangeQuery.newStringRange(filterField, minValue, maxValue, true, true));
+                            }
                         }else if(filterQueryElement instanceof FilterQuery.FilterFieldGreaterThanInteger) {
                             int minValue = ((FilterQuery.FilterFieldGreaterThanInteger) filterQueryElement).getFieldValue();
                             query.add(filterField, NumericRangeFilter.newIntRange(filterField, minValue, Integer.MAX_VALUE, true, true));
@@ -442,8 +449,6 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         int maxYear = calendar.get(Calendar.YEAR);
         return NumericRangeQuery.newIntRange(filterField, minYear, maxYear, true, true);
     }
-
-
 
     private Set<String> getFieldValues(FilterQuery.FilterQueryElement filterQueryElement) {
         return ((FilterQuery.FilterFieldValue) filterQueryElement).getFieldsValue();
@@ -504,7 +509,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         return indexableField.stringValue();
 
     }
-
+    
     public List<RecordList.Record> queryTable(FilterQuery filterQuery,String[] facetFields, int start, int length, TableViewConfig tableViewConfig) throws SearchException{
         try{
             QueryResult queryResult = this.query(filterQuery, facetFields);
