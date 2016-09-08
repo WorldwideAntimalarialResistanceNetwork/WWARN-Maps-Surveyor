@@ -1,3 +1,4 @@
+
 package org.wwarn.surveyor.client.core;
 
 /*
@@ -33,17 +34,20 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+
 import com.google.gwt.junit.client.GWTTestCase;
 import org.wwarn.surveyor.client.model.*;
 
 import java.util.Iterator;
 import java.util.List;
 
+
 /**
  * User: nigel
  * Date: 25/07/13
  * Time: 15:34
  */
+
 public class GwtTestXMLApplicationLoader extends GWTTestCase {
 
     private XMLApplicationLoader xmlApplicationLoader;
@@ -62,7 +66,7 @@ public class GwtTestXMLApplicationLoader extends GWTTestCase {
     public void testGetFilterOptions() throws Exception {
         FilterConfig filterConfig = xmlApplicationLoader.getConfig(FilterConfig.class);
         assertNotNull("Filter is null", filterConfig);
-        assertEquals(6, filterConfig.getFilterCount());
+        assertEquals(7, filterConfig.getFilterCount());
 
         List<FilterSetting> filters = filterConfig.getFilters();
         assertEquals("DN", filters.get(0).filterFieldName);
@@ -184,7 +188,8 @@ public class GwtTestXMLApplicationLoader extends GWTTestCase {
         assertNull(templateViewNodesConfig.getDataSource());
     }
 
-    /**
+
+/**
      <splitLayout>
      <left>
      <!--
@@ -206,6 +211,7 @@ public class GwtTestXMLApplicationLoader extends GWTTestCase {
      </splitLayout>
      * @param templateViewNodesConfig
      */
+
     private void testInfoWindowTemplate(TemplateViewNodesConfig templateViewNodesConfig) {
         assertNotNull(templateViewNodesConfig);
         assertEquals("CLON,CLAT", templateViewNodesConfig.getDataSource());
@@ -231,6 +237,7 @@ public class GwtTestXMLApplicationLoader extends GWTTestCase {
         List<TableViewConfig.TableColumn> tableColumns = tableViewConfig.getColumns();
 
 
+
         /**
          <column field-name="FA" field-title="1st Author"/>
          <column field-name="PY" field-title="Year"/>
@@ -238,6 +245,7 @@ public class GwtTestXMLApplicationLoader extends GWTTestCase {
          <column field-name="PUB" field-title="Publication"/>
          <column field-name="CN" field-title="Countries"/>
          */
+
 
         assertEquals("FA", tableColumns.get(0).getFieldName());
         assertEquals("1st Author", tableColumns.get(0).getFieldTitle());

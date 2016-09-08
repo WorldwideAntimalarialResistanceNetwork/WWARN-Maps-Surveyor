@@ -107,7 +107,7 @@
             <g:Label addStyleNames="{style.prefixSpace} {style.horizontalAlign}" ui:field="startSampleSizeLabel"/>
         </g:FlowPanel>
         <g:FlowPanel ui:field="integerRangeDropdownFilterPanel" addStyleNames="{style.yearRangeSliderPanel} {style.paddingTop}">
-            <g:ListBox ui:field ="integerRangeDropdownListBox" styleName="dropdown-toggle"/>
+            <g:ListBox ui:field ="integerRangeDropdownListBox" styleName="btn btn-primary dropdown-toggle"/>
         </g:FlowPanel>
     </g:FlowPanel>
 </ui:UiBinder>
