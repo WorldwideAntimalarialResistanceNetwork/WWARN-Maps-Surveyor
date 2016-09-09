@@ -84,8 +84,8 @@ public class ResultViewUI extends Composite implements ResultView {
     }
 
     public void setup(final ResultsViewConfig viewConfigs) {
-        setupLoadDisplays();
         setupViews(viewConfigs);
+        setupLoadDisplays();
         setupTabBar(viewConfigs);
         tabContentHolder.getElement().setId("surveyorTabContentHolder");
     }
