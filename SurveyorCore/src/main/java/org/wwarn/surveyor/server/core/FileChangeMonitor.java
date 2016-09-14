@@ -193,7 +193,7 @@ public class FileChangeMonitor extends Observable {
                     Path name = ev.context();
                     Path child = dir.resolve(name);
 
-                    if(Files.isSameFile(child, monitoredFile)){
+                    if(Files.exists(child) && Files.isSameFile(child, monitoredFile)){
                         //set event change
                         fileChangeMonitor.setChanged();
                         fileChangeMonitor.notifyObservers(event);
