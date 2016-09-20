@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.TableViewConfig;
+import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -203,5 +204,14 @@ public class LuceneSearchServiceImplTest {
 
     }
 
+    @Test
+    public void testFilterQueryByIntegerRange() throws Exception {
+        FilterQuery filterQuery = new FilterQuery();
+        filterQuery.addRangeFilter("PID", 0, 100);
+
+        QueryResult queryResult = luceneSearchService.query(filterQuery, testUtility.getSelectorList());
+        assertNotNull(queryResult);
+        assertEquals(queryResult.getRecordList().size(), 2);
+    }
 
 }
