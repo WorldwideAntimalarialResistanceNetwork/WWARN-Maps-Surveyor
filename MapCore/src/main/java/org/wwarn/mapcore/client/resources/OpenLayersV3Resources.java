@@ -45,10 +45,10 @@ public interface OpenLayersV3Resources extends ClientBundle {
     @Source("proj4j.v2.3.3/proj4.js")
     TextResource proj4js();
 
-    @Source("ol.v3.7.0/ol.js")
+    @Source("ol.v3.20.1/ol.js")
     TextResource js();
 
-    @Source("ol.v3.7.0/ol.css")
+    @Source("ol.v3.20.1/ol.css")
     TextResource css();
 
 }
