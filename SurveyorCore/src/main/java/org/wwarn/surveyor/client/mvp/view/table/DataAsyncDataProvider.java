@@ -61,6 +61,8 @@ public class DataAsyncDataProvider extends AsyncDataProvider<RecordList.Record> 
 
     Range range;
 
+    Range previousRange;
+
     ClientFactory clientFactory = SimpleClientFactory.getInstance();
 
     TableViewConfig tableViewConfig;
@@ -97,8 +99,13 @@ public class DataAsyncDataProvider extends AsyncDataProvider<RecordList.Record> 
 
         // Get the new range required.
         range = display.getVisibleRange();
-        updateResults(range.getStart(), range.getLength());
+        //if it is the last page don't load more results
+        if(display.getRowCount()%range.getLength()!= 0 && display.getRowCount() > 0 && range.getStart() > previousRange.getStart()){
+            display.setVisibleRange(previousRange.getStart(), previousRange.getLength());
+        }
 
+        updateResults(range.getStart(), range.getLength());
+        previousRange = range;
     }
 
 

@@ -33,6 +33,15 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
+//import jdk.internal.org.xml.sax.InputSource;
+
+import javax.swing.text.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.Node;
+import java.io.StringReader;
+
 /**
  * Created with IntelliJ IDEA.
  * User: nigel
@@ -257,6 +266,7 @@ public interface Constants {
             "                Filter studies by publication year range: 1975 to 2013\n" +
             "            </label>\n" +
             "        </filterByDateRange>\n" +
+            "        <filterByEnrolment field=\"enrolment\" name=\"Filter by sample size\" end=\"400\" initialValue=\"0\"/>\n" +
             "    </filters>\n" +
             "\n" +
             "</surveyor>\n";
@@ -325,4 +335,10 @@ public interface Constants {
             "{\"PID\":166,\"DOI\":\"\",\"TTL\":\"FDB recalls Counterfeit and substandard anti-malarial medicines\",\"FA\":\"Ghana News Agency\",\"PY\":2010,\"PUB\":\"Ghanaweb.com\",\"PTI\":4,\"PTN\":\"Lay press\",\"URL\":\"http://www.ghanaweb.com/GhanaHomePage/health/artikel.php?ID=197020#\",\"DID\":8,\"DSN\":\"CQ\",\"DN\":\"Chloroquine\",\"CID\":29,\"CN\":\"Ghana\",\"CLAT\":5.55,\"CLON\":-0.25,\"LID\":-1,\"LN\":\"\",\"LLAT\":0.0,\"LLON\":0.0,\"SDI\":487,\"OTI\":11,\"OTN\":\"Govt & Private outlets\",\"STI\":6,\"STN\":\"MRA seizure\",\"DQI\":2,\"QI\":\"Substandard\",\"FR\":100,\"SD\":\"01/01/2010\",\"ED\":\"31/12/2010\",\"ICR\":\"-1\",\"DCN\":\"Non-artemisinins\",\"NST\":-1}," +
             "{\"PID\":166,\"DOI\":\"\",\"TTL\":\"FDB recalls Counterfeit and substandard anti-malarial medicines\",\"FA\":\"Ghana News Agency\",\"PY\":2012,\"PUB\":\"Ghanaweb.com\",\"PTI\":4,\"PTN\":\"Lay press\",\"URL\":\"http://www.ghanaweb.com/GhanaHomePage/health/artikel.php?ID=197020#\",\"DID\":8,\"DSN\":\"CQ\",\"DN\":\"Chloroquine\",\"CID\":29,\"CN\":\"Ghana\",\"CLAT\":5.55,\"CLON\":-0.25,\"LID\":-1,\"LN\":\"\",\"LLAT\":0.0,\"LLON\":0.0,\"SDI\":487,\"OTI\":11,\"OTN\":\"Govt & Private outlets\",\"STI\":6,\"STN\":\"MRA seizure\",\"DQI\":2,\"QI\":\"Substandard\",\"FR\":100,\"SD\":\"01/01/2010\",\"ED\":\"31/12/2010\",\"ICR\":\"-1\",\"DCN\":\"Non-artemisinins\",\"NST\":-1}" +
             "]";
+
+    public final String XML_BASIC = "<filters>\n" +
+            "        <filterByEnrolment field=\"enrolment\" name=\"Filter by sample size\" end=\"400\" initialValue=\"0\"/>\n" +
+            "</filters>";
+
+
 }

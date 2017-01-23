@@ -47,6 +47,7 @@ public class MapViewConfig implements ViewConfig {
     private double initialLon = 1.0;
     private int initialZoomLevel = 2;
     private Integer imageLegendPositionFromTopInPixels;
+    String legendToTab;
     String viewName = "";
     String markerLongitudeField = "";
     String markerLatitudeField = "";
@@ -57,7 +58,7 @@ public class MapViewConfig implements ViewConfig {
     private MapBuilder.MapImplementation mapImplementation;
     private boolean doCluster=false;
 
-    private MapViewConfig(){};
+    public MapViewConfig(){};
 
     public MapViewConfig(String viewName, int initialZoomLevel, double initialLat, double initialLon, String markerLongitudeField, String markerLatitudeField, String mapImageRelativePath, String imageLegendPosition, Integer imageLegendPositionFromTopInPixels, String mapTabLabel, TemplateViewNodesConfig templateViewNodesConfig, MapBuilder.MapImplementation mapImplementation, boolean doCluster) {
         this.viewName = viewName;
@@ -107,12 +108,24 @@ public class MapViewConfig implements ViewConfig {
         return initialZoomLevel;
     }
 
+    public void setInitialZoomLevel(int initialZoomLevel) {
+        this.initialZoomLevel = initialZoomLevel;
+    }
+
     public double getInitialLat() {
         return initialLat;
     }
 
+    public void setInitialLat(double initialLat) {
+        this.initialLat = initialLat;
+    }
+
     public double getInitialLon() {
         return initialLon;
+    }
+
+    public void setInitialLon(double initialLon) {
+        this.initialLon = initialLon;
     }
 
     public TemplateViewNodesConfig getTemplateViewNodesConfig() {
@@ -133,6 +146,14 @@ public class MapViewConfig implements ViewConfig {
 
     public boolean isDoCluster() {
         return doCluster;
+    }
+
+    public String getLegendToTab() {
+        return legendToTab;
+    }
+
+    public void setLegendToTab(String legendToTab) {
+        this.legendToTab = legendToTab;
     }
 
     @Override

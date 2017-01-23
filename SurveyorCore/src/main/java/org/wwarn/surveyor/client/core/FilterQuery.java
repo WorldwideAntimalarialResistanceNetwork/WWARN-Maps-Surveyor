@@ -106,7 +106,6 @@ public class FilterQuery implements IsSerializable{
         if(!valueToFilter.isEmpty()){
             filterQueries.put(field, new FilterFieldValue(field, valueToFilter));
         }
-
     }
 
     /**
@@ -125,6 +124,9 @@ public class FilterQuery implements IsSerializable{
             filterQueries.put(field, new FilterFieldRange(field, (String)minValue, (String)maxValue));
         }else if (minValue instanceof Date){
             filterQueries.put(field, new FilterFieldRangeDate(field, (Date)minValue, (Date)maxValue));
+        }
+        else if (minValue instanceof Integer){
+            filterQueries.put(field, new FilterFieldRange.FilterFieldRangeInteger(field, (Integer)minValue, (Integer)maxValue));
         }
     }
 
@@ -203,6 +205,7 @@ public class FilterQuery implements IsSerializable{
 
         private String field, minValue, maxValue;
 
+
         FilterFieldRange(String field, String minValue, String maxValue) {
             if(StringUtils.isEmpty(field, minValue, maxValue)) {
                 throw new IllegalArgumentException("All parameters must be set.");
@@ -210,6 +213,29 @@ public class FilterQuery implements IsSerializable{
             this.field = field;
             this.minValue = minValue;
             this.maxValue = maxValue;
+
+        }
+
+        public static class FilterFieldRangeInteger extends FilterFieldRange implements IsSerializable{
+
+            private String field;
+            private Integer minValueInteger, maxValueInteger;
+
+            FilterFieldRangeInteger(){
+                super();
+            }
+
+            FilterFieldRangeInteger(String field, Integer minValueInteger, Integer maxValueInteger) {
+                this.field = field;
+                this.minValueInteger = minValueInteger;
+                this.maxValueInteger = maxValueInteger;
+            }
+
+            public Integer getMinValueInteger() {return minValueInteger;}
+
+            public Integer getMaxValueInteger() {
+                return maxValueInteger;
+            }
 
         }
 
@@ -314,9 +340,7 @@ public class FilterQuery implements IsSerializable{
             this.fieldValue = fieldValue;
         }
 
-        public int getFieldValue() {
-            return fieldValue;
-        }
+        public int getFieldValue() {return fieldValue;}
 
         @Override
         public String getFilterField() {
@@ -343,7 +367,6 @@ public class FilterQuery implements IsSerializable{
             return result;
         }
     }
-
 
     @Override
     public boolean equals(Object o) {

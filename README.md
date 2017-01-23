@@ -1,6 +1,6 @@
 ## WWARN Maps Surveyor overview
-WWARN Maps Surveyor is a mapping platform for visualising data to support statistical 
-reporting, public health surveillance, and health research. However, the use of the this 
+WWARN Maps Surveyor is a mapping platform for visualising data to support research synthesis and 
+reporting in global health settings and health research. However, the use of the this 
 goes beyond geo visualisation of research data. The platform can, for instance, facilitate 
 functions such as decision support, statistical mapping, crime surveillance etc.
 
@@ -34,6 +34,15 @@ Limitations:
     
 ## Demos and implementations
 
+The offline capable surveyor is available at:
+[http://www.wwarn.org/surveyor/NMFI/](http://www.wwarn.org/surveyor/NMFI/) and uses [http://offlinefirst.org](http://offlinefirst.org) principles and a demo of the offline capability is here : [https://vimeo.com/135569913](https://vimeo.com/135569913)
+
+There are several other implementations of the surveyor:
+* Kelch13 resistance markers: [http://www.wwarn.org/molecular/surveyor/k13/](http://www.wwarn.org/molecular/surveyor/k13/)
+* Mapping resistance markers with the molecular surveyor:  [http://www.wwarn.org/molecular/surveyor](http://www.wwarn.org/molecular/surveyor)
+* Pharmaceutical crimes with Interpol: [http://pharmacrimelaws.org](http://pharmacrimelaws.org)
+* WWARN Explorer: [http://www.wwarn.org/explorer/app/](http://www.wwarn.org/explorer/app/) , this explores antimalarial drug resistance in 4 areas - 
+clinical trials, pharmacology, in vitro drug testing, and molecular markers of resistance. This is although not strictly completely on surveyor codebase, the core mapping components are from the same code base.
 * [Live demonstrator](http://wwarn-maps-surveyor-demo.appspot.com) based on [SurveyorSimpleDemoApp](https://github.com/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor/tree/master/SurveyorSimpleDemoApp)
 * [AQ Surveyor](http://www.wwarn.org/aqsurveyor/) - Custom views of published poor-quality antimalarial medicine reports
 * [Molecular Surveyor](http://www.wwarn.org/surveyor/) - Visualise data from publications  examining molecular markers of antimalarial resistance in malaria-endemic countries
@@ -90,4 +99,4 @@ We have setup a google web forum at [Worldwide Antimalarial Resistance Network O
 
 ## Project Sponsored by
 ![alt tag](https://www.jetbrains.com/idea/docs/logo_intellij_idea.png)
-
+[IntelliJ IDEA Free Open Source License](https://www.jetbrains.com/buy/opensource/?product=idea)

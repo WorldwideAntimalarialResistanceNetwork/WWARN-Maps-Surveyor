@@ -35,6 +35,8 @@ package org.wwarn.surveyor.client.mvp;
 
 import com.google.gwt.event.shared.EventBus;
 import org.wwarn.surveyor.client.core.*;
+import org.wwarn.surveyor.client.model.Config;
+import org.wwarn.surveyor.client.model.ViewConfig;
 
 /**
  * This is a shared object passed amongst most presenter
@@ -52,4 +54,5 @@ public interface ClientFactory {
     public String[] getFacetFieldList();
     public FilterQuery getLastFilterQuery();
     public void setLastFilterQuery(FilterQuery filterQuery);
+    public void setConfigDynamically(Config viewConfig);
 }

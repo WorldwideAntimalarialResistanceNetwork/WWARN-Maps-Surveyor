@@ -199,4 +199,27 @@ public class SimpleClientFactory implements ClientFactory {
     public void setLastFilterQuery(FilterQuery filterQuery) {
         this.lastFilterQuery = filterQuery;
     }
+
+    /**
+     * This method configures dynamically any config in the xml.
+     * Right now, only overrides the coordinates of the map but it could be use to override any configuration
+     * @param viewConfig
+     */
+    @Override
+    public void setConfigDynamically(Config viewConfig) {
+
+        if(viewConfig instanceof MapViewConfig) {
+            MapViewConfig newMapViewConfig = (MapViewConfig) viewConfig;
+            updateMapViewConfig(newMapViewConfig);
+        }
+    }
+
+    private void updateMapViewConfig(MapViewConfig newMapViewConfig){
+        MapViewConfig currentMapViewConfig = applicationContext.getConfig(MapViewConfig.class);
+        currentMapViewConfig.setInitialLat(newMapViewConfig.getInitialLat());
+        currentMapViewConfig.setInitialLon(newMapViewConfig.getInitialLon());
+        currentMapViewConfig.setInitialZoomLevel(newMapViewConfig.getInitialZoomLevel());
+    }
+
+
 }

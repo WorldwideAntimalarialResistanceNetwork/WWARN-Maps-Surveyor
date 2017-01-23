@@ -146,7 +146,7 @@ public class FilterPresenter implements Presenter {
      */
     static public class FilterChangeHandler{
 
-        public static final Date START_DATE = DateTimeFormat.getFormat("yyyy").parse("1975");
+        public static final Date START_DATE = DateTimeFormat.getFormat("yyyy").parse("1900");
         public static final int DELAY_MILLIS_BEFORE_QUERYING = 800;
         private Queue<FilterChangedEvent> updateQueue = new LinkedList<FilterChangedEvent>();
         /*stores all previous field selections, this must be kept for filters to work correctly*/
@@ -234,8 +234,8 @@ public class FilterPresenter implements Presenter {
                         filterDateRange(filterQuery, valueToFilter);
                     }else if(valueToFilter instanceof FilterChangedEvent.DateRangeAndFields){
                         filterDateRangeAndFields(filterQuery, valueToFilter);
-                    }else if(valueToFilter instanceof FilterChangedEvent.FilterGreater){
-                        filterGreater(filterQuery, valueToFilter);
+                    }else if(valueToFilter instanceof FilterChangedEvent.FilterRangeInteger){
+                            filterIntegerRange(filterQuery, valueToFilter);
                     }else if(valueToFilter instanceof FilterChangedEvent.MultipleFilterValue){
                         final FilterChangedEvent.MultipleFilterValue multipleFilterValue = (FilterChangedEvent.MultipleFilterValue) valueToFilter;
                         if(!multipleFilterValue.getFacetFieldValues().contains(DEFAULT_CATCH_ALL_OPTION)){
@@ -284,11 +284,14 @@ public class FilterPresenter implements Presenter {
             filterQuery.addRangeFilter(dateRange.getFieldFrom(), START_DATE, dateRange.getEnd());
         }
 
-
-
         private void filterGreater(FilterQuery filterQuery, FilterChangedEvent.FilterElement valueToFilter){
             FilterChangedEvent.FilterGreater minimumSize = (FilterChangedEvent.FilterGreater) valueToFilter;
             filterQuery.addFilterGreater(valueToFilter.getFacetField(), minimumSize.getFacetFieldValue());
+        }
+
+        private void filterIntegerRange(FilterQuery filterQuery, FilterChangedEvent.FilterElement valueToFilter){
+            FilterChangedEvent.FilterRangeInteger minimumSize = (FilterChangedEvent.FilterRangeInteger) valueToFilter;
+            filterQuery.addRangeFilter(valueToFilter.getFacetField(), minimumSize.getFacetFieldValue(), minimumSize.getMax());
         }
 
         private void filterMultipleValues(FilterQuery filterQuery, FilterChangedEvent.FilterElement valueToFilter){
