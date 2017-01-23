@@ -63,7 +63,7 @@ and dispatching it to the DataProvider layer.
 a fair bit of work has been involved in setting these up.
 
 Outcomes:
-Reduced the time needed to develop and deploy a surveyor from 6 weeks to approx a week.
+Reduced the time needed to develop and deploy a surveyor from 6 weeks to approx two weeks.
 Reduced the size of the code base, removing duplicate code across AQSurvyeor, Surveyor and NMFISurveyor, reducing the maintenance expense
 XML based configuration added to map a dataset dynamically, create facets, tables, maps
 Updated code base to use the latest version of google maps API and reducing strong coupling

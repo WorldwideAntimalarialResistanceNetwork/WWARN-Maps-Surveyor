@@ -48,6 +48,26 @@ clinical trials, pharmacology, in vitro drug testing, and molecular markers of r
 * [Molecular Surveyor](http://www.wwarn.org/surveyor/) - Visualise data from publications  examining molecular markers of antimalarial resistance in malaria-endemic countries
 * [NMFI Fever Series Surveyor - TODO](#) and [NMFI Case Reports Surveyor - TODO](#) - A visual analysis of published health literature for causes of non-malaria febrile disease
 
+## Deployment and versioning:
+We try to follow semantic versioning [semver.org](http://semver.org) principles outlined:
+
+Given a version number MAJOR.MINOR.PATCH, increment the:
+
+MAJOR version when you make incompatible API changes,
+MINOR version when you add functionality in a backwards-compatible manner, and
+PATCH version when you make backwards-compatible bug fixes.
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
+Set new version:
+mvn versions:set -DnewVersion=1.2.3-SNAPSHOT
+
+Test
+mvn clean verfiy
+
+Commit/revert:
+mvn versions:(commit|revert)
+
+
 ## How do I use it?
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
 
@@ -78,4 +98,5 @@ Check the README files in the SurveyorCore and MapCore modules
 We have setup a google web forum at [Worldwide Antimalarial Resistance Network Open Source Software](https://groups.google.com/forum/?hl=en#!forum/worldwide-antimalarial-resistance-network-open-source-software), please use this to get in touch if you have any questions. Alternatively, if you have noticed a bug/have a new feature request use [GitHub issue tracking system to report this](https://github.com/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor/issues). 
 
 ## Project Sponsored by
+![alt tag](https://www.jetbrains.com/idea/docs/logo_intellij_idea.png)
 [IntelliJ IDEA Free Open Source License](https://www.jetbrains.com/buy/opensource/?product=idea)
