@@ -8,18 +8,18 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the University of Oxford nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -33,6 +33,7 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * #L%
  */
 
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.base.LatLng;
 import com.google.gwt.maps.client.base.Point;
@@ -48,6 +49,7 @@ import com.google.gwt.maps.client.events.mouseover.MouseOverMapEvent;
 import com.google.gwt.maps.client.events.mouseover.MouseOverMapHandler;
 import com.google.gwt.maps.client.maptypes.Projection;
 import com.google.gwt.maps.client.overlays.*;
+import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -401,13 +403,21 @@ public class GoogleV3Marker<T> extends GenericMarker<T> {
         }
 
         private Integer getMarkerPositionFrom(LatLng markerCoordinates){
-            final String markerCoordinatesKey = markerCoordinates.getToString();
+            final String markerCoordinatesKey = getMarkerCoordinatesKey(markerCoordinates);
             return locationPosition.get(markerCoordinatesKey);
         }
 
         private Integer storeMarkerAndPosition(LatLng markerCoordinates, int position){
-            final String markerCoordinatesKey = markerCoordinates.getToString();
+            final String markerCoordinatesKey = getMarkerCoordinatesKey(markerCoordinates);
             return locationPosition.put(markerCoordinatesKey, position);
+        }
+
+        private String getMarkerCoordinatesKey(LatLng markerCoordinates){
+            // Round lon and lat so if 2 positins are too close it will be considered as the same location
+            String lon = NumberFormat.getFormat("000000.00").format(markerCoordinates.getLongitude());
+            String lat = NumberFormat.getFormat("000000.00").format(markerCoordinates.getLatitude());
+            final String markerCoordinatesKey = lon + lat;
+            return  markerCoordinatesKey;
         }
 
         /**
@@ -418,6 +428,8 @@ public class GoogleV3Marker<T> extends GenericMarker<T> {
         public int registerMarkerPosition(LatLng markerCoordinates) {
             Integer positionCount = getMarkerPositionFrom(markerCoordinates);
             if(positionCount == null){
+                positionCount = 0;
+            }else if(positionCount > dispersionLookup.size()){ // if it is bigger than the dispersionLookup Assign 0
                 positionCount = 0;
             }
             storeMarkerAndPosition(markerCoordinates, ++positionCount);
@@ -479,7 +491,7 @@ public class GoogleV3Marker<T> extends GenericMarker<T> {
         {
             double INITIAL_RING_COUNT = 5;
             double PIN_SIZE = 0.3;
-            double radius = PIN_SIZE * 1.3;
+            double radius = PIN_SIZE * 3;
             double ringCount = INITIAL_RING_COUNT;
             double angle;
             double length;

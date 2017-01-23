@@ -8,18 +8,18 @@ package org.wwarn.surveyor.client.core;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the University of Oxford nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -57,6 +57,9 @@ import java.util.Map;
 public class XMLApplicationLoader implements ApplicationContext {
 
     Map<String, Config> configs = new HashMap<String, Config>();
+
+    public XMLApplicationLoader() throws XMLUtils.ParseException {
+    }
 
     public XMLApplicationLoader(String xmlConfig) throws XMLUtils.ParseException {
         parseXML(xmlConfig);
@@ -309,6 +312,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             String imageLegendRelativePath = "";
             Integer imageLegendPositionFromTopInPixels = null;
             String imageLegendPosition = null;
+            String legendToTab = null;
             NodeList childNodes = mapNode.getChildNodes();
             TemplateViewNodesConfig templateViewNodesConfig = null;
             boolean doCluster = Boolean.parseBoolean(doClusterRaw);
@@ -320,6 +324,7 @@ public class XMLApplicationLoader implements ApplicationContext {
                         imageLegendRelativePath = getAttributeByName(mapLegendNode, "relativeImagePath");
                         imageLegendPositionFromTopInPixels = Integer.valueOf(StringUtils.ifEmpty(getAttributeByName(mapLegendNode, "positionFromTopInPixels"),"0"));
                         imageLegendPosition = (StringUtils.ifEmpty(getAttributeByName(mapLegendNode, "imageLegendPosition"),"BOTTOM_LEFT"));
+                        legendToTab = getAttributeByName(mapLegendNode, "legendToTab");
                     }
                     if (mapChildNode.getNodeName().equals("marker")) {
                         Node markerNode = mapChildNode;
@@ -350,6 +355,7 @@ public class XMLApplicationLoader implements ApplicationContext {
             }
 
             final MapViewConfig mapViewConfig = new MapViewConfig(name, initialZoomLevel, initialLat, initialLon, lonFieldName, latFieldName, imageLegendRelativePath, imageLegendPosition, imageLegendPositionFromTopInPixels, getNodeCDATAValue(getNodeByName(mapNode, "label")), templateViewNodesConfig, convertTotMapImplementation(implementation), doCluster);
+            mapViewConfig.setLegendToTab(legendToTab);
             String mapType = StringUtils.ifEmpty(getAttributeByName(mapNode, "mapType"), "TERRAIN");
             mapViewConfig.setMapType(resolveMapType(mapType));
             configs.put(MapViewConfig.class.getName(), mapViewConfig);
@@ -549,13 +555,16 @@ public class XMLApplicationLoader implements ApplicationContext {
                         }
                         FacetType facetType = getFilterType(filterNode);
 
-                        if(filterNode.getNodeName().equals("filterByDateRange")){
-                            parseFilterByDateRange(filterConfig,filterNode);
-
-                        }else if(filterNode.getNodeName().equals("filterBySampleSize")){
+                        if(filterNode.getNodeName().equals("filterBySampleSize")){
                             parseFilterBySampleSize(filterConfig,filterNode);
-
-                        }else{
+                        }
+                        else if(filterNode.getNodeName().equals("filterByIntegerRange")){
+                            parseFilterByIntegerRange(filterConfig,filterNode);
+                        }
+                        else if(filterNode.getNodeName().equals("filterByDateRange")){
+                            parseFilterByDateRange(filterConfig,filterNode);
+                        }
+                        else{
                             final HashMap<String, String> filterFieldValueToLabelMap = new HashMap<String, String>();
 
                             final Node filterValueLabelMap = getNodeByName(filterNode, "filterValueLabelMap");
@@ -605,7 +614,6 @@ public class XMLApplicationLoader implements ApplicationContext {
                     return facetType;
                 }
             }
-
             return FacetType.LABEL_LIST;
         }
 
@@ -630,9 +638,17 @@ public class XMLApplicationLoader implements ApplicationContext {
 
         private void parseFilterBySampleSize(FilterConfig filterConfig, Node filterNode){
             int start = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "start"), "0"));
-            int end = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "end"), "400"));
+            int end = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "end"), "2000"));
             int initialValue = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "initialValue"), "0"));
             filterConfig.addSampleSizeFilter(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue);
+        }
+
+        private void parseFilterByIntegerRange(FilterConfig filterConfig, Node filterNode){
+            int start = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "start"), "0"));
+            int end = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "end"), "2000"));
+            int initialValue = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "initialValue"), "0"));
+            int increment = Integer.parseInt(StringUtils.ifEmpty(getAttributeByName(filterNode, "increment"), "1"));
+            filterConfig.addIntegerRangeFilter(filterColumn, filterFieldName, filterFieldLabel, start, end, initialValue, increment);
         }
 
     }

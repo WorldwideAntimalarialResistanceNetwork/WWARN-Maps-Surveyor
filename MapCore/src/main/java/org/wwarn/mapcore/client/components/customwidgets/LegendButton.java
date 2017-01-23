@@ -38,8 +38,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.*;
 import org.wwarn.mapcore.client.i18nstatic.MapTextConstants;
+import org.wwarn.mapcore.client.utils.StringUtils;
 
 /**
  * Created by suay on 5/23/14.
@@ -53,6 +55,8 @@ public class LegendButton extends Composite {
 
     Image legendImg;
 
+    Anchor anchor = new Anchor();
+
     boolean isLegendDisplayed;
 
     HorizontalPanel panel = new HorizontalPanel();
@@ -61,10 +65,8 @@ public class LegendButton extends Composite {
 
     String legendWord;
 
-    public LegendButton(String relativeImagePath ){
-
-        legendImg = new Image(GWT.getModuleBaseForStaticFiles() + relativeImagePath);
-        legendImg.getElement().setId("mapLegendImage");
+    public LegendButton(String relativeImagePath, String imgToTab){
+        Widget image = setLegendImage(relativeImagePath, imgToTab);
         setLegendButtonText();
         legendButton.addClickHandler(legendClickHandler);
         final String legendButton = "legendButton";
@@ -72,8 +74,28 @@ public class LegendButton extends Composite {
         this.legendButton.getElement().setId("mapLegendButton");
         isLegendDisplayed = true;
         panel.add(this.legendButton);
-        panel.add(legendImg);
+        panel.add(image);
         initWidget(panel);
+    }
+
+    private Widget setLegendImage(String relativeImagePath, final String imgToTab){
+        legendImg = new Image(GWT.getModuleBaseForStaticFiles() + relativeImagePath);
+        legendImg.getElement().setId("mapLegendImage");
+
+        if(StringUtils.isEmpty(imgToTab)){
+            return legendImg;
+        }
+
+        anchor.getElement().appendChild(legendImg.getElement());
+        anchor.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+        anchor.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                History.newItem(imgToTab);
+            }
+        });
+
+        return anchor;
     }
 
     private void setLegendButtonText(){
@@ -123,5 +145,6 @@ public class LegendButton extends Composite {
             return outWidth;
         }
     }
+
 
 }

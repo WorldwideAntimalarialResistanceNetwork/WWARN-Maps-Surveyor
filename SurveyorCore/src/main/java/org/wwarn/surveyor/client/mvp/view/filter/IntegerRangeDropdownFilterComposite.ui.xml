@@ -1,0 +1,113 @@
+<!--
+  #%L
+  SurveyorCore
+  %%
+  Copyright (C) 2013 - 2014 University of Oxford
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+
+  3. Neither the name of the University of Oxford nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        /*
+        See @external usage docs http://www.gwtproject.org/doc/latest/DevGuideClientBundle.html#External_and_legacy_scopes
+        */
+        @external .rangeSliderNumLabel .rangeSliderTickLabel;
+
+        .yearRangePanel {
+            /*float: left;*/
+            /*margin-bottom: 1em;*/
+            height: 80px;
+            width: 100%;
+        }
+
+        .horizontalAlign {
+            float: left !important;
+        }
+
+        .yearRangePanel .label {
+            font-size: 10pt;
+            color: black;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+
+        .yearRangePanel .labelContent {
+            font-size: 10pt;
+            margin-left: 0.5em;
+            color: black;
+        }
+
+        .yearRangePanel .rangeSeparator {
+            font-size: 1em;
+            font-weight: bold;
+            color: black;
+            margin-left: 0.5em;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+        }
+
+        .yearRangePanel .prefixSpace {
+            padding-left: 0.5em;
+        }
+
+        .yearRangePanel .rangeSliderNumLabel {
+            top: 38px !important;
+        }
+
+        .yearRangePanel .rangeSliderTickLabel {
+            top: 20px !important;
+        }
+
+        .yearRangePanel .yearRangeSliderPanel {
+            padding-left: 1em;
+        }
+
+        .yearRangePanel .rangeSliderNumLabel {
+            font-size: 10pt;
+            color: black;
+        }
+
+        .yearRangePanel div {
+            /* This must be present or nothing will be shown*/
+            overflow: visible !important;
+        }
+
+        .paddingTop {
+            padding-top: 1.0em !important;
+        }
+    </ui:style>
+    <g:FlowPanel addStyleNames="{style.yearRangePanel}">
+        <g:FlowPanel addStyleNames="{style.rangeSeparator} {style.paddingTop}">
+            <g:Label addStyleNames="{style.horizontalAlign}" ui:field="integerRangeDropdownLabel">Filter studies by range of enroled patients: </g:Label>
+            <g:Label addStyleNames="{style.prefixSpace} {style.horizontalAlign}" ui:field="startSampleSizeLabel"/>
+        </g:FlowPanel>
+        <g:FlowPanel ui:field="integerRangeDropdownFilterPanel" addStyleNames="{style.yearRangeSliderPanel} {style.paddingTop}">
+            <g:ListBox ui:field ="integerRangeDropdownListBox" styleName="btn btn-primary dropdown-toggle"/>
+        </g:FlowPanel>
+    </g:FlowPanel>
+</ui:UiBinder>

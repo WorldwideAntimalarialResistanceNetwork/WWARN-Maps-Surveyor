@@ -8,18 +8,18 @@ package org.wwarn.surveyor.client.mvp.view.table;
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the University of Oxford nor the names of its contributors
  *    may be used to endorse or promote products derived from this software without
  *    specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -108,6 +108,12 @@ public class TableFunctions {
             table.setValue(rowIndex, tableColumnIndex, concatDate(rowIndex));
         }else if(functionType == FunctionType.ARITH){
             table.setValue(rowIndex, tableColumnIndex, arith(rowIndex));
+        }else if(functionType == FunctionType.IF_NULL){
+            table.setValue(rowIndex, tableColumnIndex, ifNull(rowIndex));
+        }else if(functionType == FunctionType.LIMIT_STRING){
+            table.setValue(rowIndex, tableColumnIndex, limitString(rowIndex));
+        }else if(functionType == FunctionType.PUBMED_URL){
+            table.setValue(rowIndex, tableColumnIndex, pubMedURL(rowIndex));
         }
     }
 
@@ -181,7 +187,72 @@ public class TableFunctions {
 
     }
 
+    /**
+     * Given 2 fields, if the first is null then return the second field
+     * In the config file use:
+     * fieldName="func(IFNULL(field1,field2))"
+     */
+    private String ifNull(int rowIndex){
 
+        if(params.length != 2){
+            throw new IllegalArgumentException("Wrong number of Parameters for if null expression");
+        }
+
+        final RecordList.Record currentRecord = recordList.getRecords().get(rowIndex);
+        final String field1 = currentRecord.getValueByFieldName(params[0]);
+
+        if (!field1.isEmpty()){
+            return field1;
+        }
+        final String field2 = currentRecord.getValueByFieldName(params[1]);
+        return field2;
+    }
+
+    /**
+     * Reduce a String to a max limit
+     * In the config file use:
+     * fieldName="func(Limit(field,limit))"
+     */
+    private String limitString(int rowIndex){
+
+        if(params.length != 2){
+            throw new IllegalArgumentException("Wrong number of Parameters for limit string expression");
+        }
+
+        final RecordList.Record currentRecord = recordList.getRecords().get(rowIndex);
+        final String field = currentRecord.getValueByFieldName(params[0]);
+        int limit = Integer.parseInt(params[1]);
+
+        if (field.isEmpty() || field.length() < limit){
+            return field;
+        }
+
+        String result = field.substring(0, limit) + "...";
+        return result;
+    }
+
+       /**
+     * Create an anchor with the title and the pubMedId
+     * In the config file use:
+     * fieldName="func(PUBMED_URL(title,pubMedID))"
+     */
+    private String pubMedURL(int rowIndex){
+
+        if(params.length != 2){
+            throw new IllegalArgumentException("Wrong number of Parameters for limit string expression");
+        }
+
+        final RecordList.Record currentRecord = recordList.getRecords().get(rowIndex);
+        final String title = currentRecord.getValueByFieldName(params[0]);
+        String pubMedId = currentRecord.getValueByFieldName(params[1]);
+
+        if (pubMedId.isEmpty()){
+            return title;
+        }
+
+        String result = "<a href=" + "http://www.ncbi.nlm.nih.gov/pubmed/"+pubMedId+" target=_blank>"+title+"</a>";
+        return result;
+    }
 
     public static String[] getParameters(FunctionType functionType, String function){
         //remove function type
@@ -191,6 +262,6 @@ public class TableFunctions {
     }
 
     public enum FunctionType{
-        CONCAT_DATE, ARITH, GET_YEAR;
+        CONCAT_DATE, ARITH, GET_YEAR, IF_NULL, LIMIT_STRING, PUBMED_URL;
     }
 }
