@@ -39,6 +39,26 @@ Limitations:
 * [Molecular Surveyor](http://www.wwarn.org/surveyor/) - Visualise data from publications  examining molecular markers of antimalarial resistance in malaria-endemic countries
 * [NMFI Fever Series Surveyor - TODO](#) and [NMFI Case Reports Surveyor - TODO](#) - A visual analysis of published health literature for causes of non-malaria febrile disease
 
+## Deployment and versioning:
+We try to follow semantic versioning [semver.org](http://semver.org) principles outlined:
+
+Given a version number MAJOR.MINOR.PATCH, increment the:
+
+MAJOR version when you make incompatible API changes,
+MINOR version when you add functionality in a backwards-compatible manner, and
+PATCH version when you make backwards-compatible bug fixes.
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
+Set new version:
+mvn versions:set -DnewVersion=1.2.3-SNAPSHOT
+
+Test
+mvn clean verfiy
+
+Commit/revert:
+mvn versions:(commit|revert)
+
+
 ## How do I use it?
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
 
@@ -70,3 +90,4 @@ We have setup a google web forum at [Worldwide Antimalarial Resistance Network O
 
 ## Project Sponsored by
 ![alt tag](https://www.jetbrains.com/idea/docs/logo_intellij_idea.png)
+

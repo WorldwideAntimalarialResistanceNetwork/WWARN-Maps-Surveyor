@@ -173,7 +173,7 @@ public class MapViewComposite extends Composite {
         }
 
         mapWidget.setMarkers(markers);
-        }
+    }
 
     private MarkerCoordinateSource getMarkerCoordinateSource() {
         if(markerCoordinateSource!=null) return markerCoordinateSource;
