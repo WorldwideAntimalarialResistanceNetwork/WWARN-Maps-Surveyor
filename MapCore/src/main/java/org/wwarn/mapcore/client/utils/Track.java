@@ -78,8 +78,14 @@ public class Track {
         }
 
         historyToken = URL.encode("/WWARN-GWT-Analytics/V1.0/" + historyToken);
-        trackGoogleAnalytics(historyToken);
-        GWT.log("Tracked " + historyToken);
+        boolean hasErrored = false;
+        try{
+            trackGoogleAnalytics(historyToken);
+        }catch (JavaScriptException e){
+            hasErrored = true;
+            GWT.log("Unable to track" ,e);
+        }
+        if(!hasErrored) GWT.log("Tracked " + historyToken);
     }
 
     /**
@@ -113,7 +119,7 @@ public class Track {
 
         } catch (err) {
             // debug
-            throw new UserException('FAILURE: to send in event to google analytics: ',  err);
+            throw new TrackingException('FAILURE: to send in event to google analytics: ',  err);
         }
 
     }-*/;
