@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='gwtlocalforage'>
+	<!-- Inherit the core Web Toolkit stuff.                        -->
+	<inherits name='com.google.gwt.user.User' />
+
+	<!-- Specify the paths for translatable code                    -->
+	<source path='client' />
+
+	<!-- allow Super Dev Mode -->
+	<!-- <add-linker name="xsiframe"/> -->
+	<!-- <entry-point class="us.storee.gwt.libs.localforage.client.Test"></entry-point> -->
+</module>

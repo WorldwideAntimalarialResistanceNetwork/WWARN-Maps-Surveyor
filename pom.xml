@@ -5,6 +5,7 @@
     <artifactId>maps-surveyor-parent</artifactId>
     <version>1.2.3-SNAPSHOT</version>
     <modules>
+        <module>gwt-localforage</module>
         <module>MapCore</module>
         <module>SurveyorCore</module>
         <module>SurveyorSimpleDemoApp</module>
