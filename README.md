@@ -1,4 +1,5 @@
-## WWARN Maps Surveyor overview
+## WWARN Maps Surveyor overview [![Build Status](https://travis-ci.org/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor.svg?branch=master)](https://travis-ci.org/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor)
+
 WWARN Maps Surveyor is a mapping platform for visualising data to support research synthesis and 
 reporting in global health settings and health research. However, the use of the this 
 goes beyond geo visualisation of research data. The platform can, for instance, facilitate 
