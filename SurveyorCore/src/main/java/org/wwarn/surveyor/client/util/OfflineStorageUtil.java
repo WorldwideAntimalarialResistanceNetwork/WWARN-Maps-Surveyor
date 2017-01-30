@@ -37,8 +37,8 @@ import com.google.gwt.core.client.Scheduler;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.QueryResult;
-import us.storee.gwt.libs.localforage.client.LocalForage;
-import us.storee.gwt.libs.localforage.client.LocalForageCallback;
+import org.wwarn.localforage.client.LocalForage;
+import org.wwarn.localforage.client.LocalForageCallback;
 
 import java.util.Objects;
 

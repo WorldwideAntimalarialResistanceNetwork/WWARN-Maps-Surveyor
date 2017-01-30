@@ -58,7 +58,7 @@
     <inherits name="org.wwarn.mapcore.Map"/>
     <inherits name="com.google.gwt.visualization.Visualization"/>
     <inherits name='com.google.web.bindery.event.EventBinder'/>
-    <inherits name="us.storee.gwt.libs.localforage.LocalForage"/>
+    <inherits name="org.wwarn.localforage.LocalForage"/>
     <!--<inherits name='com.github.gwtd3.D3' />-->
 
 
