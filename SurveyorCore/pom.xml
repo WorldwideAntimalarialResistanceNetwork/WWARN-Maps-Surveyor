@@ -293,9 +293,9 @@
 
         <!-- local forage gwt wrapper-->
         <dependency>
-            <groupId>us.storee.gwt</groupId>
+            <groupId>org.wwarn.localforage</groupId>
             <artifactId>gwt-localForage</artifactId>
-            <version>1.2.3-SNAPSHOT</version>
+            <version>1.2.4-SNAPSHOT</version>
         </dependency>
 
         <!-- Used for serialisation only of java classes to string-->
