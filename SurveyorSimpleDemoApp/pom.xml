@@ -4,19 +4,18 @@
     <parent>
         <groupId>org.wwarn.mapssurveyor</groupId>
         <artifactId>maps-surveyor-parent</artifactId>
-        <version>1.2.3-SNAPSHOT</version>
+        <version>1.3.0-SNAPSHOT</version>
     </parent>
 
     <groupId>com.example</groupId>
     <artifactId>SurveyorSimpleDemoApp</artifactId>
     <packaging>war</packaging>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <name>SurveyorSimpleDemoApp</name>
     <description>A demonstrator for the surveyor framework</description>
 
     <properties>
         <!-- GWT -->
-        <gwt.version>2.7.0</gwt.version>
         <gwt.style>OBF</gwt.style>
 
         <!-- App Engine -->
@@ -29,7 +28,7 @@
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <gae.version>1.9.6</gae.version>
         <gae.home>${settings.localRepository}/com/google/appengine/appengine-java-sdk/${gae.version}/appengine-java-sdk-${gae.version}</gae.home>
-        <surveyor.core.version>${parent.version}</surveyor.core.version>
+        <surveyor.core.version>${version}</surveyor.core.version>
     </properties>
 
     <dependencies>
@@ -37,20 +36,20 @@
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtVersion}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtVersion}</version>
             <scope>provided</scope>
         </dependency>
         <!-- needed for gwt integration tests-->
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
-            <version>${gwt.version}</version>
+            <version>${gwtVersion}</version>
             <scope>test</scope>
         </dependency>
 
@@ -77,10 +76,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.5.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${javaVersion}</source>
+                    <target>${javaVersion}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -144,7 +143,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.version}</version>
+                <version>${gwtVersion}</version>
                 <executions>
                     <execution>
                         <goals>
