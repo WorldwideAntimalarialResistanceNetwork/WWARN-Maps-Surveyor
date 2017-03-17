@@ -346,6 +346,27 @@
             <artifactId>annotations</artifactId>
             <version>13.0</version>
         </dependency>
+
+
+        <!--Hack to fix error: Caused by: java.lang.NoClassDefFoundError: org/w3c/dom/ElementTraversal
+            http://stackoverflow.com/a/17842240
+            http://stackoverflow.com/a/15197808
+        -->
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.4.01</version>
+
+        </dependency>
+
+        <!-- Hack to fix error: Caused by: java.lang.NoClassDefFoundError: org/apache/http/config/Lookup
+        -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.4</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
