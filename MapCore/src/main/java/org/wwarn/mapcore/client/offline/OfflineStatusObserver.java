@@ -35,6 +35,7 @@ package org.wwarn.mapcore.client.offline;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.user.client.Window;
 import org.wwarn.mapcore.client.resources.Resources;
 
 /**
@@ -52,6 +53,9 @@ public class OfflineStatusObserver {
         if (!isLoaded()) {
             String text = Resources.IMPL.offlineStatusScript().getText();
             ScriptInjector.fromString(text).setWindow(ScriptInjector.TOP_WINDOW).inject();
+            if(!isLoaded()){
+                Window.alert("Offline.js failed to load");
+            }
         }
     }
 
@@ -92,19 +96,19 @@ public class OfflineStatusObserver {
     ;
     
     public boolean isOnline(){
-        return this.check().equals(STATUS_ONLINE);
+        return getState().equals(STATUS_ONLINE);
     }
 
     public final native String getState()
             throws RuntimeException /*-{
-        return $entry($wnd.Offline.state);
+        return ($wnd.Offline.state);
     }-*/
     ;
 
     public static native void initialise(OfflineStatusObserver offlineStatusObserver, OfflineStatusOptions offlineStatusOptions)/*-{
-        //$wnd.console.log("offlineStatusOptions");
-        //$wnd.console.log(offlineStatusOptions);
-        $wnd.Offline.options = offlineStatusOptions;
+//        $wnd.console.log("offlineStatusOptions");
+//        $wnd.console.log(offlineStatusOptions);
+        $wnd.Offline.options = {checkOnLoad: true, interceptRequests: true, requests: true, checks: {image: {url: 'http://www.wwarn.org/sites/all/themes/wwarn/logo.png'}, active: 'image'}};
         offlineStatusObserver.@org.wwarn.mapcore.client.offline.OfflineStatusObserver::offlineStatusObserver = $wnd.Offline;
     }-*/;
 

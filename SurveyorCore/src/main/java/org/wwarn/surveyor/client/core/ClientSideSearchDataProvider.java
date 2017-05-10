@@ -37,6 +37,7 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
 import org.wwarn.mapcore.client.utils.StringUtils;
@@ -191,7 +192,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private boolean isOffline() {
-        return false && !isDevelopmentMode() && !offlineStatusObserver.isOnline();
+        return !offlineStatusObserver.isOnline();
     }
 
     private void scheduleStoreToOfflineDataStore(final QueryResult queryResult) {
@@ -211,7 +212,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private void scheduleCheckForDataUpdates() {
-        if(isOffline()){return;}
+        if(isOffline()){
+            return;
+        }
 //        //checks server for data updates
         final DataSchema schema = this.schema;
         final GenericDataSource dataSource = this.dataSource;
@@ -239,6 +242,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                             public void run() {
                                 if (Log.isDebugEnabled()) Log.debug("New data fetch complete");
                                 storePreviousDataSourceHash(previousDataSourceHash);
+                                promptUserToReload();
                             }
                         });
 
@@ -250,6 +254,33 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         });
     }
 
+    private boolean hasAlertRanOnceBeforeCheck = false;
+
+    private void promptUserToReload() {
+        if(hasAlertRanOnceBeforeCheck){return;}
+        if(isReloadSupport()){
+            if(Window.confirm("A new update has been received, would you like to refresh your page to receive this update?")){
+                hasAlertRanOnceBeforeCheck = true;
+                reloadPage();
+            }
+        }else {
+            hasAlertRanOnceBeforeCheck = true;
+            Window.alert("A new update has been received, please refresh your page.");
+        }
+    }
+    public static native void reloadPage()/*-{
+        $wnd.location.reload();
+    }-*/;
+
+    public static native boolean isReloadSupport()/*-{
+        // We know that serialisation is slow in ie10 or below, too slow to be usable, so we disable this
+        // We use GetRandomValues http://caniuse.com/#feat=getrandomvalues to determine if browser is recent,
+        // as it is only support in IE 11 and above
+        if (typeof $wnd.location === "undefined" || $wnd.location === null || typeof $wnd.location.reload === "undefined" || $wnd.location.reload === null) {
+            return false;
+        }
+        return true;
+    }-*/;
     private void cleanupPreviousData(final String currentDataHash) {
         if(Log.isDebugEnabled()) Log.debug("Attempting to remove old key, if present");
         final OfflineStorageUtil<String> offlineStoragePreviousKeyStore = getOfflineStoragePreviousKeyStore();
