@@ -48,4 +48,9 @@ public class MapLoadUtil {
         ArrayList<LoadApi.LoadLibrary> loadLibraries = new ArrayList<LoadApi.LoadLibrary>();
         LoadApi.go(onLoadCallback, loadLibraries, false);
     }
+
+    public static void loadMapApi(Runnable onLoadCallback, String otherParams){
+        ArrayList<LoadApi.LoadLibrary> loadLibraries = new ArrayList<LoadApi.LoadLibrary>();
+        LoadApi.go(onLoadCallback, loadLibraries, false, otherParams);
+    }
 }
