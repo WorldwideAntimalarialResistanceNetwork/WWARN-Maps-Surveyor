@@ -223,7 +223,11 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                 DirectoryTaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxonomyDirectory);
         ){
             // parse json into index using schema
-            List<Document> indexDocuments = parseJSONToIndexDocument(jsonWithMetaData.getJsonArray(), schema);
+            final JSONArray jsonArray = jsonWithMetaData.getJsonArray();
+            if(jsonArray == null){
+                throw new IllegalArgumentException("Failed to parse JSON, check JSON is valid.");
+            }
+            List<Document> indexDocuments = parseJSONToIndexDocument(jsonArray, schema);
             for (Document indexDocument : indexDocuments) {
                 indexWriter.addDocument(config.build(taxoWriter, indexDocument));
             }
@@ -248,6 +252,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
 
     private List<Document> parseJSONToIndexDocument(JSONArray jsonArray, DataSchema schema) {
         final ArrayList<Document> documents = new ArrayList<>();
+        Objects.requireNonNull(jsonArray);
         for (int i = 0; i < jsonArray.size(); i++){
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
             Set<String> fieldNamesSet = jsonObject.keySet();
