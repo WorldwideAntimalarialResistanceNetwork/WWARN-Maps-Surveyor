@@ -89,6 +89,8 @@
                     <mode>htmlunit</mode>
                     <style>${gwt.style}</style>
                     <includes>**/Gwt*Suite.java</includes>
+                    <testTimeOut>3000</testTimeOut>
+                    <timeOut>3000</timeOut>
                 </configuration>
             </plugin>
             <plugin>
