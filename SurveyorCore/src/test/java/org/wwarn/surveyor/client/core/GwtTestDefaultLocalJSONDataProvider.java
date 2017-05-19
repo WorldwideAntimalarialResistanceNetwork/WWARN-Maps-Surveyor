@@ -53,6 +53,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
     public static final int QUERY_SIZE = 28;
     public static final int FINISH_TEST_DELAY_TIMEOUT_MILLIS = 1500;
     public static final int EXPECTED_FACET_FOR_NIGERIA = 4;
+    private static final int TEST_CLIENT_TIMEOUT = 300000;
     private DataProviderTestUtility.DataProviderSource dataProviderSource;
     private final DataProviderTestUtility dataProviderTestUtility = new DataProviderTestUtility();
     protected JSONArray jsonArray;
@@ -111,7 +112,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             @Override
             public void run() {
                 try {
-                    dataProvider.query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
@@ -189,7 +190,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             FilterQuery filterQuery = new FilterQuery();
             filterQuery.addFilter("PUB", "Nigerian Tribune");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
@@ -217,7 +218,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 filterQuery = new FilterQuery();
             filterQuery.addFilter("QI", "Substandard");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
@@ -256,7 +257,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 //"{\"PID\":187,\"DOI\":\"\",\"TTL\":\"NAFDAC´s unfinished business in Kaduna\",\"FA\":\"Nigerian Tribune\",\"PY\":2011,\"PUB\":\"Nigerian Tribune\",\"PTI\":4,\"PTN\":\"Lay press\",\"URL\":\"\",\"DID\":29,\"DSN\":\"AL\",\"DN\":\"Artemether-Lumefantrine\",\"CID\":30,\"CN\":\"Nigeria\",\"CLAT\":9.17583,\"CLON\":7.167,\"LID\":100,\"LN\":\"Kaduna\",\"LLAT\":10.51667,\"LLON\":7.433333,\"SDI\":516,\"OTI\":2,\"OTN\":\"Private pharmacy\",\"STI\":6,\"STN\":\"MRA seizure\",\"DQI\":0,\"QI\":\"Falsified\",\"FR\":100,\"SD\":\"15/02/2010\",\"ED\":\"15/02/2010\",\"ICR\":\"-1\",\"DCN\":\"ACT\",\"NST\":-1}," +
 
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
@@ -311,7 +312,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 filterQuery.addFilter("CLAT", "9.17583");
                 filterQuery.addFilter("CLON", "7.167");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
@@ -347,7 +348,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 filterQuery.addFilter("PID", "128");
                 filterQuery.addFilter("PY", "2010");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
@@ -387,7 +388,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             @Override
             public void run() {
                 try {
-                    dataProvider.query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(new MatchAllQuery(), new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
@@ -431,7 +432,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
             FilterQuery filterQuery = new FilterQuery();
             filterQuery.addRangeFilter("PY", "2001", "2002");
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
@@ -478,7 +479,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 //DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("31/12/2003")
                 filterQuery.addRangeFilter("SD", DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("01/01/2001"), DataType.ParseUtil.parseDateInEnglishDayMonthYearFormat("31/12/2003"));
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
@@ -522,7 +523,7 @@ public class GwtTestDefaultLocalJSONDataProvider extends VisualizationTest {
                 FilterQuery filterQuery = new FilterQuery();
                 filterQuery.addFilterGreater("PID", 200);
                 try {
-                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>() {
+                    dataProvider.query(filterQuery, new AsyncCallbackWithTimeout<QueryResult>(TEST_CLIENT_TIMEOUT) {
                         @Override
                         public void onTimeOutOrOtherFailure(Throwable caught) {
                             this.onFailure(caught);
