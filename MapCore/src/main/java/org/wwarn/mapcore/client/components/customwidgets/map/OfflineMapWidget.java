@@ -62,6 +62,7 @@ public class OfflineMapWidget extends GenericMapWidget {
     private JavaScriptObject pfEndemicityTileLayer;
     private JavaScriptObject vectorLayer;
     private JavaScriptObject clusterLayer;
+    private JavaScriptObject clusterStyleCache;
 
     private String currentId;
     private boolean mapDrawCalled = false;
@@ -97,12 +98,13 @@ public class OfflineMapWidget extends GenericMapWidget {
         offlineStatusObserver = new OfflineStatusObserver();
         if (!isLoaded()) {
 //            ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.proj4js().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
+            ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.supercluster().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
             ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.js().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
             StyleInjector.injectStylesheetAtStart(OpenLayersV3Resources.INSTANCE.css().getText());
         }
     }
     public static native boolean isLoaded()/*-{
-        if (typeof $wnd.ol === "undefined" || $wnd.ol === null) {
+        if (typeof $wnd.ol === "undefined" || $wnd.ol === null || typeof $wnd.supercluster === "undefined" || $wnd.supercluster === null ) {
             return false;
         }
         return true;
