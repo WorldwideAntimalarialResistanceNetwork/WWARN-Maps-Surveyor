@@ -31,7 +31,8 @@
   #L%
   -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:filter="urn:import:org.wwarn.surveyor.client.mvp.view.filter">
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:filter="urn:import:org.wwarn.surveyor.client.mvp.view.filter" xmlns:widget="urn:import:org.wwarn.surveyor.client.mvp.view.widgets">
     <ui:style>
         .mainAppWidget {
 
@@ -65,6 +66,7 @@
                         </g:HTMLPanel>
                     </g:VerticalPanel>
                     <g:VerticalPanel ui:field="rightColumn">
+                        <widget:FeedbackWidgetComposite url="https://docs.google.com/forms/d/e/1FAIpQLSeQXoy2CE4PPXXR2ngvbEBZ7zxhbZEgn4ja46zQO5IPdjtggQ/viewform?usp=pp_url&amp;entry.275962491&amp;entry.734236631&amp;entry.935756694=All+surveyors"/>
                         <g:FlowPanel ui:field="resultsContainerPanel"/>
                         <g:FlowPanel>
                             <filter:YearRangeSliderComposite addStyleNames="{style.horizontalPanelAlignment} {style.yearRangeSliderComposite}" width="50%" fieldName="PY" dateFormat="yyyy"/>
