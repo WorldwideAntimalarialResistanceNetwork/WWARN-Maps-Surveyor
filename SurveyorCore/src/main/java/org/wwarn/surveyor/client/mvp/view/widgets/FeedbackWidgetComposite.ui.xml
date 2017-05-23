@@ -6,6 +6,7 @@
             position: fixed;
             top: 240px;
             right: 0;
+            z-index: 999;
         }
 
         .feedbackContentPanel {
