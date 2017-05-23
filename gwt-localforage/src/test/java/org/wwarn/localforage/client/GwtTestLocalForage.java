@@ -40,6 +40,7 @@ public class GwtTestLocalForage extends GWTTestCase {
         final LocalForage localForage = GWT.create(LocalForage.class);
         assertTrue(localForage.isSupported());
         assertTrue(localForage.isLoaded());
+        delayTestFinish(TIMEOUT_MILLIS);
         localForage.clear(new LocalForageCallback() {
             @Override
             public void onComplete(boolean error, Object value) {
@@ -54,7 +55,6 @@ public class GwtTestLocalForage extends GWTTestCase {
                 });
             }
         });
-        delayTestFinish(TIMEOUT_MILLIS);
     }
 
     private void assertLengthEqaulsOne(LocalForage localForage) {
@@ -73,6 +73,7 @@ public class GwtTestLocalForage extends GWTTestCase {
         final LocalForage localForage = GWT.create(LocalForage.class);
         assertTrue(localForage.isSupported());
         assertTrue(localForage.isLoaded());
+        delayTestFinish(TIMEOUT_MILLIS);
         localForage.setItem("key1", "value1", new LocalForageCallback<String>() {
             @Override
             public void onComplete(boolean error, String value) {
@@ -95,13 +96,13 @@ public class GwtTestLocalForage extends GWTTestCase {
 
             }
         });
-        delayTestFinish(TIMEOUT_MILLIS);
     }
 
     public void testLocalForageKey() {
         final LocalForage localForage = GWT.create(LocalForage.class);
         assertTrue(localForage.isSupported());
         assertTrue(localForage.isLoaded());
+        delayTestFinish(TIMEOUT_MILLIS);
         localForage.setItem("key1", "value1", new LocalForageCallback<String>() {
             @Override
             public void onComplete(boolean error, String value) {
@@ -125,13 +126,13 @@ public class GwtTestLocalForage extends GWTTestCase {
 
             }
         });
-        delayTestFinish(TIMEOUT_MILLIS);
     }
 
     public void testLocalForageKeys() {
         final LocalForage localForage = GWT.create(LocalForage.class);
         assertTrue(localForage.isSupported());
         assertTrue(localForage.isLoaded());
+        delayTestFinish(TIMEOUT_MILLIS);
         localForage.setItem("key1", "value1", new LocalForageCallback<String>() {
             @Override
             public void onComplete(boolean error, String value) {
@@ -165,7 +166,6 @@ public class GwtTestLocalForage extends GWTTestCase {
                 });
             }
         });
-        delayTestFinish(TIMEOUT_MILLIS);
     }
 
     public void testLocalForageIterate() {
@@ -173,6 +173,8 @@ public class GwtTestLocalForage extends GWTTestCase {
         assertTrue(localForage.isSupported());
         assertTrue(localForage.isLoaded());
         final int[] countOfIteration = {0};
+        delayTestFinish(TIMEOUT_MILLIS);
+
         localForage.clear(new LocalForageCallback() {
             @Override
             public void onComplete(boolean error, Object value) {
@@ -239,7 +241,6 @@ public class GwtTestLocalForage extends GWTTestCase {
                 });
             }
         });
-        delayTestFinish(TIMEOUT_MILLIS);
     }
 
     private JavaScriptObject getEmptyArray() {
