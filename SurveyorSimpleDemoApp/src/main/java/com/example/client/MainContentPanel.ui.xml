@@ -32,7 +32,8 @@
   -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:filter="urn:import:org.wwarn.surveyor.client.mvp.view.filter" xmlns:widget="urn:import:org.wwarn.surveyor.client.mvp.view.widgets">
+             xmlns:filter="urn:import:org.wwarn.surveyor.client.mvp.view.filter"
+             xmlns:widget="urn:import:org.wwarn.surveyor.client.mvp.view.widgets">
     <ui:style>
         .filterContainerPanel {
             /*float: none;*/
