@@ -67,7 +67,7 @@ public class ProjectEntryPoint implements EntryPoint {
                     public void run() {
                         loadVisualisationApi();
                     }
-                });
+                },"key=AIzaSyB19viB1Kzwxjp49tKN5_jdnBdGB5pG42I");
             }
         });
     }
