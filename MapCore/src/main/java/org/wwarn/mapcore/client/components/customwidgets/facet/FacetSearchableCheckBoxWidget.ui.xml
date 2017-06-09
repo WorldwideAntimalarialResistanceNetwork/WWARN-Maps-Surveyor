@@ -78,9 +78,10 @@
                 <span ui:field="toggleFilterField" class="glyphicon glyphicon-plus"></span>
             </g:Anchor>
             <span ui:field="headingValue">Default header</span>
+            <g:Anchor ui:field="resizeControl" href="#"><span ui:field="toggleResize" class="glyphicon glyphicon-resize-full"></span></g:Anchor>
             <g:Anchor visible="false" ui:field="clearSelectionControl"
-                      addStyleNames="{style.searchableCheckBoxClearAnchor} searchableCheckBoxClearAnchor" href="#">clear
-            </g:Anchor>
+                      addStyleNames="{style.searchableCheckBoxClearAnchor} searchableCheckBoxClearAnchor"
+                      href="#">clear</g:Anchor>
         </g:HTMLPanel>
         <g:FlowPanel ui:field="filterMainBody">
             <g:TextBox ui:field="searchBox"/>
@@ -89,6 +90,6 @@
                     <g:VerticalPanel ui:field="checkBoxContainer"/>
                 </g:FocusPanel>
             </g:ScrollPanel>
-    </g:FlowPanel>
+        </g:FlowPanel>
     </g:VerticalPanel>
 </ui:UiBinder>
