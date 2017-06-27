@@ -43,15 +43,20 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
-import com.allen_sauer.gwt.log.client.Log;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.nio.file.StandardWatchEventKinds.*;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Listen for changes in local indexed file and inform parent class of changes
  * Takes a while to setup file changed listener
  */
 public class FileChangeMonitor extends Observable {
+    private static Logger logger = Logger.getLogger("SurveyorCore.FileChangeMonitor");
+
     private WatchService watcher;
     private final Map<WatchKey, Path> keys = new HashMap<WatchKey, Path>();
     private Path monitoredFile;
@@ -68,7 +73,7 @@ public class FileChangeMonitor extends Observable {
     @Override
     public synchronized void addObserver(Observer o) {
         if(watcher == null) {
-            Log.warn("FileChangeMonitor::addObserver", "init/initSynchronous not yet called - ensure it is called with a path to file to observer, or there will be nothing to observe!");
+            logger.log(INFO, "FileChangeMonitor::addObserver + init/initSynchronous not yet called - ensure it is called with a path to file to observer, or there will be nothing to observe!");
         }
         super.addObserver(o);
     }
@@ -163,20 +168,18 @@ public class FileChangeMonitor extends Observable {
             while(!Thread.currentThread().isInterrupted()){
                 // wait for key to be signalled
 
-                GWT.log("Watcher::processEvents"+ "Started the long blocking call");
-                Log.debug("Watcher::processEvents", "Started the long blocking call");
+                logger.log(INFO,"Watcher::processEvents"+ "Started the long blocking call");
                 WatchKey key = watcher.take(); /* This call is blocking until events are present
                 This can take a while complete,
                 hence startSignal given only after this is loaded*/
                 startSignal.countDown();
-                GWT.log("Watcher::processEvents" + "Finished the long blocking call");
-                Log.debug("Watcher::processEvents", "Finished the long blocking call");
+                logger.log(INFO,"Watcher::processEvents" + "Finished the long blocking call");
 
 
                 Path dir = keys.get(key);
                 if (dir == null) {
                     final String warningmsg = "WatchKey not recognized!!";
-                    Log.error("Watcher::processEvents", warningmsg);
+                    logger.log(SEVERE,"Watcher::processEvents", warningmsg);
                     throw new IllegalStateException(warningmsg);
                 }
 
@@ -216,13 +219,13 @@ public class FileChangeMonitor extends Observable {
         @Override
         public void run() {
             try {
-                Log.debug("Watcher::run", "Entered run state");
+                logger.log(INFO,"Watcher::run", "Entered run state");
                 processEvents();
             } catch (IOException e) {
-                Log.error("Watcher::run", "I/O failure while call to processEvents", e);
+                logger.log(SEVERE,"Watcher::run I/O failure while call to processEvents", e);
                 throw new IllegalStateException(e);
             } catch (InterruptedException e) {
-                Log.error("Watcher::run", "Threat interrupted exception", e);
+                logger.log(SEVERE,"Watcher::run Threat interrupted exception", e);
                 throw new IllegalStateException(e);
             }
         }

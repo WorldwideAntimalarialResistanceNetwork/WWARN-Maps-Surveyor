@@ -33,7 +33,6 @@ package org.wwarn.surveyor.client.util;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -42,6 +41,10 @@ import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.FINE;
 
 
 /**
@@ -54,6 +57,7 @@ import java.util.Date;
  * Time: 14:28:31
  */
 public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
+    private static Logger logger = Logger.getLogger("SurveyorCore.AsyncCallbackWithTimeout");
 
     final private Timer timer;
     public static Timestamp latestServerCallTimeStamps = null;
@@ -74,9 +78,9 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
         latestServerCallTimeStamps = timeSend;
         //reset
         SurveyorUncaughtExceptionHandler.alertMsg = true;
-        if(Log.isDebugEnabled()) {
-            Log.debug("Registering latest server request with time stamp ..." + timeSend.toString());
-            Log.debug("AsyncCallbackWithTimeout constructor, timeoutMillis: " + timeoutMillis);
+        if(logger.isLoggable(FINE)) {
+            logger.log(FINE,"Registering latest server request with time stamp ..." + timeSend.toString());
+            logger.log(FINE,"AsyncCallbackWithTimeout constructor, timeoutMillis: " + timeoutMillis);
         }
 
         timer = new Timer() {
@@ -92,15 +96,15 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
     }
 
     private void onTimeout() {
-        if(Log.isDebugEnabled()) {
-            Log.debug("AsyncCallbackWithTimeout::onTimeout");
+        if(logger.isLoggable(FINE)) {
+            logger.log(FINE,"AsyncCallbackWithTimeout::onTimeout");
         }
         final TimedOutException timeOutException = new TimedOutException(TIMEOUT_ERROR);
 
         //display error only for latest timeout event
         if (latestServerCallTimeStamps!=null && timeSend.before(latestServerCallTimeStamps)) {
-            if(Log.isDebugEnabled()) {
-                Log.debug("----------------- switch off alert msg ");
+            if(logger.isLoggable(FINE)) {
+                logger.log(FINE, "----------------- switch off alert msg ");
             }
             SurveyorUncaughtExceptionHandler.alertMsg = false;
             SimpleClientFactory.getInstance().getEventBus().fireEvent(new ExceptionEvent(timeOutException));
@@ -119,8 +123,8 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
     public void onFailure(Throwable caught) {
 
         if (!hasTimedOut) {
-            if(Log.isDebugEnabled()) {
-                Log.debug("AsyncCallbackWithTimeout::onFailure, hasNotTimedOut");
+            if(logger.isLoggable(FINE)) {
+                logger.log(FINE,"AsyncCallbackWithTimeout::onFailure, hasNotTimedOut");
             }
             SimpleClientFactory.getInstance().getEventBus().fireEvent(new ExceptionEvent(new IllegalStateException(caught)));
 
@@ -135,8 +139,8 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
     public void onSuccess(T result) {
 
         if (!hasTimedOut) {
-            if(Log.isDebugEnabled()) {
-                Log.debug("AsyncCallbackWithTimeout::onNonTimedOutSuccess, hasNotTimedOut");
+            if(logger.isLoggable(FINE)) {
+                logger.log(FINE,"AsyncCallbackWithTimeout::onNonTimedOutSuccess, hasNotTimedOut");
             }
 
             timer.cancel();

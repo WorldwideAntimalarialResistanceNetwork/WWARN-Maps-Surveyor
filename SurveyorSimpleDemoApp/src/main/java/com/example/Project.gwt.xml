@@ -57,26 +57,26 @@
     </replace-with>
 
     <replace-with class="org.wwarn.surveyor.client.mvp.SimpleClientFactory">
-            	<when-type-is class="org.wwarn.surveyor.client.mvp.ClientFactory"/>
+    	<when-type-is class="org.wwarn.surveyor.client.mvp.ClientFactory"/>
     </replace-with>
 
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerHoverLabelBuilder">
-            	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerHoverLabelBuilder"/>
+    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerHoverLabelBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.DefaultMarkerClickInfoWindowBuilder">
-            	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerClickInfoWindowBuilder"/>
+    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerClickInfoWindowBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.DefaultTableRecordsFilter">
-            	<when-type-is class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.TableRecordsFilter"/>
+    	<when-type-is class="org.wwarn.surveyor.client.mvp.view.table.TableViewComposite.TableRecordsFilter"/>
     </replace-with>
     <replace-with class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.DefaultMarkerIconPathBuilder">
-            	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerIconPathBuilder"/>
+    	<when-type-is class="org.wwarn.mapcore.client.components.customwidgets.map.GenericMarker.MarkerIconPathBuilder"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerDisplayFilter">
-            	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerDisplayFilter"/>
+    	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerDisplayFilter"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.DefaultMarkerCoordinateSource">
-            	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerCoordinateSource"/>
+    	<when-type-is class="org.wwarn.surveyor.client.mvp.view.map.MapViewComposite.MarkerCoordinateSource"/>
     </replace-with>
     <replace-with class="org.wwarn.surveyor.client.core.ServerSideSearchDataProvider.DefaultInitialFilterQuery">
         <when-type-is class="org.wwarn.surveyor.client.core.InitialFilterQuery"/>

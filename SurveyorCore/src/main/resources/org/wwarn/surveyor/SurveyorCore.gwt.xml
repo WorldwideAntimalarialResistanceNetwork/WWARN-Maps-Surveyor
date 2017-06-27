@@ -33,12 +33,7 @@
   -->
 
 <module>
-    <!-- Logging -->
-    <inherits name="com.allen_sauer.gwt.log.gwt-log-OFF" />
-    <extend-property name="log_level" values="DEBUG"/>
-    <!--Enable RemoteLogger-->
-    <inherits name="com.allen_sauer.gwt.log.gwt-log-RemoteLogger" />
-    <!-- End Logging -->
+    <inherits name="com.google.gwt.logging.Logging"/>
 
     <!-- Inherit the core Web Toolkit stuff.                        -->
     <!--<inherits name='com.google.gwt.user.User' />-->

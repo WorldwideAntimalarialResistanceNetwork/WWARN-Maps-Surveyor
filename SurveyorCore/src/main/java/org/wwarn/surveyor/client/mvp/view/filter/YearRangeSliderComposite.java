@@ -33,7 +33,6 @@ package org.wwarn.surveyor.client.mvp.view.filter;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -221,9 +220,8 @@ public class YearRangeSliderComposite extends Composite{
                         !integerShowRangeEvent.getEnd().equals(currentMaxYear)) {
                     currentMinYear = integerShowRangeEvent.getStart();
                     currentMaxYear = integerShowRangeEvent.getEnd();
-                    if(Log.isDebugEnabled()) {
-                        Log.debug("Min and max year " + currentMinYear + " " + currentMaxYear);
-                    }
+
+
                     if(StringUtils.isEmpty(filterByDateRangeSettings.getFieldFrom()) ||
                             StringUtils.isEmpty(filterByDateRangeSettings.getFieldTo())){
                         filterChangedEvent.addFilter(DataType.ParseUtil.parseDateStartYearOnly(currentMinYear), DataType.ParseUtil.parseDateEndYearOnly(currentMaxYear));

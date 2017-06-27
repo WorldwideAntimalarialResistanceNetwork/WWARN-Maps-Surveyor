@@ -33,7 +33,6 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +59,6 @@ public class RecordListCompressedWithInvertedIndexImpl extends RecordListCompres
     @Override
     public void addRecord(String... fields) {
         super.addRecord(fields);
-        Log.debug(Arrays.toString(fields));
         index.addDocument(fields);
     }
 

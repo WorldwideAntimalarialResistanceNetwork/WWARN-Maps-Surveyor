@@ -34,7 +34,6 @@ package org.wwarn.surveyor.client;
  */
 
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -46,17 +45,28 @@ import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.mvp.SurveyorAppController;
 import org.wwarn.surveyor.client.mvp.view.MainPanelView;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Surveyor implements EntryPoint {
     protected ClientFactory clientFactory = SimpleClientFactory.getInstance();
+    private static Logger logger = Logger.getLogger("SurveyorCore.Surveyor");
 
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        Log.setUncaughtExceptionHandler();
+        GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
+            @Override
+            public void onUncaughtException(Throwable e) {
+                logger.log(SEVERE, "UncaughtException", e);
+            }
+        });
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
@@ -74,7 +84,7 @@ public class Surveyor implements EntryPoint {
 
         @Override
         public void onUncaughtException(Throwable throwable) {
-            Log.error("Uncaught exception", throwable);
+            logger.log(SEVERE,"Uncaught exception", throwable);
         }
     }
 
