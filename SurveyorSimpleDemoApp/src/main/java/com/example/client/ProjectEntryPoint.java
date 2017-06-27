@@ -33,8 +33,8 @@ package com.example.client;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.Table;
@@ -46,18 +46,26 @@ import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.mvp.SurveyorAppController;
 import org.wwarn.surveyor.client.mvp.view.MainPanelView;
 
+import java.util.logging.Logger;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class ProjectEntryPoint implements EntryPoint {
     protected ClientFactory clientFactory = SimpleClientFactory.getInstance();
+    private static Logger LOGGER = Logger.getLogger("UncaughtExceptionLogger");
 
   /**
    * Sets up RPC
    */
 
     public void onModuleLoad() {
-        Log.setUncaughtExceptionHandler();
+        GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
+            @Override
+            public void onUncaughtException(Throwable e) {
+                
+            }
+        });
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {

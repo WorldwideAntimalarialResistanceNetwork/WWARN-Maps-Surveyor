@@ -34,7 +34,6 @@ package org.wwarn.surveyor.client.mvp.view.table;
  */
 
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -121,7 +120,6 @@ public class CliendSideAsyncDataProvider extends AsyncDataProvider<RecordList.Re
             });
         }catch(Exception e){
             final String message = "Unable to query the table";
-            Log.error(message, e);
             throw new SearchException(message,e);
         }
 

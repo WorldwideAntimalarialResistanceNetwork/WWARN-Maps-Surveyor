@@ -33,7 +33,6 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.http.client.*;
@@ -56,7 +55,10 @@ import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.SEVERE;
 
 /**
  * JSON Data provider, this contains the logic to query a JSON data source, supports filter queries, and faceted
@@ -68,6 +70,7 @@ import java.util.Set;
  * Time: 15:40
  */
 public class DefaultLocalJSONDataProvider implements DataProvider {
+    private static Logger logger = Logger.getLogger("SurveyorCore.DefaultLocalJSONDataProvider");
 
     private final DataTable dataTable = DataTable.create();
     private final DataSchema schema;
@@ -387,7 +390,7 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
                     }else{
                         final String message = "Failed to retrieve external resources ; ERROR CODE:" + response.getStatusCode();
                         final IllegalStateException illegalStateException = new IllegalStateException(message);
-                        Log.error(message, illegalStateException);
+                        logger.log(SEVERE,message, illegalStateException);
                         throw illegalStateException;
                     }
                 }
@@ -395,14 +398,14 @@ public class DefaultLocalJSONDataProvider implements DataProvider {
                 @Override
                 public void onError(Request request, Throwable throwable) {
                     final String message = "Failed to retrieve external resources; ERROR CODE:" + throwable.getMessage();
-                    Log.error(message, throwable);
+                    logger.log(SEVERE,message, throwable);
                     throw new IllegalStateException(message, throwable);
             }
             });
             try{
                 requestBuilder.send();
             }catch(RequestException e){
-                Log.error("Failed to retrieve external resources ", e);
+                logger.log(SEVERE,"Failed to retrieve external resources ", e);
             }
         }
 

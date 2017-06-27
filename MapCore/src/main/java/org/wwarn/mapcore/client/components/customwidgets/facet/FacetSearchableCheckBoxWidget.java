@@ -33,7 +33,6 @@ package org.wwarn.mapcore.client.components.customwidgets.facet;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
@@ -48,17 +47,25 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.Button;
 import org.jetbrains.annotations.NotNull;
 import org.wwarn.mapcore.client.common.types.FilterConfigVisualization;
 import org.wwarn.mapcore.client.panel.Tooltip;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Checkbox implementation of a filter widget
  */
 public class FacetSearchableCheckBoxWidget extends Composite implements FacetWidget, KeyUpHandler {
+    private static Logger logger = Logger.getLogger("MapCore.FacetSearchableCheckBoxWidget");
 
     public static final String STYLE_CHECKBOXLIST_ITEM_CHECKED = "searchCheckBoxListItemChecked";
     public static final String STYLE_CHECKBOXLIST_ITEM_DISABLED = "searchCheckBoxListItemDisabled";
@@ -99,6 +106,8 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     FocusPanel focusPanel;
     @UiField
     VerticalPanel checkBoxContainer;
+    @UiField
+    Anchor resizeControl;
     /**
      * Once the user adds a text into the textBox, this method is responsible to update
      * the listBox with the suggestions.
@@ -317,6 +326,15 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         }
     }
 
+    private void createDialogBox() {
+        // Create a dialog box and set the caption text
+        final GWTDialogBox dialogBox = new GWTDialogBox();
+        dialogBox.setContent(this);
+        dialogBox.setTitle(this.getFacetTitle());
+        dialogBox.show();
+
+    }
+
     @UiHandler("clearSelectionControl")
     public void clearSelectionHandleClick(ClickEvent event) {
         event.preventDefault();
@@ -331,6 +349,11 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         event.preventDefault();
         filterMainBody.setVisible(!filterMainBody.isVisible());
         updateToggleFilterView();
+    }
+
+    @UiHandler("resizeControl")
+    public void resizeControlClick(ClickEvent event) {
+        createDialogBox();
     }
 
     @NotNull
@@ -441,8 +464,8 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
     private FacetWidgetItem getFacetWidgetItemFromIndex(int currentIndices) {
         FacetWidgetItem facetWidgetItem;
         try {
-            if(Log.isDebugEnabled()) {
-                Log.debug("index " + (currentIndices - 1));
+            if(logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "index " + (currentIndices - 1));
             }
             facetWidgetItem = facetWidgetItems.get(currentIndices);
 
@@ -464,7 +487,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         //asif
         int visibleItemCount = this.getVisibleItemCount();
         if(visibleItemCount < 1) {
-            Log.error("", new IllegalStateException("Visible item count " + visibleItemCount));
+            logger.log(Level.SEVERE,"", new IllegalStateException("Visible item count " + visibleItemCount));
             visibleItemCount = 1;
         }
         int offset = 80;
@@ -577,5 +600,54 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
         @UiTemplate("FacetLabelTemplate.ui.xml")
         interface FacetLabelTemplateBinder extends UiBinder<Widget, HeaderPopup>{}
+    }
+
+    static class GWTDialogBox extends Composite{
+        private static DialogBoxTemplateBinder dialogBoxTemplateBinder = GWT.create(DialogBoxTemplateBinder.class);
+        private VerticalPanel oldParent;
+
+        @UiField
+        Modal modal;
+
+        @UiField
+        VerticalPanel modalBody;
+        @UiField
+        Button closeModal;
+        private int beforeIndexPosition;
+
+        public GWTDialogBox() {
+            final Widget widget = dialogBoxTemplateBinder.createAndBindUi(this);
+            initWidget(widget);
+        }
+
+        public void setTitle(String title){
+            modal.setTitle(title);
+        }
+
+        public void setContent(Widget widget){
+            this.oldParent = (VerticalPanel) widget.getParent();
+            this.beforeIndexPosition = ((VerticalPanel) widget.getParent()).getWidgetIndex(widget);
+            modalBody.add(widget);
+        }
+
+        public void show(){
+            modal.show();
+            final Widget modalBodyWidget = modalBody.getWidget(0);
+//            modalBodyWidget.setWidth("400px");
+
+        }
+
+        public void hide(){
+            modal.hide();
+        }
+
+        @UiHandler("closeModal")
+        public void closeModalClick(ClickEvent event) {
+            final Widget modalBodyWidget = modalBody.getWidget(0);
+            (oldParent).insert(modalBodyWidget, beforeIndexPosition);
+        }
+
+        @UiTemplate("FacetDialogBoxTemplate.ui.xml")
+        interface DialogBoxTemplateBinder extends UiBinder<Widget, GWTDialogBox>{}
     }
 }

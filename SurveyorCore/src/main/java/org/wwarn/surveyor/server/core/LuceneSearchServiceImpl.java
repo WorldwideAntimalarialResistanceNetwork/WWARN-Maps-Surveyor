@@ -33,7 +33,6 @@ package org.wwarn.surveyor.server.core;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.googlecode.luceneappengine.GaeDirectory;
 import com.googlecode.luceneappengine.GaeLuceneUtil;
@@ -59,11 +58,17 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Setup index, from some data source and schema
  */
 public class LuceneSearchServiceImpl implements SearchServiceLayer {
+    private static Logger logger = Logger.getLogger("SurveyorCore.LuceneSearchServiceImpl");
+
     public static final String DATE_FORMAT_YEAR = "yyyy";
     private static LuceneSearchServiceImpl ourInstance = new LuceneSearchServiceImpl();
     private Directory indexDirectory = null;
@@ -87,7 +92,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
     public void init(final DataSchema dataSchema, final GenericDataSource dataSource) throws SearchException {
         try {
             if(this.hasInitialised.get() && dataSource != null && dataSource.getLocation() == location){
-                if(Log.isDebugEnabled()) Log.debug("LuceneSearchServiceImpl::init", "skipping initialisation, already called previously");
+                logger.log(FINE,"LuceneSearchServiceImpl::init", "skipping initialisation, already called previously");
                 return;
             }
             Objects.requireNonNull(dataSchema);
@@ -96,11 +101,11 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             //setup index
             JSONWithMetaData jsonContent = getJsonArrayFrom(dataSource);
             setupIndex(dataSource, dataSchema, jsonContent);
-            if(Log.isDebugEnabled()) Log.debug("LuceneSearchServiceImpl::init", "Finished setup of index from json data");
+            logger.log(FINE,"LuceneSearchServiceImpl::init", "Finished setup of index from json data");
             this.hasInitialised.getAndSet(true);
             setupIndexMonitor(dataSchema, dataSource);
         } catch (Exception e) {
-            Log.error("Failed to initialise index", e);
+            logger.log(SEVERE,"Failed to initialise index", e);
             throw e;
         }
     }
@@ -111,7 +116,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
      * @param dataSource
      */
     private void setupIndexMonitor(final DataSchema dataSchema, final GenericDataSource dataSource) {
-        if(Log.isDebugEnabled()) Log.debug("LuceneSearchServiceImpl::setupIndexMonitor","Attempting to setup Index monitor...");
+        logger.log(FINE,"LuceneSearchServiceImpl::setupIndexMonitor Attempting to setup Index monitor...");
 
         try {
             if(GoogleAppEngineUtil.isGaeEnv()){
@@ -137,8 +142,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                 public void update(Observable o, Object arg) {
                     JSONWithMetaData jsonContent;
                     try {
-                        if (Log.isDebugEnabled())
-                            Log.debug("LuceneSearchServiceImpl::setupIndexMonitor", "Index monitor change noted.");
+                        logger.log(FINE,"LuceneSearchServiceImpl::setupIndexMonitor", "Index monitor change noted.");
                         jsonContent = getJsonArrayFrom(dataSource);
                     } catch (SearchException e) {
                         throw new IllegalStateException(e);
@@ -147,7 +151,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                 }
             });
         } catch (Exception e) {
-            Log.error("LuceneSearchServiceImpl::setupIndexMonitor","Failed to setup monitor for indexed file changes", e);
+            logger.log(SEVERE,"LuceneSearchServiceImpl::setupIndexMonitor Failed to setup monitor for indexed file changes", e);
         }
     }
 
@@ -215,9 +219,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         indexDirectory = getDirectoryFrom(dataSource);//create a default index
         taxonomyDirectory = new RAMDirectory();//create a default index
         this.dataSourceHash = jsonWithMetaData.getDataSourceHash();
-        if(Log.isDebugEnabled()){
-            Log.debug("indexDirectory and taxonomyDirectory are ready");
-        }
+        logger.log(FINE, "indexDirectory and taxonomyDirectory are ready");
         try (
                 IndexWriter indexWriter = new IndexWriter(indexDirectory, conf);
                 DirectoryTaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(taxonomyDirectory);
@@ -232,12 +234,11 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                 indexWriter.addDocument(config.build(taxoWriter, indexDocument));
             }
             indexWriter.commit();
-            if(Log.isDebugEnabled()){
-                Log.debug("finished parsing json into index");
-            }
+            logger.log(FINE,"finished parsing json into index");
+
 
         } catch (IOException e) {
-            Log.error("Failed to setup search index",e);
+            logger.log(SEVERE,"Failed to setup search index",e);
             throw new IllegalStateException(e);
         }
     }
@@ -525,7 +526,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             return getPageRecords(uniqueRecords, start,length);
         }catch(Exception e){
             final String message = "Unable to query the table";
-            Log.error(message,e);
+            logger.log(SEVERE,message,e);
             throw new SearchException(message,e);
         }
     }

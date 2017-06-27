@@ -33,7 +33,6 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.io.Serializable;
@@ -47,6 +46,7 @@ import java.util.*;
  * Time: 11:33
  */
 public class RecordList implements IsSerializable, Serializable{
+
     protected DataSchema schema;
     protected List<Record> records = new ArrayList<Record>();
     protected String dataSourceHash = "";
@@ -230,7 +230,6 @@ public class RecordList implements IsSerializable, Serializable{
         protected void validateIndex(int index, String message) {
             if(index > fields.length-1 || index < 0){
                 IndexOutOfBoundsException e = new IndexOutOfBoundsException(message);
-                Log.error("IndexOutOfBoundsException", e);
                 throw e;
             }
         }

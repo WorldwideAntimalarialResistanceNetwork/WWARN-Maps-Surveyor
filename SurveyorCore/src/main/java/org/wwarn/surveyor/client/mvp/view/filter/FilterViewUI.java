@@ -33,7 +33,6 @@ package org.wwarn.surveyor.client.mvp.view.filter;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -66,12 +65,16 @@ import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.mvp.presenter.FilterPresenter;
 
 import java.util.*;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.FINE;
 
 /**
  * Add filter widget
  * Get filter event changes and delegate
  */
 public class FilterViewUI extends Composite implements  FilterView {
+    private static Logger logger = Logger.getLogger("SurveyorCore.FilterViewUI");
     protected FilterPresenter presenter;
     protected final Panel panel;
     private LinkedFilterSelectionState linkedFilterSelectionState = new LinkedFilterSelectionState();
@@ -288,9 +291,7 @@ public class FilterViewUI extends Composite implements  FilterView {
         resetAnchor.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                if (Log.isDebugEnabled()) {
-                    Log.debug("Resetting app to default state.");
-                }
+                logger.log(FINE,"Resetting app to default state.");
                 clientFactory.getEventBus().fireEvent(new ResetFilterActionEvent());
             }
         });

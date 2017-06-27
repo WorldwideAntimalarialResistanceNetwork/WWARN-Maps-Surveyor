@@ -33,18 +33,22 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import org.wwarn.surveyor.client.mvp.ClientFactory;
 import org.wwarn.surveyor.client.mvp.SimpleClientFactory;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.List;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Created by nigelthomas on 27/05/2014.
  */
 public class ServerSideSearchDataProvider implements DataProvider {
+    private static Logger logger = Logger.getLogger("SurveyorCore.ServerSideSearchDataProvider");
+
     protected final GenericDataSource dataSource;
     protected SearchServiceAsync searchServiceAsync = (SearchServiceAsync) GWT.create(SearchService.class);
     protected ClientFactory clientFactory = SimpleClientFactory.getInstance();
@@ -76,7 +80,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
                 }
             });
         } catch (SearchException e) {
-            Log.error("Unable to initalise the index", e);
+            logger.log(SEVERE,"Unable to initalise the index", e);
             throw new IllegalStateException(e);
         }
     }
@@ -106,7 +110,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
         try {
             searchServiceAsync.query(filterQuery, facetFields,  queryResultCallBack);
         } catch (SearchException e) {
-            Log.error("Query failed with error", e);
+            logger.log(SEVERE,"Query failed with error", e);
             throw e;
         }
     }
@@ -116,7 +120,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
         try {
             searchServiceAsync.query(filterQuery, this.facetFieldList, queryResultCallBack);
         } catch (SearchException e) {
-            Log.error("Error completing query", e);
+            logger.log(SEVERE,"Error completing query", e);
             throw (e);
         }
     }
@@ -125,7 +129,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
         try {
             searchServiceAsync.queryUniqueRecords(filterQuery, this.facetFieldList, queryResultCallBack);
         } catch (Exception e) {
-            Log.error("query unique record failed", e);
+            logger.log(SEVERE,"query unique record failed", e);
             throw new SearchException("query unique record failed", e);
         }
     }
@@ -135,7 +139,7 @@ public class ServerSideSearchDataProvider implements DataProvider {
             searchServiceAsync.fetchDataVersion(schema, dataSource, dataVersionCallback);
         } catch (Exception e) {
             final String message = "unable to fetch data version";
-            Log.error(message, e);
+            logger.log(SEVERE,message, e);
             throw new SearchException(message, e);
         }
     }
