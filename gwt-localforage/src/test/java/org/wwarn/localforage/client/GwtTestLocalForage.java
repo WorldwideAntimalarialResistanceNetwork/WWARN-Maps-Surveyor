@@ -19,7 +19,7 @@ import java.util.Arrays;
  */
 public class GwtTestLocalForage extends GWTTestCase {
 
-    public static final int TIMEOUT_MILLIS = 10000;
+    public static final int TIMEOUT_MILLIS = 100000; // wait for 100 seconds
 
     /**
      * Must refer to a valid module that sources this class.
