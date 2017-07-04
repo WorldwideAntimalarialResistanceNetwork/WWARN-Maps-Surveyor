@@ -35,6 +35,7 @@ package org.wwarn.surveyor.client.mvp.view.table;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
+import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.DataType;
 import org.wwarn.surveyor.client.core.RecordList;
 
@@ -68,6 +69,8 @@ public class TableFunctionsCellTable {
             result = arith();
         }else if(functionType == TableFunctions.FunctionType.GET_YEAR){
             result = getYear();
+        }else if(functionType == TableFunctions.FunctionType.GET_MOL_PYEAR){
+            result = getYearMol();
         }else if(functionType == TableFunctions.FunctionType.IF_NULL){
             result = ifNull();
         }else if(functionType == TableFunctions.FunctionType.LIMIT_STRING){
@@ -77,8 +80,6 @@ public class TableFunctionsCellTable {
         }
         return result;
     }
-
-
 
     /**
      * Given 2 fields, concat two years eg 2006 - 2008
@@ -160,6 +161,26 @@ public class TableFunctionsCellTable {
         Date dateFrom = DataType.ParseUtil.tryParseDate(rawDateFrom, DataType.DEFAULT_DATE);
 
         String yearString = yearFormat.format(dateFrom);
+        return yearString;
+    }
+
+    /**
+     * Year collection method for the molecular surveyors, where a publication may have null value for pYear
+     * In the config file use:
+     * fieldName="func(GET_YEAR_MOL(field1))"
+     */
+    private String getYearMol(){
+        if(params.length != 1){
+            throw new IllegalArgumentException("Wrong number of Parameters for concat date expression");
+        }
+
+        final DateTimeFormat yearFormat = DateTimeFormat.getFormat(DataType.DATE_FORMAT_YEAR_ONLY);
+        String yearString;
+        final String rawDateFrom = record.getValueByFieldName(params[0]);
+        if(!StringUtils.isEmpty(rawDateFrom)){
+            Date dateFrom = DataType.ParseUtil.tryParseDate(rawDateFrom, DataType.DEFAULT_DATE);
+            yearString = yearFormat.format(dateFrom);}
+        else yearString = "Unpublished";
         return yearString;
     }
     /**

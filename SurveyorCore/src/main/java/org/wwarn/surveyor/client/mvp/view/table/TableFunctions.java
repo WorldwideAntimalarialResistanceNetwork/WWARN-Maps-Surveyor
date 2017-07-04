@@ -192,6 +192,7 @@ public class TableFunctions {
      * In the config file use:
      * fieldName="func(IFNULL(field1,field2))"
      */
+
     private String ifNull(int rowIndex){
 
         if(params.length != 2){
@@ -262,6 +263,6 @@ public class TableFunctions {
     }
 
     public enum FunctionType{
-        CONCAT_DATE, ARITH, GET_YEAR, IF_NULL, LIMIT_STRING, PUBMED_URL;
+        CONCAT_DATE, ARITH, GET_YEAR, IF_NULL, LIMIT_STRING, PUBMED_URL, GET_MOL_PYEAR;
     }
 }
