@@ -33,16 +33,20 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.visualization.client.AbstractDataTable;
 
 import java.util.Date;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Created by nigelthomas on 29/05/2014.
  */
 public class DataTableConversionUtility {
+    private static Logger logger = Logger.getLogger("SurveyorCore.DataTableConversionUtility");
+
     public RecordList convertDataTableToRecordList(DataSchema schema, AbstractDataTable dataTable){
         return this.loadData(dataTable, schema);
     }
@@ -56,7 +60,7 @@ public class DataTableConversionUtility {
         // simple check to ensure schema and table definitions are aligned
         if(schema.size()!= table.getNumberOfColumns()){
             final IllegalArgumentException illegalArgumentException = new IllegalArgumentException("schema row definition do not match table supplied");
-            Log.error("Warning:", illegalArgumentException);
+            logger.log(SEVERE,"Warning:", illegalArgumentException);
         }
         int columnLength = table.getNumberOfColumns();
 

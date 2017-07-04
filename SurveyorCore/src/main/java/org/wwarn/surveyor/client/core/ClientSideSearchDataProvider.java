@@ -33,7 +33,6 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.i18n.shared.DateTimeFormat;
@@ -48,6 +47,10 @@ import org.wwarn.surveyor.client.util.OfflineStorageUtil;
 import com.google.gwt.user.client.Timer;
 
 import java.util.*;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.SEVERE;
 
 
 /**
@@ -55,6 +58,8 @@ import java.util.*;
  * When I wrote this, only God and I understood what I was doing. Now, God only knows. - Karl Weierstrass
  */
 public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider implements DataProvider{
+    private static Logger logger = Logger.getLogger("SurveyorCore.ClientSideSearchDataProvider");
+
     private boolean isTest = false;
     private OfflineStatusObserver offlineStatusObserver = new OfflineStatusObserver();
     {
@@ -62,8 +67,8 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
             final String check = offlineStatusObserver.check();
         }catch (Exception e){
             // do nothing but log exception
-            if (Log.isDebugEnabled()) {
-                Log.debug("Failed in online/offline check using offlineStatusObserver");
+            if (logger.isLoggable(FINE)) {
+                logger.log(FINE,"Failed in online/offline check using offlineStatusObserver");
             }
 
         }
@@ -123,8 +128,8 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
             @Override
             public void success(final String key) {
                 Objects.requireNonNull(key);
-                if (Log.isDebugEnabled()) {
-                    Log.debug("Key found \"" + key + "\", now using this to find data store");
+                if (logger.isLoggable(FINE)) {
+                    logger.log(FINE,"Key found \"" + key + "\", now using this to find data store");
                 }
 
                 //if null then first load, no keys stored yet defer offline datastore creation
@@ -133,8 +138,8 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 offlineDataStore.fetch(new OfflineStorageUtil.AsyncCommand<QueryResult>() {
                     @Override
                     public void success(QueryResult queryResult) {
-                        if (Log.isDebugEnabled()) {
-                            Log.debug("Query result found for key\"" + key + "\", initialising app with offline data");
+                        if (logger.isLoggable(FINE)) {
+                            logger.log(FINE,"Query result found for key\"" + key + "\", initialising app with offline data");
                         }
                         initialisedDataProvider(queryResult, callOnLoad);
                         // setup future calls to check for fresh data
@@ -143,8 +148,8 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
                     @Override
                     public void failure() {
-                        if (Log.isDebugEnabled()) {
-                            Log.debug("failed to fetch data from store, query result not found");
+                        if (logger.isLoggable(FINE)) {
+                            logger.log(FINE,"failed to fetch data from store, query result not found");
                         }
                         // failed to find query result in index, then fetch from server
                         fetchAllDataFromServers(callOnLoad);
@@ -224,7 +229,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 searchServiceAsync.fetchDataVersion(schema, dataSource, new AsyncCallbackWithTimeout<String>() {
                     @Override
                     public void onTimeOutOrOtherFailure(Throwable caught) {
-                        Log.warn("Unable to fetch latest data version", caught);
+                        logger.log(SEVERE,"Unable to fetch latest data version", caught);
                     }
 
                     @Override
@@ -236,11 +241,11 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                             return;
                         }
                         final String previousDataSourceHash = recordListCompressedWithInvertedIndex.getDataSourceHash();
-                        if (Log.isDebugEnabled()) Log.debug("New data found, fetch records from server");
+                        if (logger.isLoggable(FINE)) logger.log(FINE,"New data found, fetch records from server");
                         fetchAllDataFromServers(new Runnable() {
                             @Override
                             public void run() {
-                                if (Log.isDebugEnabled()) Log.debug("New data fetch complete");
+                                if (logger.isLoggable(FINE)) logger.log(FINE,"New data fetch complete");
                                 storePreviousDataSourceHash(previousDataSourceHash);
                                 promptUserToReload();
                             }
@@ -282,7 +287,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         return true;
     }-*/;
     private void cleanupPreviousData(final String currentDataHash) {
-        if(Log.isDebugEnabled()) Log.debug("Attempting to remove old key, if present");
+        if(logger.isLoggable(FINE)) logger.log(FINE,"Attempting to remove old key, if present");
         final OfflineStorageUtil<String> offlineStoragePreviousKeyStore = getOfflineStoragePreviousKeyStore();
 
         offlineStoragePreviousKeyStore.fetch(new OfflineStorageUtil.AsyncCommand<String>() {
@@ -293,8 +298,8 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), new Runnable() {
                         @Override
                         public void run() {
-                            if (Log.isDebugEnabled()) {
-                                Log.debug("Old key not removed, as current and previous keys are equal, remove previous key reference instead");
+                            if (logger.isLoggable(FINE)) {
+                                logger.log(FINE,"Old key not removed, as current and previous keys are equal, remove previous key reference instead");
                             }
                         }
                     });
@@ -303,15 +308,15 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                     offlineStoragePreviousKeyStore.removeItem(keyForOldHash, new Runnable() {
                         @Override
                         public void run() {
-                            if (Log.isDebugEnabled()) {
-                                Log.debug(" Old key removed : " + keyForOldHash);
+                            if (logger.isLoggable(FINE)) {
+                                logger.log(FINE," Old key removed : " + keyForOldHash);
                             }
                             //remove previous key reference, now old key referenced data deleted
                             offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), new Runnable() {
                                 @Override
                                 public void run() {
-                                if (Log.isDebugEnabled()) {
-                                    Log.debug("removing previous key, now old key referenced data deleted");
+                                if (logger.isLoggable(FINE)) {
+                                    logger.log(FINE,"removing previous key, now old key referenced data deleted");
                                 }
                                 }
                             });
@@ -322,25 +327,25 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
             @Override
             public void failure() {
-                Log.warn("Offline storage: Unable to remove old key, probably because key not found or already deleted");
+                logger.log(FINE,"Offline storage: Unable to remove old key, probably because key not found or already deleted");
             }
         });
     }
 
     private void storePreviousDataSourceHash(String previousDataSourceHash) {
-        if(Log.isDebugEnabled()) Log.debug("Attempting to store previous datasourcehash");
+        if(logger.isLoggable(FINE)) logger.log(FINE,"Attempting to store previous datasourcehash");
         OfflineStorageUtil<String> offlineStoragePreviousKeyStore = getOfflineStoragePreviousKeyStore();
         offlineStoragePreviousKeyStore.store(previousDataSourceHash, new OfflineStorageUtil.AsyncCommand<String>() {
             @Override
             public void success(@NotNull String objectToStore) {
-                if (Log.isDebugEnabled()) Log.debug("Stored previous datasourcehash - successfully");
+                if (logger.isLoggable(FINE)) logger.log(FINE,"Stored previous datasourcehash - successfully");
                 // send an event to inform users to refresh browser as data has been updated.
                 clientFactory.getEventBus().fireEvent(new DataUpdatedEvent());
             }
 
             @Override
             public void failure() {
-                Log.warn("failed to store previous key");
+                logger.log(FINE,"failed to store previous key");
             }
         });
     }
@@ -365,15 +370,15 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 offlineDataStore.store(queryResult, new OfflineStorageUtil.AsyncCommand<QueryResult>() {
                     @Override
                     public void success(QueryResult queryResult) {
-                        if (Log.isDebugEnabled()) {
-                            Log.debug("stored current query result");
+                        if (logger.isLoggable(FINE)) {
+                            logger.log(FINE,"stored current query result");
                         }
                     }
 
                     @Override
                     public void failure() {
                         final String message = "Unable to store result in offline store";
-                        Log.warn(message);
+                        logger.log(FINE,message);
                         throw new IllegalStateException(message);
                     }
                 });
@@ -382,7 +387,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
             @Override
             public void failure() {
                 final String message = "Unable to store key in offline store";
-                Log.warn(message);
+                logger.log(FINE,message);
                 throw new IllegalStateException(message);
             }
         });
@@ -418,17 +423,17 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                             public boolean execute() {
                                 Scheduler.RepeatingCommand next = iterator.next();
                                 try {
-                                    Log.debug("ClientSideSearchDataProvider::executeScheduleTasks", "attempting to execute task");
+                                    GWT.log("ClientSideSearchDataProvider::executeScheduleTasks + attempting to execute task");
                                     boolean isOK = next != null && next.execute();
                                     if (!isOK) {
                                         //handle case where execution failed
-                                        Log.warn("ClientSideSearchDataProvider::executeScheduleTasks", "execution returned false");
+                                        GWT.log("ClientSideSearchDataProvider::executeScheduleTasks execution returned false");
                                     } else
-                                        Log.debug("ClientSideSearchDataProvider::executeScheduleTasks", "task execution complete");
+                                        GWT.log("ClientSideSearchDataProvider::executeScheduleTasks task execution complete");
 
                                     return isOK && iterator.hasNext();
                                 } catch (Exception e) {
-                                    Log.error("ClientSideSearchDataProvider::executeScheduleTasks", "failed to execute task", e);
+                                    GWT.log("ClientSideSearchDataProvider::executeScheduleTasks"+ "failed to execute task", e);
                                     return false;
                                 } finally {
                                     if (next != null)

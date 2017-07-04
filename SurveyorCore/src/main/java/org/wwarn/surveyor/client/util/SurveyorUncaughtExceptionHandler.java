@@ -33,16 +33,20 @@ package org.wwarn.surveyor.client.util;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  */
 public class SurveyorUncaughtExceptionHandler implements GWT.UncaughtExceptionHandler
 {
+    private static Logger logger = Logger.getLogger("Surveyor.SurveyorUncaughtExceptionHandler");
+
     private static final String newline = " ";//System.getProperty("line.separator").toCharArray()[0];//"&lt;br /&gt;"
 
     private static final String POP_UP_ERROR_MESSAGE = "An unexpected error has occurred;" +
@@ -82,16 +86,15 @@ public class SurveyorUncaughtExceptionHandler implements GWT.UncaughtExceptionHa
             }
             else
             {
-                DOM.setStyleAttribute(RootPanel.get("loading_screen").getElement(), "display", "block");
-                DOM.setInnerHTML(RootPanel.get("loading_screen").getElement(), errorMessage);
+                final String loading_screen = "loading_screen";
+                DOM.setStyleAttribute(RootPanel.get(loading_screen).getElement(), "display", "block");
+                DOM.setInnerHTML(RootPanel.get(loading_screen).getElement(), errorMessage);
             }
 
         }
 
-        // log the error to the GWT console
-        if(Log.isErrorEnabled()) {
-            Log.error(errorMessage, e);
-        }
+        // log the error to the GWT log
+            logger.log(Level.SEVERE, errorMessage);
         if (alertMsg) {
             Window.alert(errorMessage);
         }

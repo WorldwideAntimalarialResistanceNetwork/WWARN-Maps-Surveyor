@@ -33,7 +33,6 @@ package org.wwarn.surveyor.client.mvp.presenter;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -51,6 +50,9 @@ import org.wwarn.surveyor.client.mvp.view.MainPanelView;
 import org.wwarn.surveyor.client.util.AsyncCallbackWithTimeout;
 
 import java.util.*;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Filter presenter, responsible for :
@@ -61,6 +63,8 @@ import java.util.*;
  * Date: 01/08/13
  */
 public class FilterPresenter implements Presenter {
+    private static Logger logger = Logger.getLogger("SurveyorCore.FilterPresenter");
+
     protected FilterView filterView;
     private FilterChangeHandler filterChangeHandler = new FilterChangeHandler();
     private ResultChangeHandler resultChangeHandler = new ResultChangeHandler(this);
@@ -308,7 +312,7 @@ public class FilterPresenter implements Presenter {
         } catch (RuntimeException e) {
             if (!e.getMessage().startsWith("Deferred binding")) throw e;
             initialFields = new DefaultInitialFields();
-            Log.error("Initial fields has not been implemented in the current application");
+            logger.log(SEVERE,"Initial fields has not been implemented in the current application");
         }
         return initialFields;
     }

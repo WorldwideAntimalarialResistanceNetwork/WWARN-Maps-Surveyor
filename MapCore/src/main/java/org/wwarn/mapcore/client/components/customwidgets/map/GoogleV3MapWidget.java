@@ -33,7 +33,6 @@ package org.wwarn.mapcore.client.components.customwidgets.map;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.maps.client.MapOptions;
 import com.google.gwt.maps.client.MapTypeId;
@@ -55,6 +54,8 @@ import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewOnRemoveHa
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Encapsulates most of map functionality
@@ -68,6 +69,7 @@ import java.util.List;
  */
 public class GoogleV3MapWidget extends GenericMapWidget {
     private final MapBuilder builder;
+    private static Logger logger = Logger.getLogger("MapCore.GoogleV3MapWidget");
 
     AbsolutePanel absoluteMapContentOverlayPanel = new AbsolutePanel();
 
@@ -127,12 +129,12 @@ public class GoogleV3MapWidget extends GenericMapWidget {
             MapOptions mapOptions = setupDisplay(options);
             mapWidget = new MapWidget(mapOptions);
         }catch (Error e1){
-            Log.error(errorMessage, e1);
+            logger.log(Level.SEVERE, errorMessage, e1);
 //            throw new IllegalStateException("Unable to create map, check google map v3 api is included", e);
         }finally {
             if (mapWidget == null) {
                 final IllegalStateException illegalStateException = new IllegalStateException(errorMessage);
-                Log.error(errorMessage, illegalStateException);
+                logger.log(Level.SEVERE, errorMessage, illegalStateException);
                 throw illegalStateException;
             }
         }

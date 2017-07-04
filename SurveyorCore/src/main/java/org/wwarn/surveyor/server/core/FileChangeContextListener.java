@@ -33,7 +33,6 @@ package org.wwarn.surveyor.server.core;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
 import javax.servlet.ServletContext;
@@ -43,6 +42,10 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.concurrent.*;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.SEVERE;
 
 /**
  * A servlet listener that helps monitors files changes and inform lucene search service,
@@ -54,6 +57,8 @@ import java.util.concurrent.*;
  * code from http://stackoverflow.com/a/4908012
  */
 public class FileChangeContextListener implements ServletContextListener {
+    private static Logger logger = Logger.getLogger("SurveyorCore.FileChangeContextListener");
+
     public static final String CONTEXT_ID = "FileChangeMonitor_EXECUTOR";
     public static final String CONTEXT_PARAMETER = "org.wwarn.surveyor.server.core.FileChangeContextListener.monitoredFile";
     private ScheduledExecutorService executorService;
@@ -88,7 +93,7 @@ public class FileChangeContextListener implements ServletContextListener {
             @Override
             public void run() {
                 try {
-                    Log.debug("FileChangeContextListener::contextInitialized", "Index monitor setup starting");
+                    logger.log(FINE,"FileChangeContextListener::contextInitialized", "Index monitor setup starting");
                     fileChangeMonitor.initSynchronous(Paths.get(monitoredFileRealPath));
                 } catch (Throwable e) {// must catch all exceptions, otherwise, subsequent calls to fails
                     if(e instanceof Exception) {
@@ -101,7 +106,7 @@ public class FileChangeContextListener implements ServletContextListener {
     }
 
     private void logExceptions(Exception e) {
-        Log.error("FileChangeContextListener::contextInitialized", "Unable to initialize file change monitor", e);
+        logger.log(SEVERE, "FileChangeContextListener::contextInitialized Unable to initialize file change monitor", e);
     }
 
     @Override

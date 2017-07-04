@@ -33,11 +33,13 @@ package org.wwarn.surveyor.client.core;
  * #L%
  */
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
 import java.util.List;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
 
 /**
 * Created by nigelthomas on 05/07/2014.
@@ -88,7 +90,7 @@ public class RecordListBuilder {
     public RecordList createRecordList(String dataSourceHash) {
         switch (compressionMode) {
             case NONE:
-                Log.warn("RecordListBuilder::createRecordList","Using RecordList uncompressed - high memory use risk");
+                GWT.log("RecordListBuilder::createRecordList Using RecordList uncompressed - high memory use risk");
                 break;
             case CANONICAL:
             case CANONICAL_WITH_INVERTED_INDEX:
