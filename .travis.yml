@@ -2,6 +2,6 @@ language: java
 jdk:
   - oraclejdk8
 install: true
-script: "mvn verify "
+script: "travis_wait mvn verify "
 env: MAVEN_OPTS="-XX:MaxPermSize=512m"
 
