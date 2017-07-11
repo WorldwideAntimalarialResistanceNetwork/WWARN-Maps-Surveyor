@@ -566,7 +566,7 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
 
     List<RecordList.Record> orderRecords(List<RecordList.Record> records, final TableViewConfig tableViewConfig){
 
-        if(tableViewConfig == null || tableViewConfig.getSortColumn().isEmpty()){
+        if(tableViewConfig == null || tableViewConfig.getSortColumn() == null|| tableViewConfig.getSortColumn().isEmpty()){
             return records;
         }
 
