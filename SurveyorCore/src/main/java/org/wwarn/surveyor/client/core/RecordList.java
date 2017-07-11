@@ -166,7 +166,7 @@ public class RecordList implements IsSerializable, Serializable{
 
             @Override
             public int calculateHashCode(Record record) {
-                return record.hashCode();
+                return Arrays.hashCode(record.fields) * 43;
             }
         }
         //array of fields

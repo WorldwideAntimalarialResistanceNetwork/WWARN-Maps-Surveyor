@@ -46,7 +46,7 @@ import com.google.gwt.resources.client.TextResource;
  */
 public interface Resources extends ClientBundle {
     Resources IMPL = (Resources) GWT.create(Resources.class);
-    @Source("config.xml")
+    @Source("default.config.xml")
     TextResource config();
 
     @Source("BitterSet.js")
