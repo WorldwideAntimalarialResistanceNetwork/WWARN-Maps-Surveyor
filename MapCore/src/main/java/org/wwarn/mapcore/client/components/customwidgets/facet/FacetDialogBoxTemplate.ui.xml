@@ -55,7 +55,7 @@
         }
     </ui:style>
     <g:HTMLPanel ui:field="container">
-        <b:Modal title="Cupcake ipsum" closable="false" fade="true" dataBackdrop="STATIC" dataKeyboard="true"
+        <b:Modal title="Facet zoom filter" closable="true" fade="true" dataBackdrop="STATIC" dataKeyboard="true"
                  b:id="myModal" ui:field="modal">
             <b:ModalBody>
                 <g:VerticalPanel addStyleNames="{style.modalBody}" ui:field="modalBody"></g:VerticalPanel>

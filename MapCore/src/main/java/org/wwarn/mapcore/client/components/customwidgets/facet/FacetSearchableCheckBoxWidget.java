@@ -45,11 +45,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.TextBox;
+import org.gwtbootstrap3.client.shared.event.ModalHideEvent;
+import org.gwtbootstrap3.client.shared.event.ModalHideHandler;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jetbrains.annotations.NotNull;
@@ -328,7 +331,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
 
     private void createDialogBox() {
         // Create a dialog box and set the caption text
-        final GWTDialogBox dialogBox = new GWTDialogBox();
+        final ZoomIntoFacetsModal dialogBox = new ZoomIntoFacetsModal();
         dialogBox.setContent(this);
         dialogBox.setTitle(this.getFacetTitle());
         dialogBox.show();
@@ -602,7 +605,7 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         interface FacetLabelTemplateBinder extends UiBinder<Widget, HeaderPopup>{}
     }
 
-    static class GWTDialogBox extends Composite{
+    static class ZoomIntoFacetsModal extends Composite{
         private static DialogBoxTemplateBinder dialogBoxTemplateBinder = GWT.create(DialogBoxTemplateBinder.class);
         private VerticalPanel oldParent;
 
@@ -615,9 +618,16 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
         Button closeModal;
         private int beforeIndexPosition;
 
-        public GWTDialogBox() {
+        public ZoomIntoFacetsModal() {
             final Widget widget = dialogBoxTemplateBinder.createAndBindUi(this);
             initWidget(widget);
+
+            modal.addHideHandler(new ModalHideHandler() {
+                @Override
+                public void onHide(ModalHideEvent modalHideEvent) {
+                    closeModalClick(modalHideEvent);
+                }
+            });
         }
 
         public void setTitle(String title){
@@ -641,13 +651,12 @@ public class FacetSearchableCheckBoxWidget extends Composite implements FacetWid
             modal.hide();
         }
 
-        @UiHandler("closeModal")
-        public void closeModalClick(ClickEvent event) {
+        public void closeModalClick(ModalHideEvent event) {
             final Widget modalBodyWidget = modalBody.getWidget(0);
             (oldParent).insert(modalBodyWidget, beforeIndexPosition);
         }
 
         @UiTemplate("FacetDialogBoxTemplate.ui.xml")
-        interface DialogBoxTemplateBinder extends UiBinder<Widget, GWTDialogBox>{}
+        interface DialogBoxTemplateBinder extends UiBinder<Widget, ZoomIntoFacetsModal>{}
     }
 }
