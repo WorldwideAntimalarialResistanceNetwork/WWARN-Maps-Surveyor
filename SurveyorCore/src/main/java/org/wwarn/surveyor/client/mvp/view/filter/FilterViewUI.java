@@ -51,6 +51,7 @@ import org.wwarn.mapcore.client.component.UiHelpToolTip;
 import org.wwarn.mapcore.client.components.customwidgets.facet.*;
 import org.wwarn.mapcore.client.components.customwidgets.map.OfflineMapWidget;
 import org.wwarn.surveyor.client.core.FacetList;
+import org.wwarn.surveyor.client.event.FilterChangedEvent;
 import org.wwarn.surveyor.client.event.ResetFilterActionEvent;
 import org.wwarn.surveyor.client.event.SelectFilterEvent;
 import org.wwarn.surveyor.client.event.ToggleLayerEvent;
@@ -183,6 +184,14 @@ public class FilterViewUI extends Composite implements  FilterView {
         return facetWidget;
     }
 
+    /**
+     * Track filterchangeevent outside of facet widget triggered changes (e.g. externally fired filter changes events) and update relevant facet linked state
+     * @param filterChangedEvent
+     */
+    @EventHandler
+    public void onFilterChanged(FilterChangedEvent filterChangedEvent){
+        linkFilters(filterChangedEvent.getFacetField());
+    }
 
     protected void linkFilters(String facetField){
         lastSelectedFilterField = facetField;
