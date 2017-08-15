@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wwarn.mapssurveyor</groupId>
     <artifactId>maps-surveyor-parent</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.1-SNAPSHOT</version>
     <modules>
         <module>gwt-localforage</module>
         <module>MapCore</module>
@@ -35,6 +35,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <gwtVersion>2.8.1</gwtVersion>
         <gwt.maven.plugin.version>2.8.1</gwt.maven.plugin.version>
+        <maven.compiler.source>${javaVersion}</maven.compiler.source>
+        <maven.compiler.target>${javaVersion}</maven.compiler.target>
     </properties>
 
     <scm>
