@@ -105,6 +105,8 @@
                     </modules>
                     <mode>htmlunit</mode>
                     <includes>**/GwtTest*.java</includes>
+                    <testTimeOut>3000</testTimeOut>
+                    <timeOut>3000</timeOut>
                 </configuration>
             </plugin>
             <plugin>
