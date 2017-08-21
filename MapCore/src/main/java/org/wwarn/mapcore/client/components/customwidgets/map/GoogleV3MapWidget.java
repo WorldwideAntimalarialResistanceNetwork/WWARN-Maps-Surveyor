@@ -39,12 +39,6 @@ import com.google.gwt.maps.client.MapTypeId;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.base.LatLng;
 import com.google.gwt.maps.client.controls.MapTypeControlOptions;
-import com.google.gwt.maps.client.events.dragend.DragEndMapEvent;
-import com.google.gwt.maps.client.events.dragend.DragEndMapHandler;
-import com.google.gwt.maps.client.events.idle.IdleMapEvent;
-import com.google.gwt.maps.client.events.idle.IdleMapHandler;
-import com.google.gwt.maps.client.events.zoom.ZoomChangeMapEvent;
-import com.google.gwt.maps.client.events.zoom.ZoomChangeMapHandler;
 import com.google.gwt.maps.client.overlays.MapCanvasProjection;
 import com.google.gwt.maps.client.overlays.OverlayView;
 import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewMethods;
@@ -53,7 +47,6 @@ import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewOnDrawHand
 import com.google.gwt.maps.client.overlays.overlayhandlers.OverlayViewOnRemoveHandler;
 import com.google.gwt.user.client.ui.*;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,7 +70,6 @@ public class GoogleV3MapWidget extends GenericMapWidget {
     private MapWidget mapWidget = null;
     final private SimplePanel legendWidgetPlaceHolder = new SimplePanel();
     final private SimplePanel filtersDisplayWidgetPlaceHolder = new SimplePanel();
-    private List<GenericMarker> markers;
     private MapCanvasProjection mapCanvasProjection;
     final private PopupPanel loadingPanelPopup = new PopupPanel();
 
@@ -96,24 +88,14 @@ public class GoogleV3MapWidget extends GenericMapWidget {
         mapWidget = initialiseMapWidget();
         mapWidget.setSize(Integer.toBinaryString(builder.mapWidth), Integer.toString(builder.mapHeight) + "px");
 
-        final OverlayView overlayView = OverlayView.newInstance(mapWidget,
-                new OverlayViewOnDrawHandler() {
-                    @Override
-                    public void onDraw(OverlayViewMethods overlayViewMethods) {
-                        mapCanvasProjection = overlayViewMethods.getProjection();
-                    }
-                },
-                new OverlayViewOnAddHandler() {
-                    @Override
-                    public void onAdd(OverlayViewMethods overlayViewMethods) {
+        OverlayView.newInstance(mapWidget,
+                overlayViewMethods -> // fetch map canvas projection
+                         mapCanvasProjection = overlayViewMethods.getProjection(),
+                overlayViewMethods -> {
 
-                    }
                 },
-                new OverlayViewOnRemoveHandler() {
-                    @Override
-                    public void onRemove(OverlayViewMethods overlayViewMethods) {
+                overlayViewMethods -> {
 
-                    }
                 });
 
         absoluteMapContentOverlayPanel.add(mapWidget);
@@ -191,7 +173,7 @@ public class GoogleV3MapWidget extends GenericMapWidget {
 
     /**
      * Returns map zoom level
-     * @return
+     * @return zoom level integer
      */
     @Override
     public int getZoomLevel(){
@@ -222,37 +204,22 @@ public class GoogleV3MapWidget extends GenericMapWidget {
     @Override
     public HandlerRegistration onLoadComplete(final Runnable onLoadComplete){
         mapWidget.triggerResize(); // Added to prevent only single tile showing : http://stackoverflow.com/a/16348551/192040
-        return mapWidget.addIdleHandler(new IdleMapHandler() {
-            @Override
-            public void onEvent(IdleMapEvent idleMapEvent) {
-                onLoadComplete.run();
-            }
-        });
+        return mapWidget.addIdleHandler(idleMapEvent -> onLoadComplete.run());
     }
 
 
     /**
      * Add zoom handler, event is not exposed at present
-     * @param zoomhandler
+     * @param zoomHandler runnable zoom handler
      */
     @Override
-    public HandlerRegistration addMapZoomEndHandler(final Runnable zoomhandler){
-        return mapWidget.addZoomChangeHandler(new ZoomChangeMapHandler() {
-            @Override
-            public void onEvent(ZoomChangeMapEvent zoomChangeMapEvent) {
-                zoomhandler.run();
-            }
-        });
+    public HandlerRegistration addMapZoomEndHandler(final Runnable zoomHandler){
+        return mapWidget.addZoomChangeHandler(zoomChangeMapEvent -> zoomHandler.run());
     }
 
     @Override
-    public HandlerRegistration addDragEndHandler(final Runnable draghandler) {
-        return mapWidget.addDragEndHandler(new DragEndMapHandler() {
-            @Override
-            public void onEvent(DragEndMapEvent event) {
-                draghandler.run();
-            }
-        });
+    public HandlerRegistration addDragEndHandler(final Runnable dragHandler) {
+        return mapWidget.addDragEndHandler(event -> dragHandler.run());
     }
 
     @Override
@@ -271,45 +238,38 @@ public class GoogleV3MapWidget extends GenericMapWidget {
     public void setMapLegend(LegendOptions legendOptions) {
 
         int xPosition = 0;
-        int yPostion = 0;
+        int yPosition = 0;
         LegendPosition screenPosition = legendOptions.screenPosition;
         if(screenPosition ==null) screenPosition = LegendPosition.BOTTOM_LEFT;
         final Widget legendWidget = legendOptions.legendWidget;
         switch (screenPosition) {
             case TOP_LEFT: // top left
                 xPosition = 3;
-                yPostion = 3;
+                yPosition = 3;
                 break;
             case TOP_RIGHT: // top right
                 xPosition = getXPositionWhenRight(legendWidget);
-                yPostion =  3;
+                yPosition =  3;
                 break;
             case BOTTOM_RIGHT: // bottom right
                 xPosition = getXPositionWhenRight(legendWidget);
-                yPostion = getYPostionWhenBottom(legendOptions);
+                yPosition = getYPositionWhenBottom(legendOptions);
                 break;
             case BOTTOM_LEFT: // bottom left
                 xPosition = LEGEND_X_INDENT;
-                yPostion = getYPostionWhenBottom(legendOptions);
+                yPosition = getYPositionWhenBottom(legendOptions);
                 break;
         }
         //setup map legend position
 
-        absoluteMapContentOverlayPanel.add(legendWidgetPlaceHolder, xPosition, yPostion);
+        absoluteMapContentOverlayPanel.add(legendWidgetPlaceHolder, xPosition, yPosition);
         legendWidgetPlaceHolder.clear();
-        absoluteMapContentOverlayPanel.setWidgetPosition(legendWidgetPlaceHolder, xPosition, yPostion);
+        absoluteMapContentOverlayPanel.setWidgetPosition(legendWidgetPlaceHolder, xPosition, yPosition);
         legendWidgetPlaceHolder.setWidget(legendWidget);
 
         final int finalXPosition = xPosition;
-        final int finalYPostion = yPostion;
-        mapWidget.addIdleHandler(new IdleMapHandler() {
-            @Override
-            public void onEvent(IdleMapEvent idleMapEvent) {
-                absoluteMapContentOverlayPanel.setWidgetPosition(legendWidgetPlaceHolder, finalXPosition, finalYPostion);
-
-
-            }
-        });
+        final int finalYPosition = yPosition;
+        mapWidget.addIdleHandler(idleMapEvent -> absoluteMapContentOverlayPanel.setWidgetPosition(legendWidgetPlaceHolder, finalXPosition, finalYPosition));
     }
 
     private int getXPositionWhenRight(Widget legendWidget) {
@@ -318,7 +278,7 @@ public class GoogleV3MapWidget extends GenericMapWidget {
         return Math.max(absoluteMapContentOverlayPanel.getElement().getClientWidth(), absoluteMapContentOverlayPanel.getOffsetWidth()) - (200 + offsetWidth);
     }
 
-    private int getYPostionWhenBottom(LegendOptions legendOptions) {
+    private int getYPositionWhenBottom(LegendOptions legendOptions) {
         return mapWidget.getOffsetHeight() + (legendOptions.legendPixelsFromBottom) - 150;
     }
 
