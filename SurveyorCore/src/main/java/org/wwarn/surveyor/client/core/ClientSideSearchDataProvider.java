@@ -693,7 +693,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         BitSet multiValueSet = new BitSet();
         for(String fieldValue : fieldValues){
             final BitSet bitSet = map.get(typeBasedStringFormatting(type,fieldValue));
-            multiValueSet.or(bitSet);
+            if(bitSet != null) {
+                multiValueSet.or(bitSet);
+            }
         }
         if(multiValueSet.length()>0) {
             if(queryBitSet.length() > 1){
