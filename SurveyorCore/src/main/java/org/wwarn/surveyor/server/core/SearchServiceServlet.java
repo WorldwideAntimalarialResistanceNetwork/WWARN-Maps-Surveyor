@@ -34,7 +34,6 @@ package org.wwarn.surveyor.server.core;
  */
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.core.*;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
 import org.wwarn.surveyor.client.model.TableViewConfig;
@@ -50,7 +49,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by nigelthomas on 28/05/2014.
  */
 public class SearchServiceServlet extends RemoteServiceServlet implements SearchService {
-    public static final String DEFAULT_DATA_PUBLICATIONS_JSON = "/data/surveyorCorepublications.json";
     private SearchServiceLayer searchServiceLayer;
     private static Map<String, String> filePathCache = new ConcurrentHashMap<>();
 
@@ -110,10 +108,6 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
             return filePathCache.get(relativeFilePath);
         }
 
-//        final String publicationsPathDefault = getDefaultPublicationPath(relativeFilePath);
-//        if(!StringUtils.isEmpty(publicationsPathDefault)){ return publicationsPathDefault;}
-
-
         final String realPath = getServletContextFilePath();
         final Path fileToFind = Paths.get(relativeFilePath);
         final String[] publicationsPath = new String[]{""};
@@ -140,13 +134,6 @@ public class SearchServiceServlet extends RemoteServiceServlet implements Search
         return publicationsPath[0];
     }
 
-    private String getDefaultPublicationPath(String relativeFilePath) {
-        //relative path to absolute path
-        final String resource = this.getServletContext().getRealPath(DEFAULT_DATA_PUBLICATIONS_JSON);
-        if(StringUtils.isEmpty(resource)) return null;
-        filePathCache.put(relativeFilePath, resource);
-        return resource;
-    }
 
     private String getServletContextFilePath(){
         return this.getServletContext().getRealPath("/");
