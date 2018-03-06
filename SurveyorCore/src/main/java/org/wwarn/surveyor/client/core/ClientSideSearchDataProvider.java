@@ -122,11 +122,14 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         if(isTest){
             fetchAllDataFromServers(callOnLoad);return;
         }
+
         //todo move this into a better data sync abstraction or tidy up
         offlineStorageCurrentKeyStore = new OfflineStorageUtil(String.class, getOfflineStoreUniqueKey());
+
         offlineStorageCurrentKeyStore.fetch(new OfflineStorageUtil.AsyncCommand<String>() {
             @Override
             public void success(final String key) {
+
                 Objects.requireNonNull(key);
                 if (logger.isLoggable(FINE)) {
                     logger.log(FINE,"Key found \"" + key + "\", now using this to find data store");
@@ -148,9 +151,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
                     @Override
                     public void failure() {
-                        if (logger.isLoggable(FINE)) {
-                            logger.log(FINE,"failed to fetch data from store, query result not found");
-                        }
+                        logger.log(FINE,"failed to fetch data from store, query result not found, fetching from server");
                         // failed to find query result in index, then fetch from server
                         fetchAllDataFromServers(callOnLoad);
                     }
@@ -171,7 +172,6 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     }
 
     private void fetchAllDataFromServers(final Runnable callOnLoad) {
-
         if(isOffline()){ // if offline, skip this step if this fails in debug mode
             return;
         }
@@ -196,9 +196,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         }
     }
 
-    private boolean isOffline() {
-        return !offlineStatusObserver.isOnline();
-    }
+    private final native boolean isOffline() throws RuntimeException /*-{
+        return ((!(typeof $wnd.navigator === "undefined" || $wnd.navigator === null || typeof $wnd.navigator.onLine === "undefined" || $wnd.location.onLine === null) && !$wnd.navigator.onLine));
+     }-*/;
 
     private void scheduleStoreToOfflineDataStore(final QueryResult queryResult) {
         // attempt to store in 7 seconds after fetching from server, should help reduce initial load time.
@@ -223,6 +223,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 //        //checks server for data updates
         final DataSchema schema = this.schema;
         final GenericDataSource dataSource = this.dataSource;
+
         listOfScheduledJobs.add(new Scheduler.RepeatingCommand() {
             @Override
             public boolean execute() {
@@ -234,14 +235,17 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
                     @Override
                     public void onNonTimedOutSuccess(final String currentDataHash) {
-                        if (recordListCompressedWithInvertedIndex == null)
+
+                        if (recordListCompressedWithInvertedIndex == null) {
                             throw new IllegalStateException("recordList was null");
+                        }
                         if (recordListCompressedWithInvertedIndex.getDataSourceHash().equals(currentDataHash)) {
                             cleanupPreviousData(currentDataHash);
                             return;
                         }
                         final String previousDataSourceHash = recordListCompressedWithInvertedIndex.getDataSourceHash();
                         if (logger.isLoggable(FINE)) logger.log(FINE,"New data found, fetch records from server");
+
                         fetchAllDataFromServers(new Runnable() {
                             @Override
                             public void run() {
@@ -263,7 +267,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
 
     private void promptUserToReload() {
         if(hasAlertRanOnceBeforeCheck){return;}
-        if(isReloadSupport()){
+        if(isReloadSupported()){
             if(Window.confirm("A new update has been received, would you like to refresh your page to receive this update?")){
                 hasAlertRanOnceBeforeCheck = true;
                 reloadPage();
@@ -277,7 +281,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         $wnd.location.reload();
     }-*/;
 
-    public static native boolean isReloadSupport()/*-{
+    public static native boolean isReloadSupported()/*-{
         // We know that serialisation is slow in ie10 or below, too slow to be usable, so we disable this
         // We use GetRandomValues http://caniuse.com/#feat=getrandomvalues to determine if browser is recent,
         // as it is only support in IE 11 and above
