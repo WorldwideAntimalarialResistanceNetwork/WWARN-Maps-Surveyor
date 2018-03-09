@@ -44,166 +44,166 @@ import org.wwarn.mapcore.client.resources.Resources;
  * Need to determine access to our server, not just some network..
  * Depends on AppCache plugin to detect
  */
-public class OfflineStatusObserver {
-
-    public static final String STATUS_ONLINE = "up";
-    public static boolean hasInitialised = false;
-
-    static{
-        if (!isLoaded()) {
-            String text = Resources.IMPL.offlineStatusScript().getText();
-            ScriptInjector.fromString(text).setWindow(ScriptInjector.TOP_WINDOW).inject();
-            if(!isLoaded()){
-                Window.alert("Offline.js failed to load");
-            }
-        }
-    }
-
-
-    public static native boolean isLoaded()/*-{
-        if (typeof $wnd.Offline === "undefined" || $wnd.Offline === null) {
-            return false;
-        }
-        return true;
-    }-*/;
-
-    private JavaScriptObject offlineStatusObserver;
-
-    public OfflineStatusObserver() {
-        OfflineStatusOptions offlineStatusOptions = (OfflineStatusOptions) OfflineStatusOptions.createObject();
-        boolean hasError = false;
-        if (!hasInitialised) { //only run if not initiliased before
-            try {
-                initialise(this, offlineStatusOptions);
-            } catch (Exception e) {
-                hasError = true;
-            }
-        }
-        if (!hasError) {
-            hasInitialised = true;
-        }
-    }
-
-    public OfflineStatusObserver(OfflineStatusOptions offlineStatusOptions) {
-        initialise(this, offlineStatusOptions);
-    }
-
-
-    public final native String check()
-            throws RuntimeException /*-{
-        return $entry($wnd.Offline.check());
-    }-*/
-    ;
-    
-    public boolean isOnline(){
-        return getState().equals(STATUS_ONLINE);
-    }
-
-    public final native String getState()
-            throws RuntimeException /*-{
-        return ($wnd.Offline.state);
-    }-*/
-    ;
-
-    public static native void initialise(OfflineStatusObserver offlineStatusObserver, OfflineStatusOptions offlineStatusOptions)/*-{
-//        $wnd.console.log("offlineStatusOptions");
-//        $wnd.console.log(offlineStatusOptions);
-        $wnd.Offline.options = {checkOnLoad: true, interceptRequests: true, requests: true, checks: {image: {url: 'http://www.wwarn.org/sites/all/themes/wwarn/logo.png'}, active: 'image'}};
-        offlineStatusObserver.@org.wwarn.mapcore.client.offline.OfflineStatusObserver::offlineStatusObserver = $wnd.Offline;
-    }-*/;
-
-    public static class OfflineStatusOptions extends JavaScriptObject{
-
-        /**
-         * {
-
-         // Should we automatically retest periodically when the connection is down (set to false to disable).
-         reconnect: {
-         // How many seconds should we wait before rechecking.
-         initialDelay: 3,
-
-         // How long should we wait between retries.
-         delay: (1.5 * last delay, capped at 1 hour)
-         },
-
-
-         }
-         */
-        protected OfflineStatusOptions() {
-        }
-
-        public final native boolean checkOnLoad()
-                throws RuntimeException /*-{
-            return this["checkOnLoad"] = (this["checkOnLoad"] || true);
-        }-*/
-        ;
-
-        /**
-         *  Should we check the connection status immediately on page load.
-         *  defaults to true
-         * @param checkOnLoad
-         * @return
-         * @throws RuntimeException
-         */
-        public final native OfflineStatusOptions checkOnLoad(boolean checkOnLoad)
-                throws RuntimeException /*-{
-            this["enabled"] = checkOnLoad;
-            return this;
-        }-*/
-        ;
-
-        public final native boolean interceptRequests()
-                throws RuntimeException /*-{
-            return this["interceptRequests"] = (this["interceptRequests"] || false);
-        }-*/
-        ;
-
-        /**
-         * Should we monitor AJAX requests to help decide if we have a connection.
-         * defaults to false
-         * @param interceptRequests
-         * @return
-         * @throws RuntimeException
-         */
-        public final native OfflineStatusOptions interceptRequests(boolean interceptRequests)
-                throws RuntimeException /*-{
-            this["interceptRequests"] = interceptRequests;
-            return this;
-        }-*/
-        ;
-
-        public final native boolean requests()
-                throws RuntimeException /*-{
-            return this["requests"] = (this["requests"] || false);
-        }-*/
-        ;
-
-
-        /**
-         * Should we store and attempt to remake requests which fail while the connection is down.
-            default: false,
-         * @param requests
-         * @return
-         * @throws RuntimeException
-         */
-        public final native OfflineStatusOptions requests(boolean requests)
-                throws RuntimeException /*-{
-            this["requests"] = requests;
-            return this;
-        }-*/
-        ;
-
-        /**
-         * No snake game support
-         * @return
-         * @throws RuntimeException
-         */
-        public final native boolean game()
-                throws RuntimeException /*-{
-            return this["game"] = (this["game"] || false);
-        }-*/
-        ;
-
-    }
-
-}
+//public class OfflineStatusObserver {
+//
+//    public static final String STATUS_ONLINE = "up";
+//    public static boolean hasInitialised = false;
+//
+//    static{
+//        if (!isLoaded()) {
+//            String text = Resources.IMPL.offlineStatusScript().getText();
+//            ScriptInjector.fromString(text).setWindow(ScriptInjector.TOP_WINDOW).inject();
+//            if(!isLoaded()){
+//                Window.alert("Offline.js failed to load");
+//            }
+//        }
+//    }
+//
+//
+//    public static native boolean isLoaded()/*-{
+//        if (typeof $wnd.Offline === "undefined" || $wnd.Offline === null) {
+//            return false;
+//        }
+//        return true;
+//    }-*/;
+//
+//    private JavaScriptObject offlineStatusObserver;
+//
+//    public OfflineStatusObserver() {
+//        OfflineStatusOptions offlineStatusOptions = (OfflineStatusOptions) OfflineStatusOptions.createObject();
+//        boolean hasError = false;
+//        if (!hasInitialised) { //only run if not initiliased before
+//            try {
+//                initialise(this, offlineStatusOptions);
+//            } catch (Exception e) {
+//                hasError = true;
+//            }
+//        }
+//        if (!hasError) {
+//            hasInitialised = true;
+//        }
+//    }
+//
+//    public OfflineStatusObserver(OfflineStatusOptions offlineStatusOptions) {
+//        initialise(this, offlineStatusOptions);
+//    }
+//
+//
+//    public final native String check()
+//            throws RuntimeException /*-{
+//        return $entry($wnd.Offline.check());
+//    }-*/
+//    ;
+//
+//    public boolean isOnline(){
+//        return getState().equals(STATUS_ONLINE);
+//    }
+//
+//    public final native String getState()
+//            throws RuntimeException /*-{
+//        return ($wnd.Offline.state);
+//    }-*/
+//    ;
+//
+//    public static native void initialise(OfflineStatusObserver offlineStatusObserver, OfflineStatusOptions offlineStatusOptions)/*-{
+////        $wnd.console.log("offlineStatusOptions");
+////        $wnd.console.log(offlineStatusOptions);
+//        $wnd.Offline.options = {checkOnLoad: true, interceptRequests: true, requests: true, checks: {image: {url: 'http://www.wwarn.org/sites/all/themes/wwarn/logo.png'}, active: 'image'}};
+//        offlineStatusObserver.@org.wwarn.mapcore.client.offline.OfflineStatusObserver::offlineStatusObserver = $wnd.Offline;
+//    }-*/;
+//
+//    public static class OfflineStatusOptions extends JavaScriptObject{
+//
+//        /**
+//         * {
+//
+//         // Should we automatically retest periodically when the connection is down (set to false to disable).
+//         reconnect: {
+//         // How many seconds should we wait before rechecking.
+//         initialDelay: 3,
+//
+//         // How long should we wait between retries.
+//         delay: (1.5 * last delay, capped at 1 hour)
+//         },
+//
+//
+//         }
+//         */
+//        protected OfflineStatusOptions() {
+//        }
+//
+//        public final native boolean checkOnLoad()
+//                throws RuntimeException /*-{
+//            return this["checkOnLoad"] = (this["checkOnLoad"] || true);
+//        }-*/
+//        ;
+//
+//        /**
+//         *  Should we check the connection status immediately on page load.
+//         *  defaults to true
+//         * @param checkOnLoad
+//         * @return
+//         * @throws RuntimeException
+//         */
+//        public final native OfflineStatusOptions checkOnLoad(boolean checkOnLoad)
+//                throws RuntimeException /*-{
+//            this["enabled"] = checkOnLoad;
+//            return this;
+//        }-*/
+//        ;
+//
+//        public final native boolean interceptRequests()
+//                throws RuntimeException /*-{
+//            return this["interceptRequests"] = (this["interceptRequests"] || false);
+//        }-*/
+//        ;
+//
+//        /**
+//         * Should we monitor AJAX requests to help decide if we have a connection.
+//         * defaults to false
+//         * @param interceptRequests
+//         * @return
+//         * @throws RuntimeException
+//         */
+//        public final native OfflineStatusOptions interceptRequests(boolean interceptRequests)
+//                throws RuntimeException /*-{
+//            this["interceptRequests"] = interceptRequests;
+//            return this;
+//        }-*/
+//        ;
+//
+//        public final native boolean requests()
+//                throws RuntimeException /*-{
+//            return this["requests"] = (this["requests"] || false);
+//        }-*/
+//        ;
+//
+//
+//        /**
+//         * Should we store and attempt to remake requests which fail while the connection is down.
+//            default: false,
+//         * @param requests
+//         * @return
+//         * @throws RuntimeException
+//         */
+//        public final native OfflineStatusOptions requests(boolean requests)
+//                throws RuntimeException /*-{
+//            this["requests"] = requests;
+//            return this;
+//        }-*/
+//        ;
+//
+//        /**
+//         * No snake game support
+//         * @return
+//         * @throws RuntimeException
+//         */
+//        public final native boolean game()
+//                throws RuntimeException /*-{
+//            return this["game"] = (this["game"] || false);
+//        }-*/
+//        ;
+//
+//    }
+//
+//}

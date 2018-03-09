@@ -38,7 +38,6 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import org.jetbrains.annotations.NotNull;
-import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
 import org.wwarn.mapcore.client.utils.StringUtils;
 import org.wwarn.surveyor.client.event.DataUpdatedEvent;
 import org.wwarn.surveyor.client.model.DataSourceProvider;
@@ -61,19 +60,6 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
     private static Logger logger = Logger.getLogger("SurveyorCore.ClientSideSearchDataProvider");
 
     private boolean isTest = false;
-    private OfflineStatusObserver offlineStatusObserver = new OfflineStatusObserver();
-    {
-        try {
-            final String check = offlineStatusObserver.check();
-        }catch (Exception e){
-            // do nothing but log exception
-            if (logger.isLoggable(FINE)) {
-                logger.log(FINE,"Failed in online/offline check using offlineStatusObserver");
-            }
-
-        }
-    }
-
     /**
      * Ordered list (implicitly ordered - TreeSet) of fields in schema order, each field hold a mapping of fields values (terms) to document positions
      */
@@ -246,13 +232,9 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                         final String previousDataSourceHash = recordListCompressedWithInvertedIndex.getDataSourceHash();
                         if (logger.isLoggable(FINE)) logger.log(FINE,"New data found, fetch records from server");
 
-                        fetchAllDataFromServers(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (logger.isLoggable(FINE)) logger.log(FINE,"New data fetch complete");
-                                storePreviousDataSourceHash(previousDataSourceHash);
-                                promptUserToReload();
-                            }
+                        fetchAllDataFromServers(() -> {
+                            if (logger.isLoggable(FINE)) logger.log(FINE,"New data fetch complete");
+                            storePreviousDataSourceHash(previousDataSourceHash, () -> promptUserToReload());
                         });
 
                     }
@@ -299,32 +281,23 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
             public void success(@NotNull String previousKeyToRemove) {
                 if (StringUtils.isEmpty(previousKeyToRemove)) return;
                 if (previousKeyToRemove.equals(currentDataHash)) {
-                    offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), new Runnable() {
-                        @Override
-                        public void run() {
-                            if (logger.isLoggable(FINE)) {
-                                logger.log(FINE,"Old key not removed, as current and previous keys are equal, remove previous key reference instead");
-                            }
+                    offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), () -> {
+                        if (logger.isLoggable(FINE)) {
+                            logger.log(FINE,"Old key not removed, as current and previous keys are equal, remove previous key reference instead");
                         }
                     });
                 } else {
                     final String keyForOldHash = createOfflineStorageUniqueKey(previousKeyToRemove);
-                    offlineStoragePreviousKeyStore.removeItem(keyForOldHash, new Runnable() {
-                        @Override
-                        public void run() {
-                            if (logger.isLoggable(FINE)) {
-                                logger.log(FINE," Old key removed : " + keyForOldHash);
-                            }
-                            //remove previous key reference, now old key referenced data deleted
-                            offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), new Runnable() {
-                                @Override
-                                public void run() {
-                                if (logger.isLoggable(FINE)) {
-                                    logger.log(FINE,"removing previous key, now old key referenced data deleted");
-                                }
-                                }
-                            });
+                    offlineStoragePreviousKeyStore.removeItem(keyForOldHash, () -> {
+                        if (logger.isLoggable(FINE)) {
+                            logger.log(FINE," Old key removed : " + keyForOldHash);
                         }
+                        //remove previous key reference, now old key referenced data deleted
+                        offlineStoragePreviousKeyStore.removeItem(getOfflineStorePreviousUniqueKey(), () -> {
+                        if (logger.isLoggable(FINE)) {
+                            logger.log(FINE,"removing previous key, now old key referenced data deleted");
+                        }
+                        });
                     });
                 }
             }
@@ -336,7 +309,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
         });
     }
 
-    private void storePreviousDataSourceHash(String previousDataSourceHash) {
+    private void storePreviousDataSourceHash(String previousDataSourceHash, Runnable onSuccess) {
         if(logger.isLoggable(FINE)) logger.log(FINE,"Attempting to store previous datasourcehash");
         OfflineStorageUtil<String> offlineStoragePreviousKeyStore = getOfflineStoragePreviousKeyStore();
         offlineStoragePreviousKeyStore.store(previousDataSourceHash, new OfflineStorageUtil.AsyncCommand<String>() {
@@ -345,6 +318,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
                 if (logger.isLoggable(FINE)) logger.log(FINE,"Stored previous datasourcehash - successfully");
                 // send an event to inform users to refresh browser as data has been updated.
                 clientFactory.getEventBus().fireEvent(new DataUpdatedEvent());
+                onSuccess.run();
             }
 
             @Override
