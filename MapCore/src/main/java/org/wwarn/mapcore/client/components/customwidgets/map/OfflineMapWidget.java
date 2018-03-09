@@ -41,7 +41,6 @@ import com.google.gwt.dom.client.StyleInjector;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import org.wwarn.mapcore.client.offline.OfflineStatusObserver;
 import org.wwarn.mapcore.client.resources.OpenLayersV3Resources;
 import org.wwarn.mapcore.client.utils.StringUtils;
 
@@ -80,7 +79,6 @@ public class OfflineMapWidget extends GenericMapWidget {
     private double mapCentreLon;
     private int zoomLevel;
     private CoordinatesLatLon centerCoordinatesLatLon;
-    private static OfflineStatusObserver offlineStatusObserver;
     private List<Runnable> loadCompleteCallbacks = new ArrayList<>();
     private HTMLPanel mapWidgetHTMLPanel = new HTMLPanel("");
     private boolean isClusteringEnabled = false;
@@ -95,7 +93,6 @@ public class OfflineMapWidget extends GenericMapWidget {
      * Loads the offline library.
      */
     public static void load() {
-        offlineStatusObserver = new OfflineStatusObserver();
         if (!isLoaded()) {
 //            ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.proj4js().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
             ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.supercluster().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
@@ -153,11 +150,15 @@ public class OfflineMapWidget extends GenericMapWidget {
 
     private void drawMap() {
         if(!mapDrawCalled) {
-            final boolean isOnline = offlineStatusObserver.isOnline();
+            final boolean isOnline = !isOffline();
             drawBasicMap(this, currentId, popupElement, isOnline, getModuleBaseName());
             mapDrawCalled = true;
         }
     }
+
+    private final native boolean isOffline() throws RuntimeException /*-{
+        return ((!(typeof $wnd.navigator === "undefined" || $wnd.navigator === null || typeof $wnd.navigator.onLine === "undefined" || $wnd.location.onLine === null) && !$wnd.navigator.onLine));
+    }-*/;
 
     private String getModuleBaseName() {
         String moduleBaseName = "org.wwarn.mapcore.Map";
