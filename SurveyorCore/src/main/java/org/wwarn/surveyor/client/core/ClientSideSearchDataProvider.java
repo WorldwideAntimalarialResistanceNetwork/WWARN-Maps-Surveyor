@@ -187,7 +187,7 @@ public class ClientSideSearchDataProvider extends ServerSideSearchDataProvider i
      }-*/;
 
     private void scheduleStoreToOfflineDataStore(final QueryResult queryResult) {
-        // attempt to store in 7 seconds after fetching from server, should help reduce initial load time.
+        // attempt to store in several seconds after fetching from server, should help reduce initial load time.
         listOfScheduledJobs.add(new Scheduler.RepeatingCommand() {
             @Override
             public boolean execute() {
