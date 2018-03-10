@@ -95,7 +95,7 @@ public class OfflineMapWidget extends GenericMapWidget {
     public static void load() {
         if (!isLoaded()) {
 //            ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.proj4js().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
-            ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.supercluster().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
+//            ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.supercluster().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
             ScriptInjector.fromString(OpenLayersV3Resources.INSTANCE.js().getText()).setWindow(ScriptInjector.TOP_WINDOW).inject();
             StyleInjector.injectStylesheetAtStart(OpenLayersV3Resources.INSTANCE.css().getText());
         }
