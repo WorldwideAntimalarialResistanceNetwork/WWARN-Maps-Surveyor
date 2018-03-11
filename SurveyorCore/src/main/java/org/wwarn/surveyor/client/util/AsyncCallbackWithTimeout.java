@@ -63,7 +63,7 @@ public abstract class AsyncCallbackWithTimeout<T> implements AsyncCallback<T> {
     public static Timestamp latestServerCallTimeStamps = null;
     protected Timestamp timeSend= null;
     private static final String TIMEOUT_ERROR = "An action timed out. Please try refreshing your browser.";
-    private static final int DEFAULT_TIMEOUT = 40000; // 40 seconds
+    private static final int DEFAULT_TIMEOUT = 120000; // 120 seconds
     private boolean hasTimedOut = false;
 
 
