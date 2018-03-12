@@ -52,6 +52,9 @@ public class OfflineStorageUtil<T> {
     private SerializationUtil serializationUtil = new SerializationUtil();
 
     public static native boolean isRecentBrowser()/*-{
+        // safari fails to deserialise data from local storage
+        if ( /^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {return false;}
+
         // ios version 7 seems to use a buggy or slow localStorage implementation works fine in 6, 5.1, 8
         if (/iP(hone|od|ad)/.test($wnd.navigator.platform)) {
             // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
