@@ -240,6 +240,8 @@ public class FilterPresenter implements Presenter {
                         filterDateRangeAndFields(filterQuery, valueToFilter);
                     }else if(valueToFilter instanceof FilterChangedEvent.FilterRangeInteger){
                             filterIntegerRange(filterQuery, valueToFilter);
+                    }else if(valueToFilter instanceof FilterChangedEvent.FilterGreater){
+                        filterGreater(filterQuery, valueToFilter);
                     }else if(valueToFilter instanceof FilterChangedEvent.MultipleFilterValue){
                         final FilterChangedEvent.MultipleFilterValue multipleFilterValue = (FilterChangedEvent.MultipleFilterValue) valueToFilter;
                         if(!multipleFilterValue.getFacetFieldValues().contains(DEFAULT_CATCH_ALL_OPTION)){
