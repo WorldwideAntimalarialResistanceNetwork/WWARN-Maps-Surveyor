@@ -13,4 +13,3 @@ deploy:
     - SurveyorSimpleDemoApp/target/SurveyorSimpleDemoApp-$project_version.jar
   on:
     branch: master
-  name: $project_version
