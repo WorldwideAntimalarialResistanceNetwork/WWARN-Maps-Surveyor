@@ -1,15 +1,17 @@
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
 install: travis_wait 40 mvn install
 env: MAVEN_OPTS="-XX:MaxPermSize=512m"
 deploy:
   provider: releases
   api_key:
-    secure: aEXiUk0PxjyZk9+XnocpPY5/0YzapTyU539/VtLakM863GR2X73hl2tKtL72Wb+Fjv5oXlGCNWr/mZuQODuu7nMd6ojRFtUW2Jg4bvq/NYVyy+n42TINR5fvLtxC8GQ+zvN7qMGvYbJf6G4hYZZ51PDSwiaack1a0EtL1tkjtbBixv5yfErIgpnuPeXdOiQIuJF6LVspoVXVe2YVcHUMewYMvXbEmJgD0F8YHLik6t4gutYJwwNOPIahuFQpmMeHvva/JfuxnrkzjKHlh5ajudzOdyWAj96psgrp0Vf6AODcSf+7mnBEVvqqzyLqIU/63Hz7w6h7eHtEjcWsdl9gdnI25DPD6qeCLN8bmhhfKSSwkF7O3HnpruihACSUel5XKRT020/ACBpLd+2WXc09G1C+zsCLayRp1vdOQVCZmc9ehP8bcHeGewBzPnX5zhB74kmhXLMsLjjnh7mozSt8s+79F08pbiWNoeagiR/bUlIwgJ2mJ8GWOKgF2L5koHn0E+2sNladyyZ07xUjjyU3X6D64/agqOJPQuE96kHsciBUpNy/7a65EN+JMYyt4G0s+Pxntm/tPzcNPk2T6mdZm1qpbt0qpxI2U4I+gfwPj8WscRvnZBoArKfqhxBE3UtB0+KwlpmLjjHXiaSGsDJbLxsav71y4j5O8zWdQO5DWe8=
+    secure: PKjFgJuhYSLte+vbNlekCi6jbxJfuJ4LLojoAeSse1BahPKIJ3RtgDdm6VjwJ/byaBjiWi5AoeC37nuzv9Z8L2r07OaCQu707OlmFemzsJHCf/14LyV//P5GL1hJ5n0HipE7C0rnW1Ai8fdXCwCMJ/FPKJakh7ETqHN/I+HX3KtVQYoD2CJ6O6eJis/dT/AHm/wlijySV4JG4SfTuvZ4D0u/SnH26VxfxAeQ58DM688ZHgmc96k58Xw1M1WQbH/cqAb741nszvldjMzaK30wCfhfrHyXhlaiYzubogegQLbgF8jVeiJH101+oEhm8x8NcWBuvR7ZU+lbPqS8F/GmqWOh7FLPx7mUvrn1VGYPxxCIWFlJPBPlhaySc/w9mBLF5eFRG0Oy3As+ku/deafjztwtnXJT5d5dZqHmmMbqEjuy9YV4hw54E6ZX0UOctDLmkFiF9IqfG8TIjhOP/IpeQF+UkedKtDEjmWn9tsZ579BCRv8JG4UvBPvCsUcsr7aRn2KwHP0VBlSDyvQU1FVEnQhFU3OG0GErVXwW5wQtDsEEZ5M2+uzwrgitvjXNHTm/iECuWW1Jq0HnhMOFJa+NpuPfGv9KxglYIesCJfoRe74rpeMe31L2iA/CFaPl/hCsU3IT7r6d0RpUG9bw9hy4E+ZUuiaa2JcqeBZF26GUclY=
   file:
     - MapCore/target/MapCore-$project_version.jar
     - SurveyorCore/target/SurveyorCore-$project_version.jar
     - SurveyorSimpleDemoApp/target/SurveyorSimpleDemoApp-$project_version.jar
   on:
     branch: master
+  on:
+    repo: WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor
