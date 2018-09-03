@@ -1,8 +1,14 @@
 language: java
 jdk:
 - oraclejdk8
-install: travis_wait 10 mvn install
+install: travis_wait mvn install -B -V
 env: MAVEN_OPTS="-XX:MaxPermSize=512m"
+
+## Get the project version
+before_deploy:
+    - mvn help:evaluate -N -Dexpression=project.version|grep -v '\['
+    - export project_version=$(mvn help:evaluate -N -Dexpression=project.version|grep -v '\[')
+
 deploy:
   provider: releases
   api_key:
@@ -15,3 +21,7 @@ deploy:
     branch: master
   on:
     repo: WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor
+
+cache:
+    directories:
+        - ~/.m2/repository
