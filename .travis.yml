@@ -1,6 +1,17 @@
 language: java
 jdk:
-  - oraclejdk8
-install: travis_wait mvn install
+- oraclejdk7
+install: true
+script: 'mvn verify '
 env: MAVEN_OPTS="-XX:MaxPermSize=512m"
-
+deploy:
+  provider: releases
+  api_key:
+    secure: aEXiUk0PxjyZk9+XnocpPY5/0YzapTyU539/VtLakM863GR2X73hl2tKtL72Wb+Fjv5oXlGCNWr/mZuQODuu7nMd6ojRFtUW2Jg4bvq/NYVyy+n42TINR5fvLtxC8GQ+zvN7qMGvYbJf6G4hYZZ51PDSwiaack1a0EtL1tkjtbBixv5yfErIgpnuPeXdOiQIuJF6LVspoVXVe2YVcHUMewYMvXbEmJgD0F8YHLik6t4gutYJwwNOPIahuFQpmMeHvva/JfuxnrkzjKHlh5ajudzOdyWAj96psgrp0Vf6AODcSf+7mnBEVvqqzyLqIU/63Hz7w6h7eHtEjcWsdl9gdnI25DPD6qeCLN8bmhhfKSSwkF7O3HnpruihACSUel5XKRT020/ACBpLd+2WXc09G1C+zsCLayRp1vdOQVCZmc9ehP8bcHeGewBzPnX5zhB74kmhXLMsLjjnh7mozSt8s+79F08pbiWNoeagiR/bUlIwgJ2mJ8GWOKgF2L5koHn0E+2sNladyyZ07xUjjyU3X6D64/agqOJPQuE96kHsciBUpNy/7a65EN+JMYyt4G0s+Pxntm/tPzcNPk2T6mdZm1qpbt0qpxI2U4I+gfwPj8WscRvnZBoArKfqhxBE3UtB0+KwlpmLjjHXiaSGsDJbLxsav71y4j5O8zWdQO5DWe8=
+  file:
+    - MapCore/target/MapCore-$project_version.jar
+    - SurveyorCore/target/SurveyorCore-$project_version.jar
+    - SurveyorSimpleDemoApp/target/SurveyorSimpleDemoApp-$project_version.jar
+  on:
+    branch: master
+  name: $project_version
