@@ -17,6 +17,7 @@ deploy:
     - MapCore/target/MapCore-$project_version.jar
     - SurveyorCore/target/SurveyorCore-$project_version.jar
     - SurveyorSimpleDemoApp/target/SurveyorSimpleDemoApp-$project_version.war
+  skip_cleanup: true
   on:
     branch: master
     repo: WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor
