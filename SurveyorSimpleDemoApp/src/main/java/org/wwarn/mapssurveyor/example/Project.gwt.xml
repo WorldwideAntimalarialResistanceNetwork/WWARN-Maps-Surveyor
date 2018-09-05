@@ -42,7 +42,7 @@
     <!-- Specify the paths for translatable code                    -->
 
     <!-- Specify the app entry point class.                         -->
-    <entry-point class='com.example.client.ProjectEntryPoint'/>
+    <entry-point class='org.wwarn.mapssurveyor.example.client.ProjectEntryPoint'/>
     <source path='client'/>
     <source path='shared'/>
 
@@ -52,7 +52,7 @@
     <!-- <set-configuration-property name="devModeRedirectEnabled" value="true"/> -->
 
 
-    <replace-with class="com.example.client.impl.ClientBundleConfigLoader">
+    <replace-with class="org.wwarn.mapssurveyor.example.client.impl.ClientBundleConfigLoader">
         <when-type-is class="org.wwarn.surveyor.client.mvp.ConfigLoader"/>
     </replace-with>
 
