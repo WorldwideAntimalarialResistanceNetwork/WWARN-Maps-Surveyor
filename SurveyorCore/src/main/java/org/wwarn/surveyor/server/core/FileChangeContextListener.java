@@ -50,10 +50,12 @@ import static java.util.logging.Level.SEVERE;
 /**
  * A servlet listener that helps monitors files changes and inform lucene search service,
  * expects a context attribute
+ * <pre>{@code
  *     <context-param>
  *     <param-name>org.wwarn.surveyor.server.core.FileChangeContextListener.monitoredFile</param-name>
  *     <param-value>data/feverseriesPublications.json</param-value>
  *     </context-param>
+ * }</pre>
  * code from http://stackoverflow.com/a/4908012
  */
 public class FileChangeContextListener implements ServletContextListener {

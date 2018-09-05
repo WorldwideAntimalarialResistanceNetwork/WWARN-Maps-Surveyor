@@ -162,7 +162,6 @@ public class BitSet  {
 
     /**
      * BitSet#xor(bitset) - XOR's this bitset with the argument bitset
-     * @return
      */
     public void xor(BitSet bitSet){
         applyXOR(bitSet.bitset);

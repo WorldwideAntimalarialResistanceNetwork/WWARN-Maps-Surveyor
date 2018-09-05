@@ -90,7 +90,7 @@ public enum DataType implements IsSerializable {
          * Attempt to parse dates, based on all supported formats
          * @param fieldValue
          * @param defaultDate
-         * @
+         * @return date object
          * @see DataType#DATE_FORMAT_YEAR_ONLY
          * @see DataType#DATE_FORMAT_DAY_MONTH_YEAR
          * @see DataType#ISO_DATE_FORMAT

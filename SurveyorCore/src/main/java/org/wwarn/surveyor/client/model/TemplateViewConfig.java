@@ -35,7 +35,7 @@ package org.wwarn.surveyor.client.model;
 
 /**
  * Holds
- * This class stores config related to <viewTemplate/> node.
+ * This class stores config related to viewTemplate node.
  */
 public class TemplateViewConfig implements ViewConfig{
     private TemplateViewNodesConfig templateViewNodesConfig = new TemplateViewNodesConfig();

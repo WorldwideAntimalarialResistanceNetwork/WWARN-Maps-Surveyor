@@ -138,10 +138,10 @@ public class LocalForage {
      * ** WARNING** note that instead of returning undefined to continue, return null instead, if return value is not null, iteration is halted.
      * iterate supports early exit by returning non undefined value inside iteratorCallback callback. Resulting value will be passed to successCallback as the result of iteration.
      *
-     * @param localForageIteratorCallback
-     * @param successCallback
-     * @Deprecated
+     * @param localForageIteratorCallback local forage iterator callback
+     * @param successCallback success call back function
      */
+    @Deprecated
     public native void iterate(LocalForageIteratorCallback localForageIteratorCallback, LocalForageCallback<String[]> successCallback) /*-{
 
 

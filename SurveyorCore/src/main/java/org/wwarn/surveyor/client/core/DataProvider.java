@@ -60,7 +60,7 @@ public interface DataProvider {
      *
      * @param filterQuery allows specifying a query composed of a field and the value to filter upon.
      * @param facetFields a facetField is a field defined in the schema for which distinct values should be returned
-     * @return query result containing the data set and adjusted map of facet fields x unique(facet field values)
+     * @param queryResultCallBack containing the data set and adjusted map of facet fields x unique(facet field values)
      * @see FilterQuery
      * @see QueryResult
      */
@@ -69,7 +69,7 @@ public interface DataProvider {
     /**
      * A basic façade for a data source
      * @param filterQuery a filter query is a set of of fields with values to restrict the results by
-     * @return query result containing the data set and adjusted map of facet fields x unique(facet field values)
+     * @param queryResultCallBack  query result containing the data set and adjusted map of facet fields x unique(facet field values)
      * @see FilterQuery
      * @see QueryResult
      */
