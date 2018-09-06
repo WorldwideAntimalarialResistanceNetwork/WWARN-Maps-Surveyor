@@ -68,7 +68,7 @@ public class StringUtils
      * <p>Abbreviates a String using ellipses. This will turn
      * "Now is the time for all good men" into "Now is the time for..."</p>
      *
-     * <p>Specifically:
+     * <p>Specifically:</p>
      * <ul>
      *   <li>If <code>str</code> is less than <code>maxWidth</code> characters
      *       long, return it.</li>
@@ -78,7 +78,6 @@ public class StringUtils
      *   <li>In no case will it return a String of length greater than
      *       <code>maxWidth</code>.</li>
      * </ul>
-     * </p>
      *
      * <pre>
      * StringUtils.abbreviate(null, *)      = null

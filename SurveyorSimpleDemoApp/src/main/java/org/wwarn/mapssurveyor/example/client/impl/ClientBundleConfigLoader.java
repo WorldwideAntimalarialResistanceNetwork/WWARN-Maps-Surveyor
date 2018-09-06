@@ -1,4 +1,4 @@
-package com.example.client.impl;
+package org.wwarn.mapssurveyor.example.client.impl;
 
 /*
  * #%L
@@ -33,7 +33,7 @@ package com.example.client.impl;
  * #L%
  */
 
-import com.example.client.ConfigResources;
+import org.wwarn.mapssurveyor.example.client.ConfigResources;
 import org.wwarn.surveyor.client.mvp.ConfigLoader;
 
 /**

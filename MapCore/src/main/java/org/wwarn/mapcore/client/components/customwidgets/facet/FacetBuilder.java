@@ -106,8 +106,8 @@ public class FacetBuilder {
     }
 
     /**
-     * Takes a map of value -> labels and the unique name of the list
-     * @param items map of value -> labels
+     * Takes a map of value to labels and the unique name of the list
+     * @param items map of value to labels
      * @return a Builder instance to allow chaining
      */
     public FacetBuilder setItemsList(Map<String, String> items) {

@@ -43,7 +43,7 @@ import org.wwarn.mapcore.client.utils.StringUtils;
 import java.util.*;
 
 /**
- * This class holds extension to support some the missing GWT DataTable/DataView methods, ie getFilteredRows and getDistinctValues <br/>
+ * This class holds extension to support some the missing GWT DataTable/DataView methods, ie getFilteredRows and getDistinctValues
  * All native JS calls encapsulated in this class, however holds reference to
  * See gwt docs:
  * http://gwt-google-apis.googlecode.com/svn/javadoc/visualization/1.1/index.html?com/google/gwt/visualization/client/package-summary.html
@@ -286,8 +286,8 @@ public class DataTableExtensions {
         }-*/;
 
         /**
-         * Note that we cannot use java.util.Date as an input parameter, as this isn't supported, <br/>
-         * instead a double is used and the value is parsed to a native javascript date, based on this <a href="https://code.google.com/p/gwt-chronoscope/source/browse/trunk/gviz/gviz-api/src/main/java/org/timepedia/chronoscope/gviz/api/client/DataTable.java">example</a>:<br/>
+         * Note that we cannot use java.util.Date as an input parameter, as this isn't supported,
+         * instead a double is used and the value is parsed to a native javascript date, based on this <a href="https://code.google.com/p/gwt-chronoscope/source/browse/trunk/gviz/gviz-api/src/main/java/org/timepedia/chronoscope/gviz/api/client/DataTable.java">example</a>:
          * (in place of long, since gwt can't work covert long)
          * @param columnIndex
          * @param minValue

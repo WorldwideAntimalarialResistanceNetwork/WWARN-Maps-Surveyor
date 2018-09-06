@@ -39,8 +39,8 @@ import org.wwarn.mapcore.client.utils.StringUtils;
 import java.util.*;
 
 /**
- * A filter query is a set of of fields with values to restrict the results by <br/>
- * FilterQuery := None | (Field, FieldValueToFilter) <br/>
+ * A filter query is a set of of fields with values to restrict the results by
+ * FilterQuery := None | (Field, FieldValueToFilter)
  * User: nigel
  * Date: 19/07/13
  */

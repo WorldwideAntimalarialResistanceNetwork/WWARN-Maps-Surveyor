@@ -1,4 +1,4 @@
-package com.example.client;
+package org.wwarn.mapssurveyor.example.client;
 
 /*
  * #%L
