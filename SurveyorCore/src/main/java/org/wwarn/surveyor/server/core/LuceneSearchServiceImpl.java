@@ -260,7 +260,14 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
 
             final Document indexDocument = new Document();
             for (String fieldName : fieldNamesSet) {
-                String fieldValue = jsonObject.get(fieldName).toString();
+                if (fieldName == null) {
+                    continue;
+                }
+                Object fieldNameObj = jsonObject.get(fieldName);
+                if (fieldNameObj == null) {
+                    continue;
+                }
+                String fieldValue = String.valueOf(fieldNameObj);
                 final DataType type = schema.getType(fieldName);
                 if(type == null){continue;} // if type not found then it is not defined in schema, so ignore..
                 if(StringUtils.isEmpty(fieldValue)){continue;}
