@@ -93,7 +93,7 @@ public class FileVersionUtil {
     }
 
     @Nullable
-    public String getHashFromInputStream(InputStream stream) {
+    public synchronized String getHashFromInputStream(InputStream stream) {
         MessageDigest md = getDigest();
         try(DigestInputStream digestInputStream = new DigestInputStream(stream, md)){
             while(digestInputStream.read() != -1);
@@ -110,14 +110,14 @@ public class FileVersionUtil {
     }
 
     static MessageDigest messageDigest;
-    public MessageDigest getDigest() {
+    public synchronized MessageDigest getDigest() {
         try {
 
             if (messageDigest == null) {
                 messageDigest = MessageDigest.getInstance("MD5");
             }
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
         return messageDigest;
     }
