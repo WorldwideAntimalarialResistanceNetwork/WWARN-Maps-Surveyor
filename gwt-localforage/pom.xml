@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.wwarn.mapssurveyor</groupId>
         <artifactId>maps-surveyor-parent</artifactId>
-        <version>1.4.4</version>
+        <version>1.4.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wwarn.localforage</groupId>
     <artifactId>gwt-localForage</artifactId>
-    <version>1.4.4</version>
+    <version>1.4.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>GWT LocalForage Wrapper</name>
 

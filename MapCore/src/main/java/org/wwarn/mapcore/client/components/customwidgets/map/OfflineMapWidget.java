@@ -539,7 +539,7 @@ public class OfflineMapWidget extends GenericMapWidget {
 
     @Override
     public void setZoomLevel(int zoomLevel) {
-        zoomLevel = zoomLevel;
+        this.zoomLevel = zoomLevel;
     }
 
     @Override

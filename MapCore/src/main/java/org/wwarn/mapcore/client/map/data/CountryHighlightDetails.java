@@ -88,4 +88,12 @@ public class CountryHighlightDetails {
 
         return true;
     }
+
+    @Override
+    public int hashCode() {
+        int result = countryCode != null ? countryCode.hashCode() : 0;
+        result = 31 * result + (opacity != null ? opacity.hashCode() : 0);
+        result = 31 * result + (colourStringRGB != null ? colourStringRGB.hashCode() : 0);
+        return result;
+    }
 }

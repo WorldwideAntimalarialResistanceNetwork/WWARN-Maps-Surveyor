@@ -209,7 +209,6 @@ public class YearRangeSliderComposite extends Composite{
 
         ShowRangeHandler<Integer> showRangeChangeHandler = new ShowRangeHandler<Integer>() {
             private String facetField = filterByDateRangeSettings.filterFieldName;
-            private ArrayList<FilterChangedEvent.DateRange> selectedListItems = new ArrayList<FilterChangedEvent.DateRange>();
             private DateTimeFormat dateTimeFormatYearOnly = DateTimeFormat.getFormat(dateFormat);
 
             public void onShowRange(ShowRangeEvent<Integer> integerShowRangeEvent) {

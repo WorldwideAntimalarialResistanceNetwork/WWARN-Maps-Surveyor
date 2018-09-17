@@ -95,7 +95,9 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                 logger.log(FINE,"LuceneSearchServiceImpl::init", "skipping initialisation, already called previously");
                 return;
             }
-            Objects.requireNonNull(dataSchema);
+            Objects.requireNonNull(dataSchema, "dataSchema should not be null");
+            Objects.requireNonNull(dataSource, "dataSource should not be null");
+
             this.dataSchema = dataSchema;
             location = dataSource.getLocation();
             //setup index
@@ -203,7 +205,8 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
         JSONArray arrayObjects;
 //        Reader reader = Files.newBufferedReader(f.toPath(),StandardCharsets.UTF_8);
         try (
-            Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8.name()));
+                final FileInputStream in = new FileInputStream(f);
+                Reader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8.name()));
         ) {
             Object fileObjects = org.json.simple.JSONValue.parse(reader);
             arrayObjects = (JSONArray) fileObjects;
