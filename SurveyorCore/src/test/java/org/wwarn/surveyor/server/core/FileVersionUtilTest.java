@@ -67,4 +67,12 @@ public class FileVersionUtilTest {
         assertEquals("D41D8CD98F00B204E9800998ECF8427E",version);
         file.deleteOnExit();
     }
+
+//    @Test
+//    public void testFiftyMegFile() throws Exception {
+//        final File file = new File("path to a big file");
+//        final String version = fileVersionUtil.calculateVersionFrom(file);
+//        assertNotNull(version);
+//        assertEquals("F4B8B98AEFC2D73E42746EC1AB409448",version);
+//    }
 }

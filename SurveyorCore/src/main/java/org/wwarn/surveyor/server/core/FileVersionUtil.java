@@ -84,7 +84,7 @@ public class FileVersionUtil {
         }
         final String digestHex;
         try {
-            digestHex = getHashFromInputStream(Files.newInputStream(file.toPath()));
+            digestHex = getHashFromBytes(Files.readAllBytes(file.toPath()));
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -93,16 +93,13 @@ public class FileVersionUtil {
     }
 
     @Nullable
-    public synchronized String getHashFromInputStream(InputStream stream) {
+    public synchronized String getHashFromBytes(byte[] bytes) {
         MessageDigest md = getDigest();
-        try(DigestInputStream digestInputStream = new DigestInputStream(stream, md)){
-            while(digestInputStream.read() != -1);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+        md.update(bytes);
         final byte[] digest = md.digest();
         return convertBinaryDigestToHexStringDigest(digest);
     }
+
 
     @NotNull
     private String convertBinaryDigestToHexStringDigest(byte[] digest) {

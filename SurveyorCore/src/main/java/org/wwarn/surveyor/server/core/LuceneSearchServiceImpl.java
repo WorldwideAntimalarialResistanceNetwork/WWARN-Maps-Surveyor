@@ -163,14 +163,15 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
             assertFilePathExists(dataSource.getLocation(), "jsonPath invalid:");
             File json = new File(dataSource.getLocation());
             // grab version information
-            final String hashOfJsonFile = fileVersionUtil.calculateVersionFrom(json);
+//            final String hashOfJsonFile = "aosfghjpoeuhrgnalsznv" /*fileVersionUtil.calculateVersionFrom(json)*/;
+            final String hashOfJsonFile =  fileVersionUtil.calculateVersionFrom(json);
             jsonContent = parseJSON(json);
             return new JSONWithMetaData(jsonContent, hashOfJsonFile);
         }else{
             Objects.requireNonNull(dataSource.getResource());
             final String stringResource = dataSource.getResource();
             final byte[] bytes = stringResource.getBytes();
-            final String hashFromInputStream = fileVersionUtil.getHashFromInputStream(new ByteArrayInputStream(bytes));
+            final String hashFromInputStream = fileVersionUtil.getHashFromBytes(bytes);
             jsonContent = parseJSON(stringResource);
             return new JSONWithMetaData(jsonContent, hashFromInputStream);
         }
