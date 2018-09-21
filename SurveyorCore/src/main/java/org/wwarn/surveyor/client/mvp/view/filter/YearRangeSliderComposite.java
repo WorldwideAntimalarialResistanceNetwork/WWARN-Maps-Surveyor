@@ -45,6 +45,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -199,7 +200,10 @@ public class YearRangeSliderComposite extends Composite{
 
     private YuiDualSliderGwtWidget setupYearRangeWidget() {
         YuiDualSliderGwtWidget dateSliderYuiWidgetImpl = new YuiDualSliderGwtWidgetImplWithLabelMarkers(456, 48, startYear, Integer.valueOf(endYear), 5, 1);
-        //dateSliderYuiWidgetImpl.setRange(initialStart, initialEnd);
+        if(initialStart != startYear || initialEnd != endYear) {
+            GWT.log("!!!org.wwarn.surveyor.client.mvp.view.filter.YearRangeSliderComposite Reading initial start year or end year - this will cause a second load - TODO fix me !!!");
+            dateSliderYuiWidgetImpl.setRange(initialStart, initialEnd);
+        }
         ValueChangeHandler<Range<Integer>> valueChangeHandler = new ValueChangeHandler<Range<Integer>>() {
 
             public void onValueChange(ValueChangeEvent<Range<Integer>> yearRangeValueChangeEvent) {
