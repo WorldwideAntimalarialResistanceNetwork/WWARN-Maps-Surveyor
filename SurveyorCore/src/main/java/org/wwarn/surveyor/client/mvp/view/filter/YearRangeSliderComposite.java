@@ -197,11 +197,12 @@ public class YearRangeSliderComposite extends Composite{
 
     }
 
+    int initialYearRun = 0;
 
     private YuiDualSliderGwtWidget setupYearRangeWidget() {
         YuiDualSliderGwtWidget dateSliderYuiWidgetImpl = new YuiDualSliderGwtWidgetImplWithLabelMarkers(456, 48, startYear, Integer.valueOf(endYear), 5, 1);
         if(initialStart != startYear || initialEnd != endYear) {
-            GWT.log("!!!org.wwarn.surveyor.client.mvp.view.filter.YearRangeSliderComposite Reading initial start year or end year - this will cause a second load - TODO fix me !!!");
+//            GWT.log("!!!org.wwarn.surveyor.client.mvp.view.filter.YearRangeSliderComposite Reading initial start year or end year - this will cause a second load - TODO fix me !!!");
             dateSliderYuiWidgetImpl.setRange(initialStart, initialEnd);
         }
         ValueChangeHandler<Range<Integer>> valueChangeHandler = new ValueChangeHandler<Range<Integer>>() {
@@ -238,6 +239,7 @@ public class YearRangeSliderComposite extends Composite{
                     // if filter is set to default values then reset filter options
                     filterChangedEvent.resetField();
                 }
+                if(isInitialValuesSetToDefault() || initialYearRun++ > 1) // hack to prevent first load initial value trigger data load and refresh
                 clientFactory.getEventBus().fireEvent(filterChangedEvent);
             }
 
@@ -247,6 +249,10 @@ public class YearRangeSliderComposite extends Composite{
         dateSliderYuiWidgetImpl.addValueChangeHandler(valueChangeHandler);
         dateSliderYuiWidgetImpl.addShowRangeHandler(showRangeChangeHandler);
         return dateSliderYuiWidgetImpl;
+    }
+
+    private boolean isInitialValuesSetToDefault() {
+        return initialStart == startYear && initialEnd == endYear;
     }
 
     private void updateRangeLabels(Integer startYear, Integer endYear) {
