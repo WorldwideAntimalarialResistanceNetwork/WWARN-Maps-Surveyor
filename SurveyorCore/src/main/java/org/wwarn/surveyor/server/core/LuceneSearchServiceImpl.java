@@ -429,7 +429,15 @@ public class LuceneSearchServiceImpl implements SearchServiceLayer {
                             Date minValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMinValue();
                             Date maxValue = ((FilterQuery.FilterFieldRangeDate) filterQueryElement).getMaxValue();
                             query.add(filterField, NumericRangeQuery.newLongRange(filterField, minValue.getTime(), maxValue.getTime(), true, true));
-                        } else{
+                        } else if(filterQueryElement instanceof FilterQuery.FilterFieldRange.FilterFieldRangeInteger){
+                            // case where only year is supplied parse as Date
+                            FilterQuery.FilterFieldRange.FilterFieldRangeInteger filterFieldRangeInteger = (FilterQuery.FilterFieldRange.FilterFieldRangeInteger)filterQueryElement;
+                            Integer minValueInteger = filterFieldRangeInteger.getMinValueInteger();
+                            Integer maxValueInteger = filterFieldRangeInteger.getMaxValueInteger();
+                            Date dateMin = new GregorianCalendar(minValueInteger, 1, 1).getTime();
+                            Date dateMax = new GregorianCalendar(maxValueInteger, 12, 31).getTime();
+                            query.add(filterField, NumericRangeQuery.newLongRange(filterField, dateMin.getTime(), dateMax.getTime(), true, true));
+                        }else{
                             for(String fieldValue : getFieldValues(filterQueryElement)){
                                 final Date date = parseDateFrom(fieldValue, ISO8601_PATTERN);
                                 query.add(filterField, String.valueOf(date.getTime()));
