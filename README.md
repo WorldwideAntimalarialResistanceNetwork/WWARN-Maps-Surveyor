@@ -73,13 +73,17 @@ mvn versions:(commit|revert)
 The use of this framework assumes some familiarity with GWT framework, mvn, and an IDE like Eclipse or Intellij.
 
 1. Clone the sample application, and configure xml
+` git clone https://github.com/WorldwideAntimalarialResistanceNetwork/WWARN-Maps-Surveyor.git`
+
 2. Build
    Maven commands: Deployment - Jetty:
 
-   ```
-    cd SurveyorSimpleDemoApp
-    mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run
-   ```
+```
+ cd WWARN-Maps-Surveyor/
+ mvn -DskipTests
+ cd SurveyorSimpleDemoApp/
+ mvn clean verify org.codehaus.cargo:cargo-maven2-plugin:run
+```
 
    Deployment - Tomcat6x: Should deploy to http://localhost:8080/[artifactID]-[version]
 
