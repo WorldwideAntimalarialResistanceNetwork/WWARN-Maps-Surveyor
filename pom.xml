@@ -88,6 +88,14 @@
             </roles>
             <timezone>0</timezone>
         </developer>
+        <developer>
+            <name>Steven Garcia</name>
+            <id>apayne</id>
+            <roles>
+                <role>Committer</role>
+            </roles>
+            <timezone>0</timezone>
+        </developer>
     </developers>
 
     <licenses>
